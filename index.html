@@ -33,10 +33,31 @@
       justify-content:space-between;
       height:100%;
     }
+    .hero-row-top{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      align-items:flex-start;
+    }
     .hero-title{font-size:20px;font-weight:700;}
     .hero-dates{margin-top:4px;font-size:13px;opacity:.9;}
     .hero-dest{margin-left:auto;text-align:right;font-size:12px;}
     .hero-dest strong{display:block;font-size:18px;}
+    .edit-toggle{
+      font-size:11px;
+      padding:4px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.7);
+      background:rgba(0,0,0,0.15);
+      color:#fff;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .edit-toggle.active{
+      background:#ffe0eb;
+      color:#c02b5b;
+      border-color:#ffe0eb;
+    }
     .hero-tabs{
       margin-top:18px;
       display:flex;
@@ -89,6 +110,21 @@
     /* content area */
     .content{
       padding:8px 12px 24px;
+    }
+    .top-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:4px;
+      font-size:11px;
+    }
+    .top-actions button{
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid #d1d8ff;
+      background:#fff;
+      cursor:pointer;
+      color:#3557ff;
     }
     .weather-card{
       margin-top:4px;
@@ -155,6 +191,7 @@
       justify-content:space-between;
       align-items:center;
       margin-bottom:4px;
+      gap:6px;
     }
     .card-tag{
       font-size:10px;
@@ -179,10 +216,125 @@
     }
     .card-desc a{color:#3557ff;text-decoration:none;}
     .card-desc a:hover{text-decoration:underline;}
+    .card-edit-row{
+      display:flex;
+      gap:6px;
+      margin-bottom:4px;
+    }
+    .card-edit-row input{
+      flex:1;
+      font-size:11px;
+      padding:3px 6px;
+      border-radius:8px;
+      border:1px solid #dde3f0;
+    }
+    .card-edit-row input.small{
+      max-width:62px;
+      flex:0 0 auto;
+    }
+    .card-desc-edit{
+      width:100%;
+      font-size:11px;
+      padding:4px 6px;
+      border-radius:8px;
+      border:1px solid #dde3f0;
+      min-height:42px;
+      resize:vertical;
+    }
+    .card-delete{
+      margin-top:4px;
+      font-size:10px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid #f2b2bd;
+      background:#fff1f3;
+      color:#e06276;
+      cursor:pointer;
+      align-self:flex-start;
+    }
+    .add-block-btn{
+      width:100%;
+      margin-top:4px;
+      padding:6px 0;
+      font-size:12px;
+      border-radius:999px;
+      border:1px dashed #c6cde8;
+      background:#f8f8ff;
+      color:#4a57c8;
+      cursor:pointer;
+    }
     .small-note{
       font-size:11px;
       color:#777;
       margin-top:6px;
+    }
+    /* notes */
+    .note-area{
+      width:100%;
+      padding:6px 8px;
+      border-radius:10px;
+      border:1px solid #dde3f0;
+      font-size:11px;
+      resize:vertical;
+      min-height:56px;
+      background:#fff;
+    }
+    .note-display{
+      font-size:12px;
+      color:#444;
+      background:#fff;
+      border-radius:10px;
+      padding:8px 10px;
+      white-space:pre-wrap;
+    }
+    /* photos */
+    .photo-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .photo-thumb{
+      position:relative;
+      width:30%;
+      padding-top:30%;
+      border-radius:10px;
+      overflow:hidden;
+      background:#e4e7f2;
+    }
+    .photo-thumb img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .photo-del{
+      position:absolute;
+      top:3px;
+      right:3px;
+      font-size:10px;
+      padding:1px 5px;
+      border-radius:999px;
+      border:none;
+      background:rgba(0,0,0,0.55);
+      color:#fff;
+      cursor:pointer;
+    }
+    .photo-add-label{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      font-size:11px;
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px dashed #c6cde8;
+      background:#f8f8ff;
+      color:#4a57c8;
+      cursor:pointer;
+      margin-top:4px;
+    }
+    .photo-add-label input{
+      display:none;
     }
     /* expenses & flights */
     .table{
@@ -242,13 +394,19 @@
       color:#e06276;
       cursor:pointer;
     }
+    .total-row{
+      margin-top:6px;
+      font-size:12px;
+      text-align:right;
+      color:#444;
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <header class="hero">
       <div class="hero-inner">
-        <div style="display:flex;justify-content:space-between;gap:8px;">
+        <div class="hero-row-top">
           <div>
             <div class="hero-title">2025 Christmas SEOUL trip 🎄</div>
             <div class="hero-dates">2025.12.25 – 12.29</div>
@@ -257,6 +415,7 @@
             <div>目的地</div>
             <strong>Seoul</strong>
           </div>
+          <button id="editToggle" class="edit-toggle">🛠 編輯模式</button>
         </div>
         <div class="hero-tabs">
           <button class="hero-tab active" id="tab-itinerary">🗺 行程</button>
@@ -269,6 +428,9 @@
     <div class="day-strip" id="dayStrip"></div>
 
     <main class="content">
+      <div class="top-actions">
+        <button id="btnPrint">🖨 匯出 / 列印 PDF</button>
+      </div>
       <section id="panel-itinerary"></section>
       <section id="panel-expense" style="display:none;"></section>
       <section id="panel-flight" style="display:none;"></section>
@@ -276,9 +438,9 @@
   </div>
 
   <script>
-    // ✅ 已經內置你嘅 OpenWeather API key
+    // ✅ 使用你新的 OpenWeather API key
     const API_KEY = "bd5e378503939ddaee76f12ad7a97608";
-    const STORAGE_KEY = "seoul_trip_pro_v2";
+    const STORAGE_KEY = "seoul_trip_edit_v1";
 
     const baseTrip = {
       days: [
@@ -289,6 +451,8 @@
           title: "Day 1｜安國 → 弘大 → 延南洞 → 明洞燈飾",
           city: "Seoul",
           weather: { temp: "", low: "", feel: "", text: "", note: "當日步行／大眾運輸" },
+          note: "",
+          photos: [],
           blocks: [
             { icon: "🍽", tag: "早餐", time: "早上", title: "Dotori Garden", desc: "https://naver.me/xzXNBJYr" },
             { icon: "🛍", tag: "安國潮店", time: "上午", title: "安國潮店走走（順路行）",
@@ -323,6 +487,8 @@
           title: "Day 2｜明洞 → 南大門 → 東大門 → 新堂辣雞爪",
           city: "Seoul",
           weather: { temp: "", low: "", feel: "", text: "", note: "購物日，步行較多" },
+          note: "",
+          photos: [],
           blocks: [
             { icon: "🍽", tag: "早餐", time: "早上", title: "宋家飯捲（明洞）", desc: "https://naver.me/G8uH9PKk" },
             { icon: "🛍", tag: "購物", time: "上午", title: "明洞購物", desc: "https://naver.me/5LYTVJQS" },
@@ -343,6 +509,8 @@
           title:"Day 3｜安國 Café → 益善洞 → 乙支路",
           city:"Seoul",
           weather:{temp:"",low:"",feel:"",text:"",note:"Café & 小店慢遊"},
+          note:"",
+          photos:[],
           blocks:[
             {icon:"🍰",tag:"早餐",time:"早上",title:"Cafe Layered（安國）",desc:"https://naver.me/GcBHBVtT"},
             {icon:"🍽",tag:"午餐",time:"中午",title:"Nakwonjang（益善洞）",desc:"https://naver.me/F5jtN9zK"},
@@ -358,6 +526,8 @@
           title:"Day 4｜聖水 ALL DAY → 明洞（晚餐 2選1）",
           city:"Seoul",
           weather:{temp:"",low:"",feel:"",text:"",note:"聖水 Café & 潮店"},
+          note:"",
+          photos:[],
           blocks:[
             {icon:"🍞",tag:"早餐",time:"早上",title:"Onion（聖水）",desc:"https://naver.me/FfnQXJR0"},
             {icon:"🛍",tag:"聖水潮店",time:"上午",
@@ -379,6 +549,8 @@
           title:"Day 5｜補貨 → 鰻魚 → 機場",
           city:"Seoul",
           weather:{temp:"",low:"",feel:"",text:"",note:"回程日"},
+          note:"",
+          photos:[],
           blocks:[
             {icon:"🥪",tag:"早餐",time:"早上",title:"Egg Drop（明洞）",desc:"https://naver.me/5hgOP0Ia"},
             {icon:"🛍",tag:"購物",time:"上午",title:"明洞最後掃貨",desc:"https://naver.me/5LYTVJQS"},
@@ -394,7 +566,21 @@
       ]
     };
 
-    let trip = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || baseTrip;
+    let trip;
+    try{
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      trip = stored || baseTrip;
+      // 升級舊資料，補 note / photos / weather 欄位
+      trip.days.forEach((d,i)=>{
+        if(typeof d.note === "undefined") d.note = "";
+        if(!Array.isArray(d.photos)) d.photos = [];
+        if(!d.weather) d.weather = {temp:"",low:"",feel:"",text:"",note: baseTrip.days[i]?.weather?.note || ""};
+      });
+      if(!Array.isArray(trip.expenses)) trip.expenses = [];
+      if(!Array.isArray(trip.flights)) trip.flights = baseTrip.flights;
+    }catch(e){
+      trip = baseTrip;
+    }
 
     function saveAll(){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(trip));
@@ -409,8 +595,11 @@
     const tabIt = document.getElementById('tab-itinerary');
     const tabEx = document.getElementById('tab-expense');
     const tabFl = document.getElementById('tab-flight');
+    const editToggleBtn = document.getElementById('editToggle');
+    const printBtn = document.getElementById('btnPrint');
 
     let currentDayIndex = 0;
+    let editMode = false;
 
     function renderDayPills(){
       const wrap = document.createElement('div');
@@ -435,7 +624,7 @@
     function linkify(text){
       if(!text) return '';
       const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      return escaped.replace(/(https?:\/\/\S+)/g,'<a href="$1" target="_blank">$1</a>').replace(/\n/g,'<br>');
+      return escaped.replace(/(https?:\/\/\S+)/g,'<a href="$1" target="_blank" rel="noreferrer">$1</a>').replace(/\n/g,'<br>');
     }
 
     async function fetchWeatherForDay(index){
@@ -501,26 +690,175 @@
       secTitle.textContent = '行程安排';
       itineraryPanel.appendChild(secTitle);
 
-      d.blocks.forEach(b=>{
+      d.blocks.forEach((b,idx)=>{
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `
-          <div class="card-icon">${b.icon}</div>
-          <div class="card-body">
-            <div class="card-tag-row">
-              <span class="card-tag">${b.tag}</span>
-              <span class="card-time">${b.time}</span>
+        if(!editMode){
+          card.innerHTML = `
+            <div class="card-icon">${b.icon}</div>
+            <div class="card-body">
+              <div class="card-tag-row">
+                <span class="card-tag">${b.tag}</span>
+                <span class="card-time">${b.time}</span>
+              </div>
+              <div class="card-title">${b.title}</div>
+              <div class="card-desc">${linkify(b.desc || "")}</div>
             </div>
-            <div class="card-title">${b.title}</div>
-            <div class="card-desc">${linkify(b.desc || "")}</div>
-          </div>
-        `;
+          `;
+        }else{
+          card.innerHTML = `
+            <div class="card-icon">
+              <input class="small" value="${b.icon || ""}" title="icon">
+            </div>
+            <div class="card-body">
+              <div class="card-tag-row">
+                <div class="card-edit-row">
+                  <input class="small" value="${b.tag || ""}" placeholder="類別">
+                  <input class="small" value="${b.time || ""}" placeholder="時間">
+                </div>
+              </div>
+              <div class="card-edit-row">
+                <input value="${b.title || ""}" placeholder="標題 / 店名">
+              </div>
+              <textarea class="card-desc-edit" placeholder="詳情 / Naver 連結">${b.desc || ""}</textarea>
+              <button class="card-delete" data-i="${idx}">刪除此項</button>
+            </div>
+          `;
+          const [iconInput] = card.querySelectorAll('.card-icon input');
+          const [tagInput,timeInput] = card.querySelectorAll('.card-edit-row input.small');
+          const [titleInput] = card.querySelectorAll('.card-edit-row input:not(.small)');
+          const descTextarea = card.querySelector('textarea');
+
+          iconInput.addEventListener('input', e=>{
+            b.icon = e.target.value;
+            saveAll();
+          });
+          tagInput.addEventListener('input', e=>{
+            b.tag = e.target.value;
+            saveAll();
+          });
+          timeInput.addEventListener('input', e=>{
+            b.time = e.target.value;
+            saveAll();
+          });
+          titleInput.addEventListener('input', e=>{
+            b.title = e.target.value;
+            saveAll();
+          });
+          descTextarea.addEventListener('input', e=>{
+            b.desc = e.target.value;
+            saveAll();
+          });
+        }
         itineraryPanel.appendChild(card);
       });
 
+      if(editMode){
+        const addBtn = document.createElement('button');
+        addBtn.className = 'add-block-btn';
+        addBtn.textContent = '＋ 新增一項行程';
+        addBtn.addEventListener('click',()=>{
+          d.blocks.push({icon:"📍",tag:"行程",time:"",title:"新行程",desc:""});
+          saveAll();
+          renderItinerary();
+        });
+        itineraryPanel.appendChild(addBtn);
+
+        itineraryPanel.addEventListener('click', e=>{
+          if(e.target.classList.contains('card-delete')){
+            const i = Number(e.target.dataset.i);
+            d.blocks.splice(i,1);
+            saveAll();
+            renderItinerary();
+          }
+        },{once:true});
+      }
+
+      const expenseTotal = calcExpenseForDay(d.labelShort);
+      const totalRow = document.createElement('div');
+      totalRow.className = 'total-row';
+      totalRow.textContent = `當日已記錄消費：${expenseTotal ? expenseTotal.toLocaleString()+" KRW" : "—"}`;
+      itineraryPanel.appendChild(totalRow);
+
+      // Notes
+      const noteTitle = document.createElement('div');
+      noteTitle.className = 'section-title';
+      noteTitle.textContent = '📓 當日備註';
+      itineraryPanel.appendChild(noteTitle);
+
+      if(editMode){
+        const ta = document.createElement('textarea');
+        ta.className = 'note-area';
+        ta.placeholder = "可以寫 summary、要記住嘅嘢、第二日要做嘅事…";
+        ta.value = d.note || "";
+        ta.addEventListener('input', e=>{
+          d.note = e.target.value;
+          saveAll();
+        });
+        itineraryPanel.appendChild(ta);
+      }else{
+        const div = document.createElement('div');
+        div.className = 'note-display';
+        div.textContent = d.note || "（尚未寫備註）";
+        itineraryPanel.appendChild(div);
+      }
+
+      // Photos
+      const photoTitle = document.createElement('div');
+      photoTitle.className = 'section-title';
+      photoTitle.textContent = '📷 今日相簿';
+      itineraryPanel.appendChild(photoTitle);
+
+      const grid = document.createElement('div');
+      grid.className = 'photo-grid';
+
+      (d.photos || []).forEach((p,i)=>{
+        const ph = document.createElement('div');
+        ph.className = 'photo-thumb';
+        ph.innerHTML = `<img src="${p}" alt="photo"><button class="photo-del" data-i="${i}">✕</button>`;
+        grid.appendChild(ph);
+      });
+
+      itineraryPanel.appendChild(grid);
+
+      if(editMode){
+        const label = document.createElement('label');
+        label.className = 'photo-add-label';
+        label.innerHTML = '＋ 新增照片<input type="file" accept="image/*" multiple>';
+        const input = label.querySelector('input');
+        input.addEventListener('change', e=>{
+          const files = Array.from(e.target.files || []);
+          files.forEach(f=>{
+            const reader = new FileReader();
+            reader.onload = ev=>{
+              d.photos.push(ev.target.result);
+              saveAll();
+              renderItinerary();
+            };
+            reader.readAsDataURL(f);
+          });
+          input.value = "";
+        });
+        itineraryPanel.appendChild(label);
+
+        grid.addEventListener('click', e=>{
+          if(e.target.classList.contains('photo-del')){
+            const i = Number(e.target.dataset.i);
+            d.photos.splice(i,1);
+            saveAll();
+            renderItinerary();
+          }
+        },{once:true});
+      }else if(!d.photos || d.photos.length===0){
+        const none = document.createElement('div');
+        none.className = 'small-note';
+        none.textContent = '今日暫時未加相，可以開啟編輯模式再上載 😊';
+        itineraryPanel.appendChild(none);
+      }
+
       const note = document.createElement('div');
       note.className = 'small-note';
-      note.textContent = '提示：上面所有 link 都係 Naver Map，喺手機打開會自動跳去 Naver。';
+      note.textContent = '提示：所有資料（行程、備註、相片、消費）都只會儲存在你本機瀏覽器，關閉網頁都唔會 send 去其他地方。';
       itineraryPanel.appendChild(note);
 
       const btn = document.getElementById('btnWeather');
@@ -580,6 +918,7 @@
 
       actions.querySelector('#btnAddFlight').addEventListener('click', ()=>{
         trip.flights.push({date:"",no:"",route:"",time:""});
+        saveAll();
         renderFlights();
       });
 
@@ -587,6 +926,7 @@
         if(e.target.classList.contains('del-btn')){
           const i = Number(e.target.dataset.i);
           trip.flights.splice(i,1);
+          saveAll();
           renderFlights();
         }
       });
@@ -606,6 +946,18 @@
       });
     }
 
+    function calcExpenseForDay(labelShort){
+      const target = labelShort; // 直接用 12/25 等作 key
+      let sum = 0;
+      trip.expenses.forEach(e=>{
+        if(e.date && e.amount && e.date.trim() === target){
+          const n = parseFloat(String(e.amount).replace(/,/g,""));
+          if(!isNaN(n)) sum += n;
+        }
+      });
+      return sum;
+    }
+
     function renderExpenses(){
       expensePanel.innerHTML = '';
       const title = document.createElement('div');
@@ -618,7 +970,7 @@
       table.innerHTML = `
         <thead>
           <tr>
-            <th style="width:18%;">日期/Day</th>
+            <th style="width:18%;">日期</th>
             <th style="width:26%;">類別</th>
             <th style="width:26%;">項目</th>
             <th style="width:16%;">金額</th>
@@ -632,7 +984,7 @@
       trip.expenses.forEach((e,idx)=>{
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><input value="${e.date||""}"></td>
+          <td><input value="${e.date||""}" placeholder="12/25 等"></td>
           <td><input value="${e.cat||""}" placeholder="餐飲/交通…"></td>
           <td><input value="${e.item||""}" placeholder="店名/備註"></td>
           <td><input value="${e.amount||""}" placeholder="KRW"></td>
@@ -653,6 +1005,7 @@
 
       actions.querySelector('#btnAddExpense').addEventListener('click', ()=>{
         trip.expenses.push({date:"",cat:"",item:"",amount:""});
+        saveAll();
         renderExpenses();
       });
 
@@ -660,6 +1013,7 @@
         if(e.target.classList.contains('del-btn')){
           const i = Number(e.target.dataset.i);
           trip.expenses.splice(i,1);
+          saveAll();
           renderExpenses();
         }
       });
@@ -676,7 +1030,25 @@
         trip.expenses = list;
         saveAll();
         alert("消費紀錄已儲存 ✅");
+        renderExpenses();
       });
+
+      const sumByDay = {};
+      trip.expenses.forEach(e=>{
+        if(!e.date || !e.amount) return;
+        const n = parseFloat(String(e.amount).replace(/,/g,""));
+        if(isNaN(n)) return;
+        sumByDay[e.date] = (sumByDay[e.date] || 0) + n;
+      });
+      const totalAll = Object.values(sumByDay).reduce((a,b)=>a+b,0);
+
+      const totalDiv = document.createElement('div');
+      totalDiv.className = 'total-row';
+      const parts = Object.entries(sumByDay).map(([d,v])=>`${d}: ${v.toLocaleString()} KRW`);
+      totalDiv.textContent = parts.length
+        ? `各日小計：${parts.join(" ｜ ")}　｜　總消費：${totalAll.toLocaleString()} KRW`
+        : "尚未輸入任何消費。";
+      expensePanel.appendChild(totalDiv);
     }
 
     function switchTab(tab){
@@ -696,14 +1068,29 @@
     tabEx.addEventListener('click',()=>switchTab(tabEx));
     tabFl.addEventListener('click',()=>switchTab(tabFl));
 
+    editToggleBtn.addEventListener('click', ()=>{
+      editMode = !editMode;
+      if(editMode){
+        editToggleBtn.classList.add('active');
+        editToggleBtn.textContent = "✅ 編輯模式中";
+      }else{
+        editToggleBtn.classList.remove('active');
+        editToggleBtn.textContent = "🛠 編輯模式";
+      }
+      renderItinerary();
+    });
+
+    printBtn.addEventListener('click', ()=>{
+      window.print();
+    });
+
     async function init(){
       renderDayPills();
       renderItinerary();
       renderExpenses();
       renderFlights();
       panelSwitch();
-      // ✅ 開 app 時自動更新所有日子天氣（你揀的 A）
-      await updateAllWeather();
+      await updateAllWeather(); // 開啟自動更新 5 日天氣
       alert("已自動更新 5 日首爾天氣 ✅");
     }
     init();
