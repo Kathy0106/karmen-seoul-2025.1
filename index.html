@@ -1064,34 +1064,33 @@
       closeModal();
     };
 
-    /* ====== 天氣 ====== */
+    /* ====== 取得天氣 ====== */
     async function fetchWeatherForDay(index){
-  const d = trip.days[index];
-  const cityQuery = (d.city || "Seoul") + ",KR";
-  try{
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityQuery)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
-    const res = await fetch(url);
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const data = await res.json();
+      const d = trip.days[index];
+      const cityQuery = (d.city || "Seoul") + ",KR";
+      try{
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityQuery)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
+        const res = await fetch(url);
+        if(!res.ok) throw new Error("HTTP "+res.status);
+        const data = await res.json();
 
-    const w0 = data.weather && data.weather[0] ? data.weather[0] : null;
+        const w0 = data.weather && data.weather[0] ? data.weather[0] : null;
 
-    d.weather.temp = Math.round(data.main.temp).toString();
-    d.weather.low  = Math.round(data.main.temp_min).toString();
-    d.weather.feel = Math.round(data.main.feels_like).toString();
-    d.weather.text = w0 ? (w0.description || "") : "";
+        d.weather.temp = Math.round(data.main.temp).toString();
+        d.weather.low  = Math.round(data.main.temp_min).toString();
+        d.weather.feel = Math.round(data.main.feels_like).toString();
+        d.weather.text = w0 ? (w0.description || "") : "";
 
-    // ⭐ 新增：儲存 id / main / icon，俾 emoji 用
-    d.weather.id    = w0 ? w0.id   : null;
-    d.weather.main  = w0 ? w0.main : "";
-    d.weather.icon  = w0 ? w0.icon : "";
+        d.weather.id    = w0 ? w0.id   : null;
+        d.weather.main  = w0 ? w0.main : "";
+        d.weather.icon  = w0 ? w0.icon : "";
 
-    saveAll();
-  }catch(e){
-    console.error(e);
-    alert("取得天氣失敗，可以之後再試一次。");
-  }
-}
+        saveAll();
+      }catch(e){
+        console.error(e);
+        alert("取得天氣失敗，可以之後再試一次。");
+      }
+    }
 
     async function updateAllWeather(){
       for(let i=0;i<trip.days.length;i++){
@@ -1112,49 +1111,55 @@
         default:return "其他";
       }
     }
-// 根據 OpenWeather 天氣資料，決定用咩 emoji
-function getWeatherEmoji(w){
-  const id = w && w.id ? w.id : 0;
-  const main = (w && w.main ? w.main : "").toLowerCase();
-  const text = (w && w.text ? w.text : "").toLowerCase();
 
-  // 有 id 就用 id 判斷
-  if(id >= 200 && id < 300) return "⛈️";        // Thunderstorm
-  if(id >= 300 && id < 600) return "🌧️";        // Drizzle / Rain
-  if(id >= 600 && id < 700) return "❄️";        // Snow
-  if(id >= 700 && id < 800) return "🌫️";        // Mist / Fog / Haze…
-  if(id === 800)             return "☀️";        // Clear sky
-  if(id > 800 && id < 900)   return "☁️";        // Clouds
+    // ⭐ 根據 OpenWeather 天氣資料決定 emoji
+    function getWeatherEmoji(w){
+      const id = w && w.id ? w.id : 0;
+      const main = (w && w.main ? w.main : "").toLowerCase();
+      const text = (w && w.text ? w.text : "").toLowerCase();
 
-  // 冇 id 或者好奇怪嘅情況，就用文字再估多次
-  if(main.includes("thunder")) return "⛈️";
-  if(main.includes("rain") || text.includes("雨")) return "🌧️";
-  if(main.includes("snow") || text.includes("雪")) return "❄️";
-  if(main.includes("cloud")) return "☁️";
-  if(main.includes("clear")) return "☀️";
+      if(id >= 200 && id < 300) return "⛈️";
+      if(id >= 300 && id < 600) return "🌧️";
+      if(id >= 600 && id < 700) return "❄️";
+      if(id >= 700 && id < 800) return "🌫️";
+      if(id === 800)             return "☀️";
+      if(id > 800 && id < 900)   return "☁️";
 
-  // default
-  return "🌤";
-}
-    /* ====== 行程渲染 ====== */
+      if(main.includes("thunder")) return "⛈️";
+      if(main.includes("rain") || text.includes("雨")) return "🌧️";
+      if(main.includes("snow") || text.includes("雪")) return "❄️";
+      if(main.includes("cloud")) return "☁️";
+      if(main.includes("clear")) return "☀️";
+
+      return "🌤";
+    }
+
+    /* ====== 行程渲染（已修 emoji） ====== */
     function renderItinerary(){
       const d = trip.days[currentDayIndex];
       const w = d.weather;
+      const emoji = getWeatherEmoji(w);   // ⭐ 之前冇呢行 → 會報錯
+
       itineraryPanel.innerHTML = '';
 
       const weather = document.createElement('div');
       weather.className = 'weather-card';
       weather.innerHTML = `
-       <div class="weather-icon">${emoji}</div>
+        <div class="weather-icon">${emoji}</div>
         <div class="weather-main">
-          <div style="font-size:11px;color:#777;margin-bottom:2px;">即時首爾天氣（非行程日期預報）</div>
-          <div class="temp-row">${w.temp ? w.temp+"°C" : "--"} 
+          <div style="font-size:11px;color:#777;margin-bottom:2px;">
+            即時首爾天氣（非行程日期預報）
+          </div>
+          <div class="temp-row">
+            ${w.temp ? w.temp+"°C" : "--"}
             <span class="temp-low">${w.low ? "/ "+w.low+"°C" : ""}</span>
           </div>
           <div class="feel">
             ${w.feel ? "體感 "+w.feel+"°C ・ " : ""}${w.text || "首次使用可按下面按鈕更新首爾即時天氣。"}
           </div>
-          <button class="weather-btn" id="btnWeatherOne">↻ 更新即時天氣（此日顯示）</button>
+          <button class="weather-btn" id="btnWeatherOne">
+            ↻ 更新即時天氣（此日顯示）
+          </button>
         </div>
         <div class="weather-note">
           <strong>今日重點</strong>
