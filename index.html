@@ -610,8 +610,7 @@
       other:"#94a3b8"
     };
 
-
-/* ====== 初始行程資料（已根據你最新 version） ====== */
+    /* ====== 初始行程資料（已根據你最新 version） ====== */
     const baseTrip = {
       days:[
         {
@@ -918,7 +917,6 @@
       fx:{rate:0.006,krw:"",hkd:""}
     };
 
-
     let trip;
     try{
       const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
@@ -987,36 +985,113 @@
     }
 
     /* ====== Modal 控制 ====== */
-    function openModal(dayIndex, blockIndex){ /* …… 你原本 modal 內容照舊 …… */ }
-    function closeModal(){ /* …… */ }
-
-    /* ====== 取得天氣 ====== */
-    async function fetchWeatherForDay(index){
-      const d = trip.days[index];
-      const cityQuery = (d.city || "Seoul") + ",KR";
-      try{
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityQuery)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
-        const res = await fetch(url);
-        if(!res.ok) throw new Error("HTTP "+res.status);
-        const data = await res.json();
-
-        const w0 = data.weather && data.weather[0] ? data.weather[0] : null;
-
-        d.weather.temp = Math.round(data.main.temp).toString();
-        d.weather.low  = Math.round(data.main.temp_min).toString();
-        d.weather.feel = Math.round(data.main.feels_like).toString();
-        d.weather.text = w0 ? (w0.description || "") : "";
-
-        d.weather.id    = w0 ? w0.id   : null;
-        d.weather.main  = w0 ? w0.main : "";
-        d.weather.icon  = w0 ? w0.icon : "";
-
-        saveAll();
-      }catch(e){
-        console.error(e);
-        alert("取得天氣失敗，可以之後再試一次。");
+    function openModal(dayIndex, blockIndex){
+      editingDayIndex = dayIndex;
+      editingBlockIndex = blockIndex;
+      const day = trip.days[dayIndex];
+      let block;
+      if(blockIndex === -1){
+        block = {
+          id: "tmp-"+Date.now(),
+          type:"other",
+          icon:"📍",
+          time:"",
+          title:"新行程",
+          location:"",
+          bizTime:"",
+          fee:"",
+          note:"",
+          map:"",
+          move:0
+        };
+      }else{
+        block = Object.assign({}, day.blocks[blockIndex]);
       }
+
+      fType.value = block.type;
+      fIcon.value = block.icon || "";
+      fTime.value = block.time || "";
+      fTitle.value = block.title || "";
+      fLocation.value = block.location || "";
+      fBizTime.value = block.bizTime || "";
+      fFee.value = block.fee || "";
+      fNote.value = block.note || "";
+      fMap.value = block.map || "";
+      fMove.value = block.move ? String(block.move) : "";
+
+      btnModalDelete.style.display = (blockIndex === -1) ? "none" : "inline-block";
+      modalBackdrop.style.display = 'flex';
     }
+    function closeModal(){
+      modalBackdrop.style.display = 'none';
+      editingDayIndex = null;
+      editingBlockIndex = null;
+    }
+    btnModalClose.onclick = btnModalCancel.onclick = closeModal;
+
+    btnModalSave.onclick = function(){
+      if(editingDayIndex == null) return;
+      const d = trip.days[editingDayIndex];
+      const block = {
+        id: (editingBlockIndex === -1 ? "b"+Date.now() : d.blocks[editingBlockIndex].id),
+        type:fType.value || "other",
+        icon:fIcon.value || "📍",
+        time:fTime.value || "",
+        title:fTitle.value || "",
+        location:fLocation.value || "",
+        bizTime:fBizTime.value || "",
+        fee:fFee.value || "",
+        note:fNote.value || "",
+        map:fMap.value || "",
+        move:parseInt(fMove.value || "0",10) || 0
+      };
+      if(editingBlockIndex === -1){
+        d.blocks.push(block);
+      }else{
+        d.blocks[editingBlockIndex] = block;
+      }
+      saveAll();
+      renderItinerary();
+      closeModal();
+    };
+
+    btnModalDelete.onclick = function(){
+      if(editingDayIndex == null || editingBlockIndex == null || editingBlockIndex === -1) return;
+      const d = trip.days[editingDayIndex];
+      d.blocks.splice(editingBlockIndex,1);
+      saveAll();
+      renderItinerary();
+      closeModal();
+    };
+
+    /* ====== 天氣 ====== */
+    async function fetchWeatherForDay(index){
+  const d = trip.days[index];
+  const cityQuery = (d.city || "Seoul") + ",KR";
+  try{
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityQuery)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const data = await res.json();
+
+    const w0 = data.weather && data.weather[0] ? data.weather[0] : null;
+
+    d.weather.temp = Math.round(data.main.temp).toString();
+    d.weather.low  = Math.round(data.main.temp_min).toString();
+    d.weather.feel = Math.round(data.main.feels_like).toString();
+    d.weather.text = w0 ? (w0.description || "") : "";
+
+    // ⭐ 新增：儲存 id / main / icon，俾 emoji 用
+    d.weather.id    = w0 ? w0.id   : null;
+    d.weather.main  = w0 ? w0.main : "";
+    d.weather.icon  = w0 ? w0.icon : "";
+
+    saveAll();
+  }catch(e){
+    console.error(e);
+    alert("取得天氣失敗，可以之後再試一次。");
+  }
+}
 
     async function updateAllWeather(){
       for(let i=0;i<trip.days.length;i++){
@@ -1037,55 +1112,49 @@
         default:return "其他";
       }
     }
+// 根據 OpenWeather 天氣資料，決定用咩 emoji
+function getWeatherEmoji(w){
+  const id = w && w.id ? w.id : 0;
+  const main = (w && w.main ? w.main : "").toLowerCase();
+  const text = (w && w.text ? w.text : "").toLowerCase();
 
-    // ⭐ 根據 OpenWeather 天氣資料決定 emoji
-    function getWeatherEmoji(w){
-      const id = w && w.id ? w.id : 0;
-      const main = (w && w.main ? w.main : "").toLowerCase();
-      const text = (w && w.text ? w.text : "").toLowerCase();
+  // 有 id 就用 id 判斷
+  if(id >= 200 && id < 300) return "⛈️";        // Thunderstorm
+  if(id >= 300 && id < 600) return "🌧️";        // Drizzle / Rain
+  if(id >= 600 && id < 700) return "❄️";        // Snow
+  if(id >= 700 && id < 800) return "🌫️";        // Mist / Fog / Haze…
+  if(id === 800)             return "☀️";        // Clear sky
+  if(id > 800 && id < 900)   return "☁️";        // Clouds
 
-      if(id >= 200 && id < 300) return "⛈️";
-      if(id >= 300 && id < 600) return "🌧️";
-      if(id >= 600 && id < 700) return "❄️";
-      if(id >= 700 && id < 800) return "🌫️";
-      if(id === 800)             return "☀️";
-      if(id > 800 && id < 900)   return "☁️";
+  // 冇 id 或者好奇怪嘅情況，就用文字再估多次
+  if(main.includes("thunder")) return "⛈️";
+  if(main.includes("rain") || text.includes("雨")) return "🌧️";
+  if(main.includes("snow") || text.includes("雪")) return "❄️";
+  if(main.includes("cloud")) return "☁️";
+  if(main.includes("clear")) return "☀️";
 
-      if(main.includes("thunder")) return "⛈️";
-      if(main.includes("rain") || text.includes("雨")) return "🌧️";
-      if(main.includes("snow") || text.includes("雪")) return "❄️";
-      if(main.includes("cloud")) return "☁️";
-      if(main.includes("clear")) return "☀️";
-
-      return "🌤";
-    }
-
-    /* ====== 行程渲染（已修 emoji） ====== */
+  // default
+  return "🌤";
+}
+    /* ====== 行程渲染 ====== */
     function renderItinerary(){
       const d = trip.days[currentDayIndex];
       const w = d.weather;
-      const emoji = getWeatherEmoji(w);   // ⭐ 之前冇呢行 → 會報錯
-
       itineraryPanel.innerHTML = '';
 
       const weather = document.createElement('div');
       weather.className = 'weather-card';
       weather.innerHTML = `
-        <div class="weather-icon">${emoji}</div>
+       <div class="weather-icon">${emoji}</div>
         <div class="weather-main">
-          <div style="font-size:11px;color:#777;margin-bottom:2px;">
-            即時首爾天氣（非行程日期預報）
-          </div>
-          <div class="temp-row">
-            ${w.temp ? w.temp+"°C" : "--"}
+          <div style="font-size:11px;color:#777;margin-bottom:2px;">即時首爾天氣（非行程日期預報）</div>
+          <div class="temp-row">${w.temp ? w.temp+"°C" : "--"} 
             <span class="temp-low">${w.low ? "/ "+w.low+"°C" : ""}</span>
           </div>
           <div class="feel">
             ${w.feel ? "體感 "+w.feel+"°C ・ " : ""}${w.text || "首次使用可按下面按鈕更新首爾即時天氣。"}
           </div>
-          <button class="weather-btn" id="btnWeatherOne">
-            ↻ 更新即時天氣（此日顯示）
-          </button>
+          <button class="weather-btn" id="btnWeatherOne">↻ 更新即時天氣（此日顯示）</button>
         </div>
         <div class="weather-note">
           <strong>今日重點</strong>
@@ -1094,11 +1163,479 @@
       `;
       itineraryPanel.appendChild(weather);
 
-      // …… 下面 block cards 渲染、hint、btnWeatherOne.onclick 等，全保留原本內容 ……
+      const secTitle = document.createElement('div');
+      secTitle.className = 'section-title';
+      secTitle.textContent = d.title;
+      itineraryPanel.appendChild(secTitle);
+
+      d.blocks.forEach((b,idx)=>{
+        if(b.move && idx>0){
+          const mt = document.createElement('div');
+          mt.className = 'move-time';
+          mt.textContent = `≈ ${b.move} min`;
+          itineraryPanel.appendChild(mt);
+        }
+        const card = document.createElement('div');
+        card.className = 'card';
+        const color = getTypeColor(b.type);
+        card.innerHTML = `
+          <div class="card-icon-wrap">
+            <div class="card-icon-circle" style="background:${color};">${b.icon || "📍"}</div>
+            <div class="card-icon-label">${b.time || ""}</div>
+          </div>
+          <div class="card-body">
+            <div class="card-title-row">
+              <div class="card-title">${b.title || ""}</div>
+            </div>
+            <div class="card-sub">${b.location || ""}</div>
+            <div class="card-meta">
+              ${b.bizTime ? `<span class="meta-pill">⏱ ${b.bizTime}</span>` : ""}
+              ${b.fee ? `<span class="meta-pill">💴 ${b.fee}</span>` : ""}
+              ${b.map ? `<span class="meta-pill">📍 已設定地圖</span>` : ""}
+              <span class="meta-pill">${labelType(b.type)}</span>
+            </div>
+            ${b.note ? `<div class="card-note">${b.note}</div>` : ""}
+            <div class="card-footer">
+              <button class="icon-btn" data-act="up" data-idx="${idx}">▲</button>
+              <button class="icon-btn" data-act="down" data-idx="${idx}">▼</button>
+              <button class="icon-btn primary" data-act="nav" data-idx="${idx}">📍</button>
+              <button class="icon-btn" data-act="edit" data-idx="${idx}">✏️</button>
+              <button class="icon-btn" data-act="del" data-idx="${idx}">🗑</button>
+            </div>
+          </div>
+        `;
+        itineraryPanel.appendChild(card);
+      });
+
+      if(editMode){
+        const addBtn = document.createElement('button');
+        addBtn.className = 'btn-pill btn-secondary';
+        addBtn.style.width = "100%";
+        addBtn.style.marginTop = "8px";
+        addBtn.textContent = "＋ 新增一項行程";
+        addBtn.onclick = ()=>openModal(currentDayIndex,-1);
+        itineraryPanel.appendChild(addBtn);
+      }
+
+      const hint = document.createElement('div');
+      hint.className = 'small-note';
+      hint.textContent = '提示：天氣為首爾「即時狀態」，所有日子會顯示同一刻的結果；詳細預報可自行開天氣 App 查看。';
+      itineraryPanel.appendChild(hint);
+
+      const oneBtn = document.getElementById('btnWeatherOne');
+      if(oneBtn){
+        oneBtn.onclick = async ()=>{
+          await fetchWeatherForDay(currentDayIndex);
+          renderItinerary();
+          alert("已更新首爾即時天氣 ✅");
+        };
+      }
     }
 
-    /* ====== 其餘部分（cardFooterHandler / renderExpenses / renderFlights / renderInfo / init） ====== */
-    // …… 全部照用你原本的程式，只要保證放喺同一個 <script> 裏面就可以 ……
+    /* ====== 卡片 footer handler（只綁一次） ====== */
+    function cardFooterHandler(e){
+      const btn = e.target.closest('.icon-btn');
+      if(!btn) return;
+      const act = btn.dataset.act;
+      const idx = parseInt(btn.dataset.idx,10);
+      if(isNaN(idx)) return;
+      const day = trip.days[currentDayIndex];
+
+      if(act === "up" && idx > 0){
+        const tmp = day.blocks[idx-1];
+        day.blocks[idx-1] = day.blocks[idx];
+        day.blocks[idx] = tmp;
+        saveAll();
+        renderItinerary();
+
+      }else if(act === "down" && idx < day.blocks.length-1){
+        const tmp = day.blocks[idx+1];
+        day.blocks[idx+1] = day.blocks[idx];
+        day.blocks[idx] = tmp;
+        saveAll();
+        renderItinerary();
+
+      }else if(act === "nav"){
+        const b = day.blocks[idx];
+        if(b.map){
+          window.open(b.map, "_blank");
+        }else{
+          alert("呢項未設定地圖連結，可以按 ✏️ 進去編輯加入 Naver / Google link。");
+        }
+
+      }else if(act === "edit"){
+        openModal(currentDayIndex, idx);
+
+      }else if(act === "del"){
+        if(confirm("確定刪除這一項行程嗎？")){
+          day.blocks.splice(idx,1);
+          saveAll();
+          renderItinerary();
+        }
+      }
+    }
+
+    /* ====== 消費頁 ====== */
+    function renderExpenses(){
+      expensePanel.innerHTML = '';
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = '支出紀錄';
+      expensePanel.appendChild(title);
+
+      const table = document.createElement('table');
+      table.className = 'table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th style="width:18%;">日期</th>
+            <th style="width:22%;">類別</th>
+            <th style="width:30%;">項目</th>
+            <th style="width:20%;">金額 (KRW)</th>
+            <th style="width:10%;">✕</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector('tbody');
+
+      trip.expenses.forEach((e,idx)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input value="${e.date||""}" placeholder="12/25"></td>
+          <td><input value="${e.cat||""}" placeholder="住宿/飲食"></td>
+          <td><input value="${e.item||""}" placeholder="店名/備註"></td>
+          <td><input value="${e.amount||""}" placeholder="10000"></td>
+          <td style="text-align:center;"><button class="del-btn" data-i="${idx}">刪</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      expensePanel.appendChild(table);
+
+      const actions = document.createElement('div');
+      actions.className = 'table-actions';
+      actions.innerHTML = `
+        <button class="btn-pill btn-secondary" id="btnAddExpense">＋ 新增一筆</button>
+        <button class="btn-pill btn-primary" id="btnSaveExpense">儲存消費</button>
+      `;
+      expensePanel.appendChild(actions);
+
+      actions.querySelector('#btnAddExpense').onclick = ()=>{
+        trip.expenses.push({date:"",cat:"",item:"",amount:""});
+        saveAll(); renderExpenses();
+      };
+
+      tbody.onclick = e=>{
+        if(e.target.classList.contains('del-btn')){
+          const i = Number(e.target.dataset.i);
+          trip.expenses.splice(i,1);
+          saveAll(); renderExpenses();
+        }
+      };
+
+      actions.querySelector('#btnSaveExpense').onclick = ()=>{
+        const rows = tbody.querySelectorAll('tr');
+        const list = [];
+        rows.forEach(r=>{
+          const [d,cat,item,amt] = r.querySelectorAll('input');
+          if(d.value || cat.value || item.value || amt.value){
+            list.push({date:d.value,cat:cat.value,item:item.value,amount:amt.value});
+          }
+        });
+        trip.expenses = list;
+        saveAll();
+        renderExpenses();
+        alert("消費紀錄已儲存 ✅");
+      };
+
+      const sumByDay = {};
+      let total = 0;
+      trip.expenses.forEach(e=>{
+        const n = parseFloat(String(e.amount||"").replace(/,/g,""));
+        if(isNaN(n)) return;
+        total += n;
+        if(e.date) sumByDay[e.date] = (sumByDay[e.date]||0)+n;
+      });
+      const totalDiv = document.createElement('div');
+      totalDiv.className = 'total-row';
+      const parts = Object.entries(sumByDay).map(([d,v])=>`${d}: ${v.toLocaleString()} KRW`);
+      totalDiv.textContent = parts.length
+        ? `各日小計：${parts.join(" ｜ ")}　｜　目前總花費：${total.toLocaleString()} KRW`
+        : "尚未輸入任何消費。";
+      expensePanel.appendChild(totalDiv);
+    }
+
+    /* ====== 航班頁 ====== */
+    function renderFlights(){
+      flightPanel.innerHTML = '';
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = '航班資料';
+      flightPanel.appendChild(title);
+
+      const table = document.createElement('table');
+      table.className = 'table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th style="width:18%;">日期</th>
+            <th style="width:22%;">航班</th>
+            <th style="width:40%;">航線</th>
+            <th style="width:12%;">時間</th>
+            <th style="width:8%;">✕</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector('tbody');
+
+      trip.flights.forEach((f,idx)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input value="${f.date||""}"></td>
+          <td><input value="${f.no||""}"></td>
+          <td><input value="${f.route||""}"></td>
+          <td><input value="${f.time||""}"></td>
+          <td style="text-align:center;"><button class="del-btn" data-i="${idx}">刪</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      flightPanel.appendChild(table);
+
+      const actions = document.createElement('div');
+      actions.className = 'table-actions';
+      actions.innerHTML = `
+        <button class="btn-pill btn-secondary" id="btnAddFlight">＋ 新增航班</button>
+        <button class="btn-pill btn-primary" id="btnSaveFlight">儲存航班</button>
+      `;
+      flightPanel.appendChild(actions);
+
+      actions.querySelector('#btnAddFlight').onclick = ()=>{
+        trip.flights.push({date:"",no:"",route:"",time:""});
+        saveAll(); renderFlights();
+      };
+
+      tbody.onclick = e=>{
+        if(e.target.classList.contains('del-btn')){
+          const i = Number(e.target.dataset.i);
+          trip.flights.splice(i,1);
+          saveAll(); renderFlights();
+        }
+      };
+
+      actions.querySelector('#btnSaveFlight').onclick = ()=>{
+        const rows = tbody.querySelectorAll('tr');
+        const list = [];
+        rows.forEach(r=>{
+          const [d,no,route,time] = r.querySelectorAll('input');
+          if(d.value || no.value || route.value || time.value){
+            list.push({date:d.value,no:no.value,route:route.value,time:time.value});
+          }
+        });
+        trip.flights = list;
+        saveAll();
+        alert("航班資料已儲存 ✅");
+      };
+    }
+
+    /* ====== 資訊頁（匯率／酒店／租車） ====== */
+    function renderInfo(){
+      infoPanel.innerHTML = "";
+
+      const fxCard = document.createElement('div');
+      fxCard.className = 'info-card';
+      fxCard.innerHTML = `
+        <div class="info-title">
+          <span>匯率換算（KRW ↔ HKD）</span>
+          <span style="font-size:11px;color:#777;">匯率基準 = KRW × 匯率 → HKD</span>
+        </div>
+        <div class="info-row">
+          <label>匯率</label>
+          <input id="fxRate" value="${trip.fx.rate}">
+        </div>
+        <div class="info-row">
+          <label>KRW</label>
+          <input id="fxKrw" value="${trip.fx.krw||""}">
+        </div>
+        <div class="info-row">
+          <label>HKD</label>
+          <input id="fxHkd" value="${trip.fx.hkd||""}">
+        </div>
+      `;
+      infoPanel.appendChild(fxCard);
+
+      const fxRate = ()=>parseFloat(document.getElementById('fxRate').value||"0");
+      const krwInput = fxCard.querySelector('#fxKrw');
+      const hkdInput = fxCard.querySelector('#fxHkd');
+      fxCard.querySelector('#fxRate').addEventListener('input',()=>{
+        trip.fx.rate = fxRate() || 0;
+        saveAll();
+      });
+      krwInput.addEventListener('input',()=>{
+        const r = fxRate(); const n = parseFloat(krwInput.value||"0");
+        if(!isNaN(n) && r){
+          hkdInput.value = (n*r).toFixed(2);
+        }
+        trip.fx.krw = krwInput.value;
+        trip.fx.hkd = hkdInput.value;
+        saveAll();
+      });
+      hkdInput.addEventListener('input',()=>{
+        const r = fxRate(); const n = parseFloat(hkdInput.value||"0");
+        if(!isNaN(n) && r){
+          krwInput.value = Math.round(n/r);
+        }
+        trip.fx.krw = krwInput.value;
+        trip.fx.hkd = hkdInput.value;
+        saveAll();
+      });
+
+      const hotelTitle = document.createElement('div');
+      hotelTitle.className = 'section-title';
+      hotelTitle.textContent = '住宿資訊';
+      infoPanel.appendChild(hotelTitle);
+
+      const hotelTable = document.createElement('table');
+      hotelTable.className = 'table';
+      hotelTable.innerHTML = `
+        <thead>
+          <tr>
+            <th style="width:26%;">酒店名稱</th>
+            <th style="width:18%;">日期</th>
+            <th style="width:32%;">地址 / 電話</th>
+            <th style="width:16%;">地圖連結</th>
+            <th style="width:8%;">✕</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const hBody = hotelTable.querySelector('tbody');
+
+      trip.hotels.forEach((h,idx)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input value="${h.name||""}"></td>
+          <td><input value="${h.date||""}" placeholder="12/25-26"></td>
+          <td><input value="${h.detail||""}" placeholder="地址 / 電話"></td>
+          <td><input value="${h.map||""}" placeholder="https://"></td>
+          <td style="text-align:center;"><button class="del-btn" data-i="${idx}">刪</button></td>
+        `;
+        hBody.appendChild(tr);
+      });
+
+      infoPanel.appendChild(hotelTable);
+
+      const hActions = document.createElement('div');
+      hActions.className = 'table-actions';
+      hActions.innerHTML = `
+        <button class="btn-pill btn-secondary" id="btnAddHotel">＋ 新增住宿</button>
+        <button class="btn-pill btn-primary" id="btnSaveHotel">儲存住宿資訊</button>
+      `;
+      infoPanel.appendChild(hActions);
+
+      hActions.querySelector('#btnAddHotel').onclick = ()=>{
+        trip.hotels.push({name:"",date:"",detail:"",map:""});
+        saveAll(); renderInfo();
+      };
+      hBody.onclick = e=>{
+        if(e.target.classList.contains('del-btn')){
+          const i = Number(e.target.dataset.i);
+          trip.hotels.splice(i,1);
+          saveAll(); renderInfo();
+        }
+      };
+      hActions.querySelector('#btnSaveHotel').onclick = ()=>{
+        const rows = hBody.querySelectorAll('tr');
+        const list=[];
+        rows.forEach(r=>{
+          const [name,date,detail,map] = r.querySelectorAll('input');
+          if(name.value || date.value || detail.value || map.value){
+            list.push({name:name.value,date:date.value,detail:detail.value,map:map.value});
+          }
+        });
+        trip.hotels = list;
+        saveAll();
+        alert("住宿資訊已儲存 ✅");
+      };
+
+      const rentTitle = document.createElement('div');
+      rentTitle.className = 'section-title';
+      rentTitle.textContent = '租車資訊（如有）';
+      infoPanel.appendChild(rentTitle);
+
+      const rCard = document.createElement('div');
+      rCard.className = 'info-card';
+      rCard.innerHTML = `
+        <div class="info-row">
+          <label>公司</label>
+          <input id="rCompany" value="${trip.rental.company||""}">
+        </div>
+        <div class="info-row">
+          <label>取車 / 還車點</label>
+          <input id="rPlace" value="${trip.rental.place||""}">
+        </div>
+        <div class="info-row">
+          <label>期間</label>
+          <input id="rPeriod" value="${trip.rental.period||""}" placeholder="例：12/27 09:00 – 12/29 20:00">
+        </div>
+        <div class="info-row">
+          <label>車型</label>
+          <input id="rCar" value="${trip.rental.car||""}">
+        </div>
+        <div class="info-row">
+          <label>備註</label>
+          <input id="rNote" value="${trip.rental.note||""}">
+        </div>
+      `;
+      infoPanel.appendChild(rCard);
+
+      ["Company","Place","Period","Car","Note"].forEach(key=>{
+        const el = rCard.querySelector("#r"+key);
+        el.addEventListener('input',()=>{
+          const k = key.toLowerCase();
+          trip.rental[k] = el.value;
+          saveAll();
+        });
+      });
+
+      const note = document.createElement('div');
+      note.className = 'small-note';
+      note.textContent = '提示：以上資訊全部只儲存在你瀏覽器本機，不會上載到伺服器。';
+      infoPanel.appendChild(note);
+    }
+
+    /* ====== Tab 與其他控制 ====== */
+    function switchTab(tab){
+      [tabIt,tabEx,tabFl,tabInfo].forEach(b=>b.classList.remove('active'));
+      tab.classList.add('active');
+      const id = tab.id;
+      itineraryPanel.style.display = (id==="tab-itinerary")?"block":"none";
+      expensePanel.style.display = (id==="tab-expense")?"block":"none";
+      flightPanel.style.display = (id==="tab-flight")?"block":"none";
+      infoPanel.style.display = (id==="tab-info")?"block":"none";
+    }
+
+    tabIt.onclick = ()=>switchTab(tabIt);
+    tabEx.onclick = ()=>switchTab(tabEx);
+    tabFl.onclick = ()=>switchTab(tabFl);
+    tabInfo.onclick = ()=>switchTab(tabInfo);
+
+    editToggleBtn.onclick = ()=>{
+      editMode = !editMode;
+      if(editMode){
+        editToggleBtn.classList.add('active');
+        editToggleBtn.textContent = "✅ 可新增行程";
+      }else{
+        editToggleBtn.classList.remove('active');
+        editToggleBtn.textContent = "✏️ 編輯行程";
+      }
+      renderItinerary();
+    };
+
+    printBtn.onclick = ()=>window.print();
+    weatherAllBtn.onclick = updateAllWeather;
 
     function init(){
       renderDayPills();
@@ -1108,7 +1645,7 @@
       renderInfo();
       switchTab(tabIt);
 
-      // 只綁一次 footer handler
+      // ⭐ 綁一次就夠，唔會再出「要 refresh 先有反應」問題
       itineraryPanel.addEventListener('click', cardFooterHandler);
     }
     init();
