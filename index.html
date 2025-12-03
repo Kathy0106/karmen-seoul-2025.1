@@ -7,191 +7,60 @@
   <style>
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     body { background:#f4f7fb; color:#333; }
-
-    .app {
-      max-width:960px;
-      margin:16px auto 40px;
-      padding:12px;
-    }
-
-    /* 封面 */
+    .app { max-width:960px; margin:16px auto 40px; padding:12px; }
     .cover {
-      position:relative;
-      border-radius:18px;
-      overflow:hidden;
-      padding:16px;
-      color:#fff;
-      min-height:180px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      background-size:cover;
-      background-position:center;
-      background-image:url('cover.jpg'); /* 👈 把你張相存成 cover.jpg */
+      position:relative; border-radius:18px; overflow:hidden; padding:16px;
+      color:#fff; min-height:180px; display:flex; flex-direction:column;
+      justify-content:space-between; background-size:cover; background-position:center;
+      background-image:url('cover.jpg');
     }
-
-    .cover-overlay {
-      position:absolute;
-      inset:0;
-      background:linear-gradient(135deg,rgba(0,0,0,0.55),rgba(0,0,0,0.25));
-    }
-
-    .cover-content {
-      position:relative;
-      z-index:1;
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-    }
-
-    .cover-title {
-      font-size:22px;
-      font-weight:700;
-      line-height:1.3;
-    }
-
-    .cover-sub {
-      font-size:14px;
-      opacity:0.9;
-      margin-top:4px;
-    }
-
-    .cover-edit {
-      position:relative;
-      z-index:1;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:10px;
-      font-size:12px;
-    }
-
-    input[type="text"], input[type="number"], input[type="date"], textarea, select {
-      width:100%;
-      padding:6px 8px;
-      border-radius:8px;
-      border:1px solid #dde3f0;
-      font-size:13px;
-      background:#fff;
+    .cover-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,0,0,0.55),rgba(0,0,0,0.25)); }
+    .cover-content { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .cover-title { font-size:22px; font-weight:700; line-height:1.3; }
+    .cover-sub { font-size:14px; opacity:0.9; margin-top:4px; }
+    .cover-edit { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; font-size:12px; }
+    input[type="text"], input[type="number"], textarea, select {
+      width:100%; padding:6px 8px; border-radius:8px; border:1px solid #dde3f0;
+      font-size:13px; background:#fff;
     }
     textarea { min-height:110px; resize:vertical; }
-
     label { font-size:12px; color:#555; display:block; margin-bottom:3px; }
     .input-group { margin-bottom:10px; }
-
     .btn {
-      border:none;
-      border-radius:999px;
-      padding:8px 16px;
-      font-size:13px;
-      cursor:pointer;
-      background:#ff7c9b;
-      color:#fff;
-      font-weight:600;
-      box-shadow:0 3px 6px rgba(0,0,0,0.12);
+      border:none; border-radius:999px; padding:8px 16px; font-size:13px; cursor:pointer;
+      background:#ff7c9b; color:#fff; font-weight:600; box-shadow:0 3px 6px rgba(0,0,0,0.12);
     }
-
     .btn-secondary {
-      border:1px solid #dde3f0;
-      background:#fff;
-      color:#555;
-      border-radius:999px;
-      padding:7px 14px;
-      font-size:12px;
-      cursor:pointer;
+      border:1px solid #dde3f0; background:#fff; color:#555;
+      border-radius:999px; padding:7px 14px; font-size:12px; cursor:pointer;
     }
-
-    .tabs {
-      display:flex;
-      margin-top:18px;
-      gap:8px;
-    }
+    .tabs { display:flex; margin-top:18px; gap:8px; }
     .tab-btn {
-      flex:1;
-      text-align:center;
-      padding:8px 6px;
-      border-radius:999px;
-      border:none;
-      background:#e2e7f5;
-      color:#555;
-      font-size:13px;
-      cursor:pointer;
+      flex:1; text-align:center; padding:8px 6px; border-radius:999px; border:none;
+      background:#e2e7f5; color:#555; font-size:13px; cursor:pointer;
     }
-    .tab-btn.active {
-      background:#3f51b5;
-      color:#fff;
-      font-weight:600;
-    }
-
+    .tab-btn.active { background:#3f51b5; color:#fff; font-weight:600; }
     .tab {
-      margin-top:16px;
-      background:#fff;
-      border-radius:16px;
-      padding:14px;
+      margin-top:16px; background:#fff; border-radius:16px; padding:14px;
       box-shadow:0 4px 8px rgba(0,0,0,0.04);
     }
-
-    .day-selector {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-    .pill {
-      padding:4px 10px;
-      border-radius:999px;
-      background:#edf0fb;
-      font-size:12px;
-    }
-
-    .weather-row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-bottom:12px;
-    }
+    .day-selector { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+    .pill { padding:4px 10px; border-radius:999px; background:#edf0fb; font-size:12px; }
+    .weather-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
     .weather-col { flex:1 1 90px; }
-
-    .two-col { display:flex; flex-wrap:wrap; gap:12px; }
-    .two-col > div { flex:1 1 220px; }
-
-    table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:13px;
-    }
-    th, td {
-      border-bottom:1px solid #eef1fb;
-      padding:6px 4px;
-      text-align:left;
-    }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { border-bottom:1px solid #eef1fb; padding:6px 4px; text-align:left; }
     th { background:#f5f7ff; font-weight:600; }
     td input {
-      width:100%;
-      border-radius:6px;
-      border:1px solid #dde3f0;
-      padding:4px 6px;
-      font-size:12px;
+      width:100%; border-radius:6px; border:1px solid #dde3f0;
+      padding:4px 6px; font-size:12px;
     }
-
-    .table-actions {
-      margin-top:8px;
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-    }
-
-    @media (max-width:600px) {
-      .cover { padding:12px; }
-      .cover-title { font-size:18px; }
-    }
+    .table-actions { margin-top:8px; display:flex; gap:8px; justify-content:flex-end; }
+    @media (max-width:600px) { .cover { padding:12px; } .cover-title { font-size:18px; } }
   </style>
 </head>
 <body>
   <div class="app">
-    <!-- 封面 -->
     <div id="cover" class="cover">
       <div class="cover-overlay"></div>
       <div class="cover-content">
@@ -204,7 +73,6 @@
           <div style="font-size:18px;font-weight:600;" id="destinationDisplay">Seoul</div>
         </div>
       </div>
-
       <div class="cover-edit">
         <div style="flex:1 1 160px;min-width:0;">
           <label>行程標題</label>
@@ -226,14 +94,12 @@
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" data-tab="plan">🗓 行程</button>
       <button class="tab-btn" data-tab="expenses">💰 消費紀錄</button>
       <button class="tab-btn" data-tab="flights">✈️ 航班資料</button>
     </div>
 
-    <!-- 行程 Tab -->
     <section class="tab" id="tab-plan">
       <div class="day-selector">
         <span class="pill">Day</span>
@@ -244,7 +110,7 @@
           <option value="day4">Day 4</option>
           <option value="day5">Day 5</option>
         </select>
-        <input id="dayLabelInput" type="text" placeholder="例如：12/25（四）安國 → 弘大 ..." style="flex:1 1 200px;min-width:0;">
+        <input id="dayLabelInput" type="text" style="flex:1 1 200px;min-width:0;">
       </div>
 
       <div class="weather-row">
@@ -270,7 +136,7 @@
         </div>
         <div class="weather-col">
           <label>天氣描述</label>
-          <input id="weatherTextInput" type="text" placeholder="晴 / 小雪 ...">
+          <input id="weatherTextInput" type="text">
         </div>
       </div>
 
@@ -283,16 +149,15 @@
       <p style="font-size:11px;color:#777;margin-top:6px;">（所有資料會存喺本機 browser localStorage）</p>
     </section>
 
-    <!-- 消費 Tab（你之後自己加都得，預設空白） -->
     <section class="tab" id="tab-expenses" style="display:none;">
       <table id="expenseTable">
         <thead>
           <tr>
-            <th style="width:26%;">日期／Day</th>
-            <th style="width:32%;">項目</th>
-            <th style="width:18%;">金額</th>
-            <th style="width:14%;">貨幣</th>
-            <th style="width:10%;">刪除</th>
+            <th>日期／Day</th>
+            <th>項目</th>
+            <th>金額</th>
+            <th>貨幣</th>
+            <th>刪除</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -303,16 +168,15 @@
       </div>
     </section>
 
-    <!-- 航班 Tab -->
     <section class="tab" id="tab-flights" style="display:none;">
       <table id="flightTable">
         <thead>
           <tr>
-            <th style="width:22%;">日期</th>
-            <th style="width:26%;">航班編號</th>
-            <th style="width:24%;">起飛</th>
-            <th style="width:24%;">抵達</th>
-            <th style="width:4%;">✕</th>
+            <th>日期</th>
+            <th>航班編號</th>
+            <th>起飛</th>
+            <th>抵達</th>
+            <th>✕</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -325,14 +189,9 @@
   </div>
 
   <script>
-    // =========================
-    //  OpenWeather 設定
-    // =========================
-    const API_KEY = "YOUR_API_KEY_HERE"; // 👈 在這裡放你的 OpenWeather API key
+    const API_KEY = "YOUR_API_KEY_HERE";
+    const STORAGE_KEY = "tripPlannerData_seoul2025"; // 👈 新 key，唔會撞到 Hokkaido 個 app
 
-    // =========================
-    //  初始資料（已填好五日行程＋航班）
-    // =========================
     const defaultData = {
       meta: {
         title: "2025 Christmas SEOUL trip 🎄",
@@ -340,58 +199,7 @@
         destination: "Seoul",
         bgUrl: "cover.jpg"
       },
-      days: {
-        day1: {
-          label: "Day 1｜12/25｜安國 → 弘大 → 延南洞 → 明洞燈飾",
-          city: "Seoul",
-          temp: "",
-          low: "",
-          feel: "",
-          weatherText: "",
-          schedule:
-"🍽 早餐｜Dotori Garden\nhttps://naver.me/xzXNBJYr\n\n🛍 安國潮店走走（順路行）\nZERO SPACE　https://naver.me/5PyocQV5\nObject　https://naver.me/xNOAPAtl\nSowol Department　https://naver.me/ID30Q57R\nINOUR MANSION　https://naver.me/x1iTiBKb\nOINU　https://naver.me/5FcjJ4qz\nTamburins 安國店　https://naver.me/5kxLYuXe\n\n➡️ 🚇 安國 → 弘大入口\n\n🍽 午餐｜Gop Mapo 烤肥腸\nhttps://naver.me/GPcC4YWc\n\n☕ 下午茶｜ARTIST BAKERY（弘大）\nhttps://naver.me/FiT5e8AY\n\n➡️ 徒步 12 分鐘 → 延南洞\n\n🧁 延南洞散步 + 小食 & 咖啡\nHUNHUN 糖餅 훈훈호떡　https://naver.me/5nre0cZm\nHIPPO Coffee（維也納咖啡）　https://naver.me/5MN2vtf4\n\n➡️ 🚇 延南洞 → 乙支路入口 / 明洞方向\n\n🍽 晚餐｜🦀 烏達里家（醬蟹）\nhttps://naver.me/5jcqjhgG\n\n🎄 聖誕燈飾｜明洞聖堂 & 明洞大街\nhttps://naver.me/G8EN4VnZ"
-        },
-        day2: {
-          label: "Day 2｜12/26｜明洞 → 南大門 → 東大門 → 新堂辣雞爪",
-          city: "Seoul",
-          temp: "",
-          low: "",
-          feel: "",
-          weatherText: "",
-          schedule:
-"🍽 早餐｜宋家飯捲（明洞）\nhttps://naver.me/G8uH9PKk\n\n🛍 明洞購物\nhttps://naver.me/5LYTVJQS\n\n🍽 午餐｜韓牛一條街（退溪路）\nhttps://naver.me/5mOIQw2x\n\n🛍 南大門市場\nhttps://naver.me/Fu2fLt3r\n\n🛍 Doota Mall + No Brand\nhttps://naver.me/5ooSPrMO\n\n🍨 Scooper Gelato（開心果 AFFOGATO）\nhttps://naver.me/GW1qN7HP\n\n🍽 晚餐｜友誼辣雞爪（新堂）🔥\nhttps://naver.me/ISbHWWes"
-        },
-        day3: {
-          label: "Day 3｜12/27｜安國 Café → 益善洞 → 乙支路",
-          city: "Seoul",
-          temp: "",
-          low: "",
-          feel: "",
-          weatherText: "",
-          schedule:
-"🍽 早餐｜Cafe Layered（安國）\nhttps://naver.me/GcBHBVtT\n\n🍽 午餐｜Nakwonjang（益善洞）\nhttps://naver.me/F5jtN9zK\n\n🛍 益善洞文青小店散步\nhttps://naver.me/5E0PW5pz\n\n🍽 晚餐｜水芹菜烤豬肉（乙支路）\nhttps://naver.me/5XecCJ2E\n\n🌙 After dinner → 自由活動\n回酒店休息 ／ 慢行明洞 ／ 便利店掃貨"
-        },
-        day4: {
-          label: "Day 4｜12/28｜聖水 ALL DAY → 明洞（晚餐 2選1）",
-          city: "Seoul",
-          temp: "",
-          low: "",
-          feel: "",
-          weatherText: "",
-          schedule:
-"🍽 早餐｜Onion（聖水）\nhttps://naver.me/FfnQJR0\n\n🛍 聖水潮店\nMusinsa Flagship　https://naver.me/FNaQKTjD\nADER ERROR　https://naver.me/G7zB8A17\nTamburins 聖水　https://naver.me/FSVKkYgr\n\n🍽 午餐｜無垢屋（聖水）\nhttps://naver.me/IGJfWThB\n\n🍮 甜品｜Milky Shop\nhttps://naver.me/FT6ByU3N\n\n➡️ 🚇 聖水 → 明洞\n\n🌙 晚餐當日自選：\n🟢 Option A｜IDAEJO 排骨湯（이대조 감자탕）\nhttps://naver.me/GAyyIQCf\n\n🟡 Option B｜明洞炸雞\n橋村　https://naver.me/xGRMiCmh\nbb.q　https://naver.me/FPSHzw51\nNENE　https://naver.me/5KGh80X0"
-        },
-        day5: {
-          label: "Day 5｜12/29｜補貨 → 鰻魚 → 機場",
-          city: "Seoul",
-          temp: "",
-          low: "",
-          feel: "",
-          weatherText: "",
-          schedule:
-"🍽 早餐｜Egg Drop（明洞）\nhttps://naver.me/5hgOP0Ia\n\n🛍 明洞最後掃貨\nhttps://naver.me/5LYTVJQS\n\n🍽 午餐｜🔥 豐川鰻魚（乙支路）\nhttps://naver.me/5iOaZr9u\n\n➡️ 拎行李 → 機場 ✈️"
-        }
-      },
+      days: {},
       expenses: [],
       flights: [
         { date:"2025-12-25", no:"UO626", dep:"HKG → ICN", arr:"" },
@@ -399,234 +207,318 @@
       ]
     };
 
-    let tripData = JSON.parse(localStorage.getItem("tripPlannerData") || "null") || defaultData;
+    // === Day 資料（幫你填好行程）===
+    defaultData.days.day1 = {
+      label: "Day 1｜12/25｜安國 → 弘大 → 延南洞 → 明洞燈飾",
+      city: "Seoul",
+      temp: "", low:"", feel:"", weatherText:"",
+      schedule: `🍽 早餐｜Dotori Garden
+https://naver.me/xzXNBJYr
 
-    function saveAll() {
-      localStorage.setItem("tripPlannerData", JSON.stringify(tripData));
+🛍 安國潮店走走（順路行）
+ZERO SPACE　https://naver.me/5PyocQV5
+Object　https://naver.me/xNOAPAtl
+Sowol Department　https://naver.me/ID30Q57R
+INOUR MANSION　https://naver.me/x1iTiBKb
+OINU　https://naver.me/5FcjJ4qz
+Tamburins 安國店　https://naver.me/5kxLYuXe
+
+➡️ 🚇 安國 → 弘大入口
+
+🍽 午餐｜Gop Mapo 烤肥腸
+https://naver.me/GPcC4YWc
+
+☕ 下午茶｜ARTIST BAKERY（弘大）
+https://naver.me/FiT5e8AY
+
+➡️ 徒步 12 分鐘 → 延南洞
+
+🧁 延南洞散步 + 小食 & 咖啡
+HUNHUN 糖餅 훈훈호떡　https://naver.me/5nre0cZm
+HIPPO Coffee（維也納咖啡）　https://naver.me/5MN2vtf4
+
+➡️ 🚇 延南洞 → 乙支路入口 / 明洞方向
+
+🍽 晚餐｜🦀 烏達里家（醬蟹）
+https://naver.me/5jcqjhgG
+
+🎄 聖誕燈飾｜明洞聖堂 & 明洞大街
+https://naver.me/G8EN4VnZ`
+    };
+
+    defaultData.days.day2 = {
+      label: "Day 2｜12/26｜明洞 → 南大門 → 東大門 → 新堂辣雞爪",
+      city: "Seoul",
+      temp:"",low:"",feel:"",weatherText:"",
+      schedule:`🍽 早餐｜宋家飯捲（明洞）
+https://naver.me/G8uH9PKk
+
+🛍 明洞購物
+https://naver.me/5LYTVJQS
+
+🍽 午餐｜韓牛一條街（退溪路）
+https://naver.me/5mOIQw2x
+
+🛍 南大門市場
+https://naver.me/Fu2fLt3r
+
+🛍 Doota Mall + No Brand
+https://naver.me/5ooSPrMO
+
+🍨 Scooper Gelato（開心果 AFFOGATO）
+https://naver.me/GW1qN7HP
+
+🍽 晚餐｜友誼辣雞爪（新堂）🔥
+https://naver.me/ISbHWWes`
+    };
+
+    defaultData.days.day3 = {
+      label: "Day 3｜12/27｜安國 Café → 益善洞 → 乙支路",
+      city:"Seoul", temp:"",low:"",feel:"",weatherText:"",
+      schedule:`🍽 早餐｜Cafe Layered（安國）
+https://naver.me/GcBHBVtT
+
+🍽 午餐｜Nakwonjang（益善洞）
+https://naver.me/F5jtN9zK
+
+🛍 益善洞文青小店散步
+https://naver.me/5E0PW5pz
+
+🍽 晚餐｜水芹菜烤豬肉（乙支路）
+https://naver.me/5XecCJ2E
+
+🌙 After dinner → 自由活動
+回酒店休息／慢行明洞／便利店掃貨`
+    };
+
+    defaultData.days.day4 = {
+      label:"Day 4｜12/28｜聖水 ALL DAY → 明洞（晚餐 2選1）",
+      city:"Seoul", temp:"",low:"",feel:"",weatherText:"",
+      schedule:`🍽 早餐｜Onion（聖水）
+https://naver.me/FfnQXJR0
+
+🛍 聖水潮店
+Musinsa Flagship　https://naver.me/FNaQKTjD
+ADER ERROR　https://naver.me/G7zB8A17
+Tamburins 聖水　https://naver.me/FSVKkYgr
+
+🍽 午餐｜無垢屋（聖水）
+https://naver.me/IGJfWThB
+
+🍮 甜品｜Milky Shop
+https://naver.me/FT6ByU3N
+
+➡️ 🚇 聖水 → 明洞
+
+🌙 晚餐當日自選：
+🟢 Option A｜IDAEJO 排骨湯（이대조 감자탕）
+https://naver.me/GAyyIQCf
+
+🟡 Option B｜明洞炸雞
+橋村　https://naver.me/xGRMiCmh
+bb.q　https://naver.me/FPSHzw51
+NENE　https://naver.me/5KGh80X0`
+    };
+
+    defaultData.days.day5 = {
+      label:"Day 5｜12/29｜補貨 → 鰻魚 → 機場",
+      city:"Seoul", temp:"",low:"",feel:"",weatherText:"",
+      schedule:`🍽 早餐｜Egg Drop（明洞）
+https://naver.me/5hgOP0Ia
+
+🛍 明洞最後掃貨
+https://naver.me/5LYTVJQS
+
+🍽 午餐｜🔥 豐川鰻魚（乙支路）
+https://naver.me/5iOaZr9u
+
+➡️ 拎行李 → 機場 ✈️`
+    };
+
+    let tripData = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || defaultData;
+    function saveAll(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(tripData)); }
+
+    // 封面
+    const coverEl=document.getElementById("cover");
+    const titleDisplay=document.getElementById("titleDisplay");
+    const dateDisplay=document.getElementById("dateDisplay");
+    const destinationDisplay=document.getElementById("destinationDisplay");
+    const titleInput=document.getElementById("titleInput");
+    const dateInput=document.getElementById("dateInput");
+    const destinationInput=document.getElementById("destinationInput");
+    const bgInput=document.getElementById("bgInput");
+
+    function renderMeta(){
+      const m=tripData.meta;
+      titleDisplay.textContent=m.title;
+      dateDisplay.textContent=m.dateRange;
+      destinationDisplay.textContent=m.destination;
+      titleInput.value=m.title;
+      dateInput.value=m.dateRange;
+      destinationInput.value=m.destination;
+      bgInput.value=m.bgUrl||"cover.jpg";
+      coverEl.style.backgroundImage=`url('${m.bgUrl||"cover.jpg"}')`;
     }
 
-    // -------- 封面渲染 --------
-    const coverEl = document.getElementById("cover");
-    const titleDisplay = document.getElementById("titleDisplay");
-    const dateDisplay = document.getElementById("dateDisplay");
-    const destinationDisplay = document.getElementById("destinationDisplay");
-    const titleInput = document.getElementById("titleInput");
-    const dateInput = document.getElementById("dateInput");
-    const destinationInput = document.getElementById("destinationInput");
-    const bgInput = document.getElementById("bgInput");
-
-    function renderMeta() {
-      const m = tripData.meta;
-      titleDisplay.textContent = m.title;
-      dateDisplay.textContent = m.dateRange;
-      destinationDisplay.textContent = m.destination;
-      titleInput.value = m.title;
-      dateInput.value = m.dateRange;
-      destinationInput.value = m.destination;
-      bgInput.value = m.bgUrl || "cover.jpg";
-      if (m.bgUrl) {
-        coverEl.style.backgroundImage = `url('${m.bgUrl}')`;
-      }
-    }
-
-    document.getElementById("saveMetaBtn").addEventListener("click", () => {
-      tripData.meta.title = titleInput.value || defaultData.meta.title;
-      tripData.meta.dateRange = dateInput.value || defaultData.meta.dateRange;
-      tripData.meta.destination = destinationInput.value || defaultData.meta.destination;
-      tripData.meta.bgUrl = bgInput.value || "cover.jpg";
-      renderMeta();
-      saveAll();
-      alert("封面已儲存 ✅");
+    document.getElementById("saveMetaBtn").addEventListener("click",()=>{
+      tripData.meta.title=titleInput.value||defaultData.meta.title;
+      tripData.meta.dateRange=dateInput.value||defaultData.meta.dateRange;
+      tripData.meta.destination=destinationInput.value||defaultData.meta.destination;
+      tripData.meta.bgUrl=bgInput.value||"cover.jpg";
+      renderMeta(); saveAll(); alert("封面已儲存 ✅");
     });
 
-    // -------- Tabs --------
-    const tabBtns = document.querySelectorAll(".tab-btn");
-    tabBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        tabBtns.forEach(b => b.classList.remove("active"));
+    // Tabs
+    const tabBtns=document.querySelectorAll(".tab-btn");
+    tabBtns.forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        tabBtns.forEach(b=>b.classList.remove("active"));
         btn.classList.add("active");
-        const target = btn.dataset.tab;
-        document.querySelectorAll(".tab").forEach(tab => {
-          tab.style.display = tab.id === "tab-" + target ? "block" : "none";
+        const target=btn.dataset.tab;
+        document.querySelectorAll(".tab").forEach(tab=>{
+          tab.style.display=tab.id==="tab-"+target?"block":"none";
         });
       });
     });
 
-    // -------- 行程／天氣 --------
-    const daySelect = document.getElementById("daySelect");
-    const dayLabelInput = document.getElementById("dayLabelInput");
-    const cityInput = document.getElementById("cityInput");
-    const tempInput = document.getElementById("tempInput");
-    const lowInput = document.getElementById("lowInput");
-    const feelInput = document.getElementById("feelInput");
-    const weatherTextInput = document.getElementById("weatherTextInput");
-    const scheduleInput = document.getElementById("scheduleInput");
+    // 行程
+    const daySelect=document.getElementById("daySelect");
+    const dayLabelInput=document.getElementById("dayLabelInput");
+    const cityInputEl=document.getElementById("cityInput");
+    const tempInputEl=document.getElementById("tempInput");
+    const lowInputEl=document.getElementById("lowInput");
+    const feelInputEl=document.getElementById("feelInput");
+    const weatherTextInputEl=document.getElementById("weatherTextInput");
+    const scheduleInputEl=document.getElementById("scheduleInput");
 
-    function loadDay(key) {
-      const d = tripData.days[key] || {};
-      dayLabelInput.value = d.label || "";
-      cityInput.value = d.city || tripData.meta.destination || "Seoul";
-      tempInput.value = d.temp ?? "";
-      lowInput.value = d.low ?? "";
-      feelInput.value = d.feel ?? "";
-      weatherTextInput.value = d.weatherText || "";
-      scheduleInput.value = d.schedule || "";
+    function loadDay(key){
+      const d=tripData.days[key]||{};
+      dayLabelInput.value=d.label||"";
+      cityInputEl.value=d.city||tripData.meta.destination||"Seoul";
+      tempInputEl.value=d.temp??"";
+      lowInputEl.value=d.low??"";
+      feelInputEl.value=d.feel??"";
+      weatherTextInputEl.value=d.weatherText||"";
+      scheduleInputEl.value=d.schedule||"";
     }
 
-    daySelect.addEventListener("change", () => {
-      loadDay(daySelect.value);
-    });
+    daySelect.addEventListener("change",()=>loadDay(daySelect.value));
 
-    document.getElementById("saveDayBtn").addEventListener("click", () => {
-      const key = daySelect.value;
-      tripData.days[key] = {
-        label: dayLabelInput.value,
-        city: cityInput.value,
-        temp: tempInput.value,
-        low: lowInput.value,
-        feel: feelInput.value,
-        weatherText: weatherTextInput.value,
-        schedule: scheduleInput.value
+    document.getElementById("saveDayBtn").addEventListener("click",()=>{
+      const key=daySelect.value;
+      tripData.days[key]={
+        label:dayLabelInput.value,
+        city:cityInputEl.value,
+        temp:tempInputEl.value,
+        low:lowInputEl.value,
+        feel:feelInputEl.value,
+        weatherText:weatherTextInputEl.value,
+        schedule:scheduleInputEl.value
       };
-      saveAll();
-      alert("行程已儲存 ✅");
+      saveAll(); alert("行程已儲存 ✅");
     });
 
-    // 自動天氣
-    const fetchWeatherBtn = document.getElementById("fetchWeatherBtn");
-    fetchWeatherBtn.addEventListener("click", async () => {
-      if (!API_KEY || API_KEY === "YOUR_API_KEY_HERE") {
-        alert("請先在程式碼中填入你的 OpenWeather API key 🙏");
+    // 天氣
+    document.getElementById("fetchWeatherBtn").addEventListener("click",async()=>{
+      if(!API_KEY||API_KEY==="YOUR_API_KEY_HERE"){
+        alert("請先在程式碼入 OpenWeather API key 🙏");
         return;
       }
-      const city = (cityInput.value || tripData.meta.destination || "Seoul") + ",KR";
-      try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        const temp = Math.round(data.main.temp);
-        const feels = Math.round(data.main.feels_like);
-        const low = Math.round(data.main.temp_min);
-        const desc = data.weather && data.weather[0] && data.weather[0].description || "";
-
-        tempInput.value = temp;
-        lowInput.value = low;
-        feelInput.value = feels;
-        weatherTextInput.value = desc;
-
+      const city=(cityInputEl.value||tripData.meta.destination||"Seoul")+",KR";
+      try{
+        const url=`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
+        const res=await fetch(url);
+        if(!res.ok)throw new Error("HTTP "+res.status);
+        const data=await res.json();
+        tempInputEl.value=Math.round(data.main.temp);
+        lowInputEl.value=Math.round(data.main.temp_min);
+        feelInputEl.value=Math.round(data.main.feels_like);
+        weatherTextInputEl.value=(data.weather&&data.weather[0]&&data.weather[0].description)||"";
         alert("已更新即時天氣 ✅");
-      } catch (e) {
+      }catch(e){
         console.error(e);
         alert("取得天氣失敗，請檢查城市名稱或 API key 🔍");
       }
     });
 
-    // -------- 消費 --------
-    const expenseTableBody = document.querySelector("#expenseTable tbody");
-
-    function renderExpenses() {
-      expenseTableBody.innerHTML = "";
-      tripData.expenses.forEach((row, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input value="${row.date || ""}" /></td>
-          <td><input value="${row.item || ""}" /></td>
-          <td><input type="number" step="0.01" value="${row.amount || ""}" /></td>
-          <td><input value="${row.currency || ""}" /></td>
+    // 消費
+    const expenseTableBody=document.querySelector("#expenseTable tbody");
+    function renderExpenses(){
+      expenseTableBody.innerHTML="";
+      tripData.expenses.forEach((row,index)=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+          <td><input value="${row.date||""}" /></td>
+          <td><input value="${row.item||""}" /></td>
+          <td><input type="number" step="0.01" value="${row.amount||""}" /></td>
+          <td><input value="${row.currency||""}" /></td>
           <td style="text-align:center;">
             <button data-index="${index}" class="del-exp btn-secondary" style="padding:2px 8px;font-size:11px;">✕</button>
           </td>`;
         expenseTableBody.appendChild(tr);
       });
     }
-
-    document.getElementById("addExpenseRowBtn").addEventListener("click", () => {
+    document.getElementById("addExpenseRowBtn").addEventListener("click",()=>{
       tripData.expenses.push({date:"",item:"",amount:"",currency:"KRW"});
       renderExpenses();
     });
-
-    expenseTableBody.addEventListener("click", e => {
-      if (e.target.classList.contains("del-exp")) {
-        const i = Number(e.target.dataset.index);
-        tripData.expenses.splice(i,1);
-        renderExpenses();
+    expenseTableBody.addEventListener("click",e=>{
+      if(e.target.classList.contains("del-exp")){
+        const i=Number(e.target.dataset.index);
+        tripData.expenses.splice(i,1); renderExpenses();
       }
     });
-
-    document.getElementById("saveExpensesBtn").addEventListener("click", () => {
-      const rows = expenseTableBody.querySelectorAll("tr");
-      const newData = [];
-      rows.forEach(tr => {
-        const [dateEl,itemEl,amountEl,currEl] = tr.querySelectorAll("input");
-        if (dateEl.value || itemEl.value || amountEl.value) {
-          newData.push({
-            date: dateEl.value,
-            item: itemEl.value,
-            amount: amountEl.value,
-            currency: currEl.value || "KRW"
-          });
+    document.getElementById("saveExpensesBtn").addEventListener("click",()=>{
+      const rows=expenseTableBody.querySelectorAll("tr");
+      const newData=[];
+      rows.forEach(tr=>{
+        const [dEl,iEl,aEl,cEl]=tr.querySelectorAll("input");
+        if(dEl.value||iEl.value||aEl.value){
+          newData.push({date:dEl.value,item:iEl.value,amount:aEl.value,currency:cEl.value||"KRW"});
         }
       });
-      tripData.expenses = newData;
-      saveAll();
-      alert("消費紀錄已儲存 ✅");
+      tripData.expenses=newData; saveAll(); alert("消費紀錄已儲存 ✅");
     });
 
-    // -------- 航班 --------
-    const flightTableBody = document.querySelector("#flightTable tbody");
-
-    function renderFlights() {
-      flightTableBody.innerHTML = "";
-      tripData.flights.forEach((row,index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input type="text" value="${row.date || ""}" /></td>
-          <td><input type="text" value="${row.no || ""}" /></td>
-          <td><input type="text" value="${row.dep || ""}" /></td>
-          <td><input type="text" value="${row.arr || ""}" /></td>
+    // 航班
+    const flightTableBody=document.querySelector("#flightTable tbody");
+    function renderFlights(){
+      flightTableBody.innerHTML="";
+      tripData.flights.forEach((row,index)=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+          <td><input type="text" value="${row.date||""}" /></td>
+          <td><input type="text" value="${row.no||""}" /></td>
+          <td><input type="text" value="${row.dep||""}" /></td>
+          <td><input type="text" value="${row.arr||""}" /></td>
           <td style="text-align:center;">
             <button data-index="${index}" class="del-flight btn-secondary" style="padding:2px 8px;font-size:11px;">✕</button>
-          </td>
-        `;
+          </td>`;
         flightTableBody.appendChild(tr);
       });
     }
-
-    document.getElementById("addFlightRowBtn").addEventListener("click", () => {
-      tripData.flights.push({date:"",no:"",dep:"",arr:""});
-      renderFlights();
+    document.getElementById("addFlightRowBtn").addEventListener("click",()=>{
+      tripData.flights.push({date:"",no:"",dep:"",arr:""}); renderFlights();
     });
-
-    flightTableBody.addEventListener("click", e => {
-      if (e.target.classList.contains("del-flight")) {
-        const i = Number(e.target.dataset.index);
-        tripData.flights.splice(i,1);
-        renderFlights();
+    flightTableBody.addEventListener("click",e=>{
+      if(e.target.classList.contains("del-flight")){
+        const i=Number(e.target.dataset.index);
+        tripData.flights.splice(i,1); renderFlights();
       }
     });
-
-    document.getElementById("saveFlightsBtn").addEventListener("click", () => {
-      const rows = flightTableBody.querySelectorAll("tr");
-      const newData = [];
-      rows.forEach(tr => {
-        const [dateEl,noEl,depEl,arrEl] = tr.querySelectorAll("input");
-        if (dateEl.value || noEl.value) {
-          newData.push({
-            date: dateEl.value,
-            no: noEl.value,
-            dep: depEl.value,
-            arr: arrEl.value
-          });
+    document.getElementById("saveFlightsBtn").addEventListener("click",()=>{
+      const rows=flightTableBody.querySelectorAll("tr");
+      const newData=[];
+      rows.forEach(tr=>{
+        const [dEl,nEl,depEl,arrEl]=tr.querySelectorAll("input");
+        if(dEl.value||nEl.value){
+          newData.push({date:dEl.value,no:nEl.value,dep:depEl.value,arr:arrEl.value});
         }
       });
-      tripData.flights = newData;
-      saveAll();
-      alert("航班資料已儲存 ✅");
+      tripData.flights=newData; saveAll(); alert("航班資料已儲存 ✅");
     });
 
-    // -------- 初始化 --------
-    function init() {
+    function init(){
       renderMeta();
       loadDay("day1");
       renderExpenses();
