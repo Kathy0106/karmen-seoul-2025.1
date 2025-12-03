@@ -51,6 +51,7 @@
       border:none;
       background:rgba(255,255,255,0.2);
       color:#fff;
+      cursor:pointer;
     }
     .hero-tab.active{
       background:#fff;
@@ -93,21 +94,19 @@
       margin-top:4px;
       background:#fff;
       border-radius:16px;
-      padding:14px 14px 10px;
+      padding:12px 12px 10px;
       display:flex;
       align-items:center;
       box-shadow:0 4px 10px rgba(0,0,0,0.04);
-      gap:12px;
+      gap:10px;
     }
     .weather-icon{
-      width:42px;height:42px;border-radius:50%;
+      width:40px;height:40px;border-radius:50%;
       background:#ecf3ff;
       display:flex;align-items:center;justify-content:center;
       font-size:22px;
     }
-    .weather-main{
-      flex:1;
-    }
+    .weather-main{flex:1;}
     .temp-row{font-size:20px;font-weight:700;}
     .temp-low{font-size:12px;margin-left:4px;color:#777;}
     .feel{font-size:11px;color:#777;margin-top:2px;}
@@ -118,6 +117,16 @@
       min-width:90px;
     }
     .weather-note strong{display:block;font-size:12px;}
+    .weather-btn{
+      margin-top:4px;
+      font-size:10px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid #d1d8ff;
+      background:#f5f7ff;
+      color:#3557ff;
+      cursor:pointer;
+    }
     /* timeline cards */
     .section-title{
       margin:14px 4px 6px;
@@ -175,19 +184,63 @@
       color:#777;
       margin-top:6px;
     }
-    /* flight / expense tabs simple placeholder badges */
-    .badge-row{
-      display:flex;
-      justify-content:center;
-      gap:6px;
-      margin-top:8px;
+    /* expenses & flights */
+    .table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      background:#fff;
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 3px 8px rgba(0,0,0,0.03);
+    }
+    .table th,
+    .table td{
+      padding:6px 6px;
+      border-bottom:1px solid #eef1fb;
+    }
+    .table th{
+      background:#f5f7ff;
+      font-weight:600;
+    }
+    .table input{
+      width:100%;
+      border-radius:6px;
+      border:1px solid #dde3f0;
+      padding:3px 4px;
       font-size:11px;
     }
-    .badge{
-      padding:4px 8px;
+    .table-actions{
+      margin-top:8px;
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+    }
+    .btn-pill{
+      font-size:11px;
+      padding:5px 10px;
       border-radius:999px;
+      border:none;
+      cursor:pointer;
+    }
+    .btn-secondary{
       background:#fff;
-      box-shadow:0 2px 6px rgba(0,0,0,0.04);
+      border:1px solid #d1d8ff;
+      color:#3557ff;
+    }
+    .btn-primary{
+      background:#ff7c9b;
+      color:#fff;
+      border:none;
+    }
+    .del-btn{
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid #f2b2bd;
+      background:#fff1f3;
+      color:#e06276;
+      cursor:pointer;
     }
   </style>
 </head>
@@ -223,28 +276,22 @@
   </div>
 
   <script>
-    // ---- 行程資料 ----
-    const trip = {
+    // ✅ 已經內置你嘅 OpenWeather API key
+    const API_KEY = "cc2dab2806da14aec6dab2ed8260a1c4";
+    const STORAGE_KEY = "seoul_trip_pro_v2";
+
+    const baseTrip = {
       days: [
         {
           id: "d1",
           labelShort: "12/25",
           weekday: "四",
           title: "Day 1｜安國 → 弘大 → 延南洞 → 明洞燈飾",
-          weather: { temp: "0", low: "-5", feel: "-8", text: "大雪／降雪", note: "當日步行／大眾運輸" },
+          city: "Seoul",
+          weather: { temp: "", low: "", feel: "", text: "", note: "當日步行／大眾運輸" },
           blocks: [
-            {
-              icon: "🍽",
-              tag: "早餐",
-              time: "早上",
-              title: "Dotori Garden",
-              desc: 'https://naver.me/xzXNBJYr'
-            },
-            {
-              icon: "🛍",
-              tag: "安國潮店",
-              time: "上午",
-              title: "安國潮店走走（順路行）",
+            { icon: "🍽", tag: "早餐", time: "早上", title: "Dotori Garden", desc: "https://naver.me/xzXNBJYr" },
+            { icon: "🛍", tag: "安國潮店", time: "上午", title: "安國潮店走走（順路行）",
               desc:
                 "ZERO SPACE　https://naver.me/5PyocQV5\n" +
                 "Object　https://naver.me/xNOAPAtl\n" +
@@ -253,62 +300,18 @@
                 "OINU　https://naver.me/5FcjJ4qz\n" +
                 "Tamburins 安國　https://naver.me/5kxLYuXe"
             },
-            {
-              icon: "🚇",
-              tag: "移動",
-              time: "中午前",
-              title: "安國 → 弘大入口",
-              desc: "搭地鐵移動"
-            },
-            {
-              icon: "🍽",
-              tag: "午餐",
-              time: "中午",
-              title: "Gop Mapo 烤肥腸",
-              desc: "https://naver.me/GPcC4YWc"
-            },
-            {
-              icon: "☕️",
-              tag: "下午茶",
-              time: "下午",
-              title: "ARTIST BAKERY（弘大）",
-              desc: "https://naver.me/FiT5e8AY"
-            },
-            {
-              icon: "🚶‍♀️",
-              tag: "散步",
-              time: "下午",
-              title: "步行 12 分鐘 → 延南洞",
-              desc: "慢行去延南洞"
-            },
-            {
-              icon: "🧁",
-              tag: "延南洞",
-              time: "下午",
-              title: "小食 & 咖啡",
+            { icon: "🚇", tag: "移動", time: "中午前", title: "安國 → 弘大入口", desc: "搭地鐵移動" },
+            { icon: "🍽", tag: "午餐", time: "中午", title: "Gop Mapo 烤肥腸", desc: "https://naver.me/GPcC4YWc" },
+            { icon: "☕️", tag: "下午茶", time: "下午", title: "ARTIST BAKERY（弘大）", desc: "https://naver.me/FiT5e8AY" },
+            { icon: "🚶‍♀️", tag: "散步", time: "下午", title: "步行 12 分鐘 → 延南洞", desc: "慢行去延南洞" },
+            { icon: "🧁", tag: "延南洞", time: "下午", title: "小食 & 咖啡",
               desc:
                 "HUNHUN 糖餅　https://naver.me/5nre0cZm\n" +
                 "HIPPO Coffee（維也納咖啡）　https://naver.me/5MN2vtf4"
             },
-            {
-              icon: "🚇",
-              tag: "移動",
-              time: "傍晚",
-              title: "延南洞 → 乙支路入口 / 明洞方向",
-              desc: ""
-            },
-            {
-              icon: "🍽",
-              tag: "晚餐",
-              time: "晚餐",
-              title: "烏達里家（醬蟹）",
-              desc: "https://naver.me/5jcqjhgG"
-            },
-            {
-              icon: "🎄",
-              tag: "夜景",
-              time: "晚上",
-              title: "明洞聖誕燈飾",
+            { icon: "🚇", tag: "移動", time: "傍晚", title: "延南洞 → 乙支路入口 / 明洞方向", desc: "" },
+            { icon: "🍽", tag: "晚餐", time: "晚餐", title: "烏達里家（醬蟹）", desc: "https://naver.me/5jcqjhgG" },
+            { icon: "🎄", tag: "夜景", time: "晚上", title: "明洞聖誕燈飾",
               desc: "明洞聖堂 & 明洞大街　https://naver.me/G8EN4VnZ"
             }
           ]
@@ -318,43 +321,19 @@
           labelShort: "12/26",
           weekday: "五",
           title: "Day 2｜明洞 → 南大門 → 東大門 → 新堂辣雞爪",
-          weather: { temp: "1", low: "-3", feel: "-6", text: "多雲", note: "購物日，步行較多" },
+          city: "Seoul",
+          weather: { temp: "", low: "", feel: "", text: "", note: "購物日，步行較多" },
           blocks: [
-            {
-              icon: "🍽", tag:"早餐", time:"早上",
-              title:"宋家飯捲（明洞）",
-              desc:"https://naver.me/G8uH9PKk"
-            },
-            {
-              icon:"🛍", tag:"購物", time:"上午",
-              title:"明洞購物",
-              desc:"https://naver.me/5LYTVJQS"
-            },
-            {
-              icon:"🍽", tag:"午餐", time:"中午",
-              title:"韓牛一條街（退溪路）",
-              desc:"https://naver.me/5mOIQw2x"
-            },
-            {
-              icon:"🛍", tag:"市場", time:"下午",
-              title:"南大門市場",
-              desc:"https://naver.me/Fu2fLt3r"
-            },
-            {
-              icon:"🛍", tag:"Shopping", time:"傍晚前",
-              title:"Doota Mall + No Brand",
-              desc:"https://naver.me/5ooSPrMO"
-            },
-            {
-              icon:"🍨", tag:"甜品", time:"傍晚",
-              title:"Scooper Gelato（開心果 AFFOGATO）",
-              desc:"https://naver.me/GW1qN7HP"
-            },
-            {
-              icon:"🔥", tag:"晚餐", time:"晚上",
-              title:"友誼辣雞爪（新堂）",
-              desc:"https://naver.me/ISbHWWes"
-            }
+            { icon: "🍽", tag: "早餐", time: "早上", title: "宋家飯捲（明洞）", desc: "https://naver.me/G8uH9PKk" },
+            { icon: "🛍", tag: "購物", time: "上午", title: "明洞購物", desc: "https://naver.me/5LYTVJQS" },
+            { icon: "🍽", tag: "午餐", time: "中午", title: "韓牛一條街（退溪路）", desc: "https://naver.me/5mOIQw2x" },
+            { icon: "🛍", tag: "市場", time: "下午", title: "南大門市場", desc: "https://naver.me/Fu2fLt3r" },
+            { icon: "🛍", tag: "Shopping", time: "傍晚前",
+              title: "Doota Mall + No Brand", desc: "https://naver.me/5ooSPrMO" },
+            { icon: "🍨", tag: "甜品", time: "傍晚",
+              title: "Scooper Gelato（開心果 AFFOGATO）", desc: "https://naver.me/GW1qN7HP" },
+            { icon: "🔥", tag: "晚餐", time: "晚上",
+              title: "友誼辣雞爪（新堂）", desc: "https://naver.me/ISbHWWes" }
           ]
         },
         {
@@ -362,7 +341,8 @@
           labelShort:"12/27",
           weekday:"六",
           title:"Day 3｜安國 Café → 益善洞 → 乙支路",
-          weather:{temp:"0",low:"-4",feel:"-7",text:"小雪",note:"Café & 小店慢遊"},
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"Café & 小店慢遊"},
           blocks:[
             {icon:"🍰",tag:"早餐",time:"早上",title:"Cafe Layered（安國）",desc:"https://naver.me/GcBHBVtT"},
             {icon:"🍽",tag:"午餐",time:"中午",title:"Nakwonjang（益善洞）",desc:"https://naver.me/F5jtN9zK"},
@@ -376,15 +356,20 @@
           labelShort:"12/28",
           weekday:"日",
           title:"Day 4｜聖水 ALL DAY → 明洞（晚餐 2選1）",
-          weather:{temp:"2",low:"-2",feel:"-4",text:"多雲",note:"聖水 Café & 潮店"},
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"聖水 Café & 潮店"},
           blocks:[
             {icon:"🍞",tag:"早餐",time:"早上",title:"Onion（聖水）",desc:"https://naver.me/FfnQXJR0"},
-            {icon:"🛍",tag:"聖水潮店",time:"上午",title:"Musinsa / ADER ERROR / Tamburins 聖水",desc:"Musinsa　https://naver.me/FNaQKTjD\nADER ERROR　https://naver.me/G7zB8A17\nTamburins 聖水　https://naver.me/FSVKkYgr"},
+            {icon:"🛍",tag:"聖水潮店",time:"上午",
+              title:"Musinsa / ADER ERROR / Tamburins 聖水",
+              desc:"Musinsa　https://naver.me/FNaQKTjD\nADER ERROR　https://naver.me/G7zB8A17\nTamburins 聖水　https://naver.me/FSVKkYgr"},
             {icon:"🍽",tag:"午餐",time:"中午",title:"無垢屋（聖水）",desc:"https://naver.me/IGJfWThB"},
             {icon:"🍮",tag:"甜品",time:"下午",title:"Milky Shop",desc:"https://naver.me/FT6ByU3N"},
             {icon:"🚇",tag:"移動",time:"傍晚前",title:"聖水 → 明洞",desc:"地鐵移動"},
             {icon:"🍲",tag:"晚餐選擇",time:"晚上",title:"Option A｜IDAEJO 排骨湯",desc:"https://naver.me/GAyyIQCf"},
-            {icon:"🍗",tag:"晚餐選擇",time:"晚上",title:"Option B｜明洞炸雞（橋村 / bb.q / NENE）",desc:"橋村 https://naver.me/xGRMiCmh\nbb.q https://naver.me/FPSHzw51\nNENE https://naver.me/5KGh80X0"}
+            {icon:"🍗",tag:"晚餐選擇",time:"晚上",
+              title:"Option B｜明洞炸雞（橋村 / bb.q / NENE）",
+              desc:"橋村 https://naver.me/xGRMiCmh\nbb.q https://naver.me/FPSHzw51\nNENE https://naver.me/5KGh80X0"}
           ]
         },
         {
@@ -392,7 +377,8 @@
           labelShort:"12/29",
           weekday:"一",
           title:"Day 5｜補貨 → 鰻魚 → 機場",
-          weather:{temp:"1",low:"-3",feel:"-5",text:"多雲",note:"回程日"},
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"回程日"},
           blocks:[
             {icon:"🥪",tag:"早餐",time:"早上",title:"Egg Drop（明洞）",desc:"https://naver.me/5hgOP0Ia"},
             {icon:"🛍",tag:"購物",time:"上午",title:"明洞最後掃貨",desc:"https://naver.me/5LYTVJQS"},
@@ -401,11 +387,18 @@
           ]
         }
       ],
+      expenses: [],
       flights:[
-        {date:"12/25",no:"UO626",route:"HKG → ICN",time:"TBC"},
-        {date:"12/29",no:"UO631",route:"ICN → HKG",time:"TBC"}
+        {date:"12/25",no:"UO626",route:"HKG → ICN",time:"待確認"},
+        {date:"12/29",no:"UO631",route:"ICN → HKG",time:"待確認"}
       ]
     };
+
+    let trip = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || baseTrip;
+
+    function saveAll(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(trip));
+    }
 
     // ---- DOM ----
     const dayStrip = document.getElementById('dayStrip');
@@ -445,6 +438,38 @@
       return escaped.replace(/(https?:\/\/\S+)/g,'<a href="$1" target="_blank">$1</a>').replace(/\n/g,'<br>');
     }
 
+    async function fetchWeatherForDay(index){
+      if(!API_KEY){
+        alert("API key 不存在 🙏");
+        return;
+      }
+      const d = trip.days[index];
+      const cityQuery = (d.city || "Seoul") + ",KR";
+      try{
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityQuery)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
+        const res = await fetch(url);
+        if(!res.ok) throw new Error("HTTP "+res.status);
+        const data = await res.json();
+        d.weather.temp = Math.round(data.main.temp).toString();
+        d.weather.low  = Math.round(data.main.temp_min).toString();
+        d.weather.feel = Math.round(data.main.feels_like).toString();
+        d.weather.text = (data.weather && data.weather[0] && data.weather[0].description) || "";
+        saveAll();
+      }catch(e){
+        console.error(e);
+      }
+    }
+
+    async function updateAllWeather(){
+      try{
+        await Promise.all(trip.days.map((_,i)=>fetchWeatherForDay(i)));
+      }catch(e){
+        console.error(e);
+      }finally{
+        renderItinerary();
+      }
+    }
+
     function renderItinerary(){
       const d = trip.days[currentDayIndex];
       const w = d.weather;
@@ -456,12 +481,17 @@
         <div class="weather-icon">❄️</div>
         <div class="weather-main">
           <div style="font-size:11px;color:#777;margin-bottom:2px;">${d.title}</div>
-          <div class="temp-row">${w.temp}°C <span class="temp-low">/ ${w.low}°C</span></div>
-          <div class="feel">體感 ${w.feel}°C ・ ${w.text}</div>
+          <div class="temp-row">${w.temp ? w.temp+"°C" : "--"} 
+            <span class="temp-low">${w.low ? "/ "+w.low+"°C" : ""}</span>
+          </div>
+          <div class="feel">
+            ${w.feel ? "體感 "+w.feel+"°C ・ " : ""}${w.text || "首次開啟會自動更新首爾天氣，如要再更新可以按下面按鈕。"}
+          </div>
+          <button class="weather-btn" id="btnWeather">↻ 更新首爾即時天氣（此日）</button>
         </div>
         <div class="weather-note">
           <strong>今日重點</strong>
-          <span>${w.note}</span>
+          <span>${w.note || ""}</span>
         </div>
       `;
       itineraryPanel.appendChild(weather);
@@ -482,7 +512,7 @@
               <span class="card-time">${b.time}</span>
             </div>
             <div class="card-title">${b.title}</div>
-            <div class="card-desc">${linkify(b.desc)}</div>
+            <div class="card-desc">${linkify(b.desc || "")}</div>
           </div>
         `;
         itineraryPanel.appendChild(card);
@@ -492,60 +522,161 @@
       note.className = 'small-note';
       note.textContent = '提示：上面所有 link 都係 Naver Map，喺手機打開會自動跳去 Naver。';
       itineraryPanel.appendChild(note);
+
+      const btn = document.getElementById('btnWeather');
+      if(btn){
+        btn.addEventListener('click', async ()=>{
+          await fetchWeatherForDay(currentDayIndex);
+          renderItinerary();
+          alert("已更新當日天氣 ✅");
+        });
+      }
     }
 
     function renderFlights(){
       flightPanel.innerHTML = '';
       const title = document.createElement('div');
       title.className = 'section-title';
-      title.textContent = '航班資料';
+      title.textContent = '航班資料（可編輯）';
       flightPanel.appendChild(title);
 
-      trip.flights.forEach(f=>{
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-icon">✈️</div>
-          <div class="card-body">
-            <div class="card-tag-row">
-              <span class="card-tag">${f.date}</span>
-              <span class="card-time">${f.time}</span>
-            </div>
-            <div class="card-title">${f.no}</div>
-            <div class="card-desc">${f.route}</div>
-          </div>
+      const table = document.createElement('table');
+      table.className = 'table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th style="width:20%;">日期</th>
+            <th style="width:26%;">航班</th>
+            <th style="width:32%;">航線</th>
+            <th style="width:14%;">時間</th>
+            <th style="width:8%;">✕</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector('tbody');
+
+      trip.flights.forEach((f,idx)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input value="${f.date||""}"></td>
+          <td><input value="${f.no||""}"></td>
+          <td><input value="${f.route||""}"></td>
+          <td><input value="${f.time||""}"></td>
+          <td style="text-align:center;"><button class="del-btn" data-i="${idx}">刪</button></td>
         `;
-        flightPanel.appendChild(card);
+        tbody.appendChild(tr);
       });
 
-      const note = document.createElement('div');
-      note.className = 'small-note';
-      note.textContent = '如有確實起飛時間，可以自己喺程式碼入面改 flight time。';
-      flightPanel.appendChild(note);
+      flightPanel.appendChild(table);
+
+      const actions = document.createElement('div');
+      actions.className = 'table-actions';
+      actions.innerHTML = `
+        <button class="btn-pill btn-secondary" id="btnAddFlight">＋ 新增航班</button>
+        <button class="btn-pill btn-primary" id="btnSaveFlight">儲存航班</button>
+      `;
+      flightPanel.appendChild(actions);
+
+      actions.querySelector('#btnAddFlight').addEventListener('click', ()=>{
+        trip.flights.push({date:"",no:"",route:"",time:""});
+        renderFlights();
+      });
+
+      tbody.addEventListener('click', (e)=>{
+        if(e.target.classList.contains('del-btn')){
+          const i = Number(e.target.dataset.i);
+          trip.flights.splice(i,1);
+          renderFlights();
+        }
+      });
+
+      actions.querySelector('#btnSaveFlight').addEventListener('click', ()=>{
+        const rows = tbody.querySelectorAll('tr');
+        const list = [];
+        rows.forEach(r=>{
+          const [d,no,route,time] = r.querySelectorAll('input');
+          if(d.value || no.value || route.value || time.value){
+            list.push({date:d.value,no:no.value,route:route.value,time:time.value});
+          }
+        });
+        trip.flights = list;
+        saveAll();
+        alert("航班資料已儲存 ✅");
+      });
     }
 
     function renderExpenses(){
       expensePanel.innerHTML = '';
       const title = document.createElement('div');
       title.className = 'section-title';
-      title.textContent = '消費紀錄（可自行寫入）';
+      title.textContent = '消費紀錄（可編輯）';
       expensePanel.appendChild(title);
 
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="card-icon">🧾</div>
-        <div class="card-body">
-          <div class="card-title">建議用法</div>
-          <div class="card-desc">
-            呢個版本主要用嚟「睇行程」，如要記帳可以：<br>
-            ・直接喺備忘錄／Excel 記<br>
-            ・或者 fork 呢個檔案，自己加 textarea + localStorage 功能<br><br>
-            如果你之後想要「內置可編輯消費紀錄」版本，我可以再幫你開發一個加強版 😊
-          </div>
-        </div>
+      const table = document.createElement('table');
+      table.className = 'table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th style="width:18%;">日期/Day</th>
+            <th style="width:26%;">類別</th>
+            <th style="width:26%;">項目</th>
+            <th style="width:16%;">金額</th>
+            <th style="width:8%;">✕</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
       `;
-      expensePanel.appendChild(card);
+      const tbody = table.querySelector('tbody');
+
+      trip.expenses.forEach((e,idx)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input value="${e.date||""}"></td>
+          <td><input value="${e.cat||""}" placeholder="餐飲/交通…"></td>
+          <td><input value="${e.item||""}" placeholder="店名/備註"></td>
+          <td><input value="${e.amount||""}" placeholder="KRW"></td>
+          <td style="text-align:center;"><button class="del-btn" data-i="${idx}">刪</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      expensePanel.appendChild(table);
+
+      const actions = document.createElement('div');
+      actions.className = 'table-actions';
+      actions.innerHTML = `
+        <button class="btn-pill btn-secondary" id="btnAddExpense">＋ 新增一筆</button>
+        <button class="btn-pill btn-primary" id="btnSaveExpense">儲存消費</button>
+      `;
+      expensePanel.appendChild(actions);
+
+      actions.querySelector('#btnAddExpense').addEventListener('click', ()=>{
+        trip.expenses.push({date:"",cat:"",item:"",amount:""});
+        renderExpenses();
+      });
+
+      tbody.addEventListener('click', e=>{
+        if(e.target.classList.contains('del-btn')){
+          const i = Number(e.target.dataset.i);
+          trip.expenses.splice(i,1);
+          renderExpenses();
+        }
+      });
+
+      actions.querySelector('#btnSaveExpense').addEventListener('click', ()=>{
+        const rows = tbody.querySelectorAll('tr');
+        const list = [];
+        rows.forEach(r=>{
+          const [d,cat,item,amt] = r.querySelectorAll('input');
+          if(d.value || cat.value || item.value || amt.value){
+            list.push({date:d.value,cat:cat.value,item:item.value,amount:amt.value});
+          }
+        });
+        trip.expenses = list;
+        saveAll();
+        alert("消費紀錄已儲存 ✅");
+      });
     }
 
     function switchTab(tab){
@@ -555,8 +686,7 @@
     }
 
     function panelSwitch(){
-      const t = document.querySelector('.hero-tab.active');
-      const id = t.id;
+      const id = document.querySelector('.hero-tab.active').id;
       itineraryPanel.style.display = id==='tab-itinerary' ? 'block':'none';
       expensePanel.style.display   = id==='tab-expense'   ? 'block':'none';
       flightPanel.style.display    = id==='tab-flight'    ? 'block':'none';
@@ -566,12 +696,17 @@
     tabEx.addEventListener('click',()=>switchTab(tabEx));
     tabFl.addEventListener('click',()=>switchTab(tabFl));
 
-    // init
-    renderDayPills();
-    renderItinerary();
-    renderExpenses();
-    renderFlights();
-    panelSwitch();
+    async function init(){
+      renderDayPills();
+      renderItinerary();
+      renderExpenses();
+      renderFlights();
+      panelSwitch();
+      // ✅ 開 app 時自動更新所有日子天氣（你揀的 A）
+      await updateAllWeather();
+      alert("已自動更新 5 日首爾天氣 ✅");
+    }
+    init();
   </script>
 </body>
 </html>
