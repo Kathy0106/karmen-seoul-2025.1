@@ -1,530 +1,577 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>2025 Christmas SEOUL trip 🎄</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    body { background:#f4f7fb; color:#333; }
-    .app { max-width:960px; margin:16px auto 40px; padding:12px; }
-    .cover {
-      position:relative; border-radius:18px; overflow:hidden; padding:16px;
-      color:#fff; min-height:180px; display:flex; flex-direction:column;
-      justify-content:space-between; background-size:cover; background-position:center;
-      background-image:url('cover.jpg');
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+    body{background:#f4f7fb;color:#222;}
+    .app{max-width:480px;margin:0 auto 40px;background:#f4f7fb;}
+    /* hero */
+    .hero{
+      position:relative;
+      height:220px;
+      overflow:hidden;
+      border-bottom-left-radius:24px;
+      border-bottom-right-radius:24px;
+      background:#6db5ff url('cover.jpg') center/cover no-repeat;
+      color:#fff;
     }
-    .cover-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,0,0,0.55),rgba(0,0,0,0.25)); }
-    .cover-content { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-    .cover-title { font-size:22px; font-weight:700; line-height:1.3; }
-    .cover-sub { font-size:14px; opacity:0.9; margin-top:4px; }
-    .cover-edit { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; font-size:12px; }
-    input[type="text"], input[type="number"], textarea, select {
-      width:100%; padding:6px 8px; border-radius:8px; border:1px solid #dde3f0;
-      font-size:13px; background:#fff;
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.1));
     }
-    textarea { min-height:110px; resize:vertical; }
-    label { font-size:12px; color:#555; display:block; margin-bottom:3px; }
-    .input-group { margin-bottom:10px; }
-    .btn {
-      border:none; border-radius:999px; padding:8px 16px; font-size:13px; cursor:pointer;
-      background:#ff7c9b; color:#fff; font-weight:600; box-shadow:0 3px 6px rgba(0,0,0,0.12);
+    .hero-inner{
+      position:relative;
+      z-index:1;
+      padding:18px 16px 12px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      height:100%;
     }
-    .btn-secondary {
-      border:1px solid #dde3f0; background:#fff; color:#555;
-      border-radius:999px; padding:7px 14px; font-size:12px; cursor:pointer;
+    .hero-title{font-size:20px;font-weight:700;}
+    .hero-dates{margin-top:4px;font-size:13px;opacity:.9;}
+    .hero-dest{margin-left:auto;text-align:right;font-size:12px;}
+    .hero-dest strong{display:block;font-size:18px;}
+    .hero-tabs{
+      margin-top:18px;
+      display:flex;
+      gap:10px;
     }
-    .tabs { display:flex; margin-top:18px; gap:8px; }
-    .tab-btn {
-      flex:1; text-align:center; padding:8px 6px; border-radius:999px; border:none;
-      background:#e2e7f5; color:#555; font-size:13px; cursor:pointer;
+    .hero-tab{
+      flex:1;
+      text-align:center;
+      padding:6px 0;
+      font-size:12px;
+      border-radius:999px;
+      border:none;
+      background:rgba(255,255,255,0.2);
+      color:#fff;
     }
-    .tab-btn.active { background:#3f51b5; color:#fff; font-weight:600; }
-    .tab {
-      margin-top:16px; background:#fff; border-radius:16px; padding:14px;
-      box-shadow:0 4px 8px rgba(0,0,0,0.04);
+    .hero-tab.active{
+      background:#fff;
+      color:#3557ff;
+      font-weight:600;
     }
-    .day-selector { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-    .pill { padding:4px 10px; border-radius:999px; background:#edf0fb; font-size:12px; }
-    .weather-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
-    .weather-col { flex:1 1 90px; }
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    th, td { border-bottom:1px solid #eef1fb; padding:6px 4px; text-align:left; }
-    th { background:#f5f7ff; font-weight:600; }
-    td input {
-      width:100%; border-radius:6px; border:1px solid #dde3f0;
-      padding:4px 6px; font-size:12px;
+    /* day strip */
+    .day-strip{
+      margin-top:-18px;
+      padding:0 12px;
     }
-    .table-actions { margin-top:8px; display:flex; gap:8px; justify-content:flex-end; }
-    @media (max-width:600px) { .cover { padding:12px; } .cover-title { font-size:18px; } }
+    .day-scroll{
+      display:flex;
+      overflow-x:auto;
+      gap:8px;
+      padding-bottom:6px;
+    }
+    .day-pill{
+      min-width:76px;
+      padding:6px 8px;
+      border-radius:12px;
+      background:#e1e7ff;
+      text-align:center;
+      font-size:11px;
+      color:#455;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+    .day-pill span{display:block;}
+    .day-pill .date{font-weight:600;font-size:12px;}
+    .day-pill.active{
+      background:#3557ff;
+      color:#fff;
+    }
+    /* content area */
+    .content{
+      padding:8px 12px 24px;
+    }
+    .weather-card{
+      margin-top:4px;
+      background:#fff;
+      border-radius:16px;
+      padding:14px 14px 10px;
+      display:flex;
+      align-items:center;
+      box-shadow:0 4px 10px rgba(0,0,0,0.04);
+      gap:12px;
+    }
+    .weather-icon{
+      width:42px;height:42px;border-radius:50%;
+      background:#ecf3ff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;
+    }
+    .weather-main{
+      flex:1;
+    }
+    .temp-row{font-size:20px;font-weight:700;}
+    .temp-low{font-size:12px;margin-left:4px;color:#777;}
+    .feel{font-size:11px;color:#777;margin-top:2px;}
+    .weather-note{
+      font-size:11px;
+      color:#555;
+      text-align:right;
+      min-width:90px;
+    }
+    .weather-note strong{display:block;font-size:12px;}
+    /* timeline cards */
+    .section-title{
+      margin:14px 4px 6px;
+      font-size:13px;
+      font-weight:600;
+      color:#444;
+    }
+    .card{
+      background:#fff;
+      border-radius:14px;
+      padding:10px 12px;
+      margin-bottom:8px;
+      display:flex;
+      gap:10px;
+      box-shadow:0 3px 8px rgba(0,0,0,0.03);
+    }
+    .card-icon{
+      width:28px;
+      font-size:18px;
+      padding-top:4px;
+      text-align:center;
+    }
+    .card-body{flex:1;}
+    .card-tag-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:4px;
+    }
+    .card-tag{
+      font-size:10px;
+      padding:2px 7px;
+      border-radius:999px;
+      background:#f1f3ff;
+      color:#4a57c8;
+    }
+    .card-time{
+      font-size:11px;
+      color:#888;
+    }
+    .card-title{
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:2px;
+    }
+    .card-desc{
+      font-size:12px;
+      color:#555;
+      word-break:break-all;
+    }
+    .card-desc a{color:#3557ff;text-decoration:none;}
+    .card-desc a:hover{text-decoration:underline;}
+    .small-note{
+      font-size:11px;
+      color:#777;
+      margin-top:6px;
+    }
+    /* flight / expense tabs simple placeholder badges */
+    .badge-row{
+      display:flex;
+      justify-content:center;
+      gap:6px;
+      margin-top:8px;
+      font-size:11px;
+    }
+    .badge{
+      padding:4px 8px;
+      border-radius:999px;
+      background:#fff;
+      box-shadow:0 2px 6px rgba(0,0,0,0.04);
+    }
   </style>
 </head>
 <body>
   <div class="app">
-    <div id="cover" class="cover">
-      <div class="cover-overlay"></div>
-      <div class="cover-content">
-        <div>
-          <div class="cover-title" id="titleDisplay">2025 Christmas SEOUL trip 🎄</div>
-          <div class="cover-sub" id="dateDisplay">2025.12.25 – 12.29</div>
+    <header class="hero">
+      <div class="hero-inner">
+        <div style="display:flex;justify-content:space-between;gap:8px;">
+          <div>
+            <div class="hero-title">2025 Christmas SEOUL trip 🎄</div>
+            <div class="hero-dates">2025.12.25 – 12.29</div>
+          </div>
+          <div class="hero-dest">
+            <div>目的地</div>
+            <strong>Seoul</strong>
+          </div>
         </div>
-        <div style="text-align:right;">
-          <div style="font-size:12px;">目的地</div>
-          <div style="font-size:18px;font-weight:600;" id="destinationDisplay">Seoul</div>
-        </div>
-      </div>
-      <div class="cover-edit">
-        <div style="flex:1 1 160px;min-width:0;">
-          <label>行程標題</label>
-          <input id="titleInput" type="text" />
-        </div>
-        <div style="flex:1 1 140px;min-width:0;">
-          <label>日期範圍</label>
-          <input id="dateInput" type="text" />
-        </div>
-        <div style="flex:1 1 120px;min-width:0;">
-          <label>目的地</label>
-          <input id="destinationInput" type="text" />
-        </div>
-        <div style="flex:1 1 160px;min-width:0;">
-          <label>背景圖檔名</label>
-          <input id="bgInput" type="text" placeholder="cover.jpg" />
-        </div>
-        <button class="btn" id="saveMetaBtn">儲存封面</button>
-      </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="plan">🗓 行程</button>
-      <button class="tab-btn" data-tab="expenses">💰 消費紀錄</button>
-      <button class="tab-btn" data-tab="flights">✈️ 航班資料</button>
-    </div>
-
-    <section class="tab" id="tab-plan">
-      <div class="day-selector">
-        <span class="pill">Day</span>
-        <select id="daySelect">
-          <option value="day1">Day 1</option>
-          <option value="day2">Day 2</option>
-          <option value="day3">Day 3</option>
-          <option value="day4">Day 4</option>
-          <option value="day5">Day 5</option>
-        </select>
-        <input id="dayLabelInput" type="text" style="flex:1 1 200px;min-width:0;">
-      </div>
-
-      <div class="weather-row">
-        <div class="weather-col">
-          <label>城市（自動天氣）</label>
-          <input id="cityInput" type="text" placeholder="Seoul">
-        </div>
-        <div class="weather-col">
-          <label>&nbsp;</label>
-          <button class="btn-secondary" type="button" id="fetchWeatherBtn">取得即時天氣</button>
-        </div>
-        <div class="weather-col">
-          <label>氣溫 (°C)</label>
-          <input id="tempInput" type="number">
-        </div>
-        <div class="weather-col">
-          <label>最低 (°C)</label>
-          <input id="lowInput" type="number">
-        </div>
-        <div class="weather-col">
-          <label>體感 (°C)</label>
-          <input id="feelInput" type="number">
-        </div>
-        <div class="weather-col">
-          <label>天氣描述</label>
-          <input id="weatherTextInput" type="text">
+        <div class="hero-tabs">
+          <button class="hero-tab active" id="tab-itinerary">🗺 行程</button>
+          <button class="hero-tab" id="tab-expense">💰 消費</button>
+          <button class="hero-tab" id="tab-flight">✈️ 航班</button>
         </div>
       </div>
+    </header>
 
-      <div class="input-group">
-        <label>當日行程</label>
-        <textarea id="scheduleInput"></textarea>
-      </div>
+    <div class="day-strip" id="dayStrip"></div>
 
-      <button class="btn" id="saveDayBtn">儲存當日資料</button>
-      <p style="font-size:11px;color:#777;margin-top:6px;">（所有資料會存喺本機 browser localStorage）</p>
-    </section>
-
-    <section class="tab" id="tab-expenses" style="display:none;">
-      <table id="expenseTable">
-        <thead>
-          <tr>
-            <th>日期／Day</th>
-            <th>項目</th>
-            <th>金額</th>
-            <th>貨幣</th>
-            <th>刪除</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="table-actions">
-        <button class="btn-secondary" id="addExpenseRowBtn">＋ 新增一筆</button>
-        <button class="btn" id="saveExpensesBtn">儲存消費紀錄</button>
-      </div>
-    </section>
-
-    <section class="tab" id="tab-flights" style="display:none;">
-      <table id="flightTable">
-        <thead>
-          <tr>
-            <th>日期</th>
-            <th>航班編號</th>
-            <th>起飛</th>
-            <th>抵達</th>
-            <th>✕</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="table-actions">
-        <button class="btn-secondary" id="addFlightRowBtn">＋ 新增航班</button>
-        <button class="btn" id="saveFlightsBtn">儲存航班資料</button>
-      </div>
-    </section>
+    <main class="content">
+      <section id="panel-itinerary"></section>
+      <section id="panel-expense" style="display:none;"></section>
+      <section id="panel-flight" style="display:none;"></section>
+    </main>
   </div>
 
   <script>
-    const API_KEY = "YOUR_API_KEY_HERE";
-    const STORAGE_KEY = "tripPlannerData_seoul2025"; // 👈 新 key，唔會撞到 Hokkaido 個 app
-
-    const defaultData = {
-      meta: {
-        title: "2025 Christmas SEOUL trip 🎄",
-        dateRange: "2025.12.25 – 12.29",
-        destination: "Seoul",
-        bgUrl: "cover.jpg"
-      },
-      days: {},
-      expenses: [],
-      flights: [
-        { date:"2025-12-25", no:"UO626", dep:"HKG → ICN", arr:"" },
-        { date:"2025-12-29", no:"UO631", dep:"ICN → HKG", arr:"" }
+    // ---- 行程資料 ----
+    const trip = {
+      days: [
+        {
+          id: "d1",
+          labelShort: "12/25",
+          weekday: "四",
+          title: "Day 1｜安國 → 弘大 → 延南洞 → 明洞燈飾",
+          weather: { temp: "0", low: "-5", feel: "-8", text: "大雪／降雪", note: "當日步行／大眾運輸" },
+          blocks: [
+            {
+              icon: "🍽",
+              tag: "早餐",
+              time: "早上",
+              title: "Dotori Garden",
+              desc: 'https://naver.me/xzXNBJYr'
+            },
+            {
+              icon: "🛍",
+              tag: "安國潮店",
+              time: "上午",
+              title: "安國潮店走走（順路行）",
+              desc:
+                "ZERO SPACE　https://naver.me/5PyocQV5\n" +
+                "Object　https://naver.me/xNOAPAtl\n" +
+                "Sowol Department　https://naver.me/ID30Q57R\n" +
+                "INOUR MANSION　https://naver.me/x1iTiBKb\n" +
+                "OINU　https://naver.me/5FcjJ4qz\n" +
+                "Tamburins 安國　https://naver.me/5kxLYuXe"
+            },
+            {
+              icon: "🚇",
+              tag: "移動",
+              time: "中午前",
+              title: "安國 → 弘大入口",
+              desc: "搭地鐵移動"
+            },
+            {
+              icon: "🍽",
+              tag: "午餐",
+              time: "中午",
+              title: "Gop Mapo 烤肥腸",
+              desc: "https://naver.me/GPcC4YWc"
+            },
+            {
+              icon: "☕️",
+              tag: "下午茶",
+              time: "下午",
+              title: "ARTIST BAKERY（弘大）",
+              desc: "https://naver.me/FiT5e8AY"
+            },
+            {
+              icon: "🚶‍♀️",
+              tag: "散步",
+              time: "下午",
+              title: "步行 12 分鐘 → 延南洞",
+              desc: "慢行去延南洞"
+            },
+            {
+              icon: "🧁",
+              tag: "延南洞",
+              time: "下午",
+              title: "小食 & 咖啡",
+              desc:
+                "HUNHUN 糖餅　https://naver.me/5nre0cZm\n" +
+                "HIPPO Coffee（維也納咖啡）　https://naver.me/5MN2vtf4"
+            },
+            {
+              icon: "🚇",
+              tag: "移動",
+              time: "傍晚",
+              title: "延南洞 → 乙支路入口 / 明洞方向",
+              desc: ""
+            },
+            {
+              icon: "🍽",
+              tag: "晚餐",
+              time: "晚餐",
+              title: "烏達里家（醬蟹）",
+              desc: "https://naver.me/5jcqjhgG"
+            },
+            {
+              icon: "🎄",
+              tag: "夜景",
+              time: "晚上",
+              title: "明洞聖誕燈飾",
+              desc: "明洞聖堂 & 明洞大街　https://naver.me/G8EN4VnZ"
+            }
+          ]
+        },
+        {
+          id: "d2",
+          labelShort: "12/26",
+          weekday: "五",
+          title: "Day 2｜明洞 → 南大門 → 東大門 → 新堂辣雞爪",
+          weather: { temp: "1", low: "-3", feel: "-6", text: "多雲", note: "購物日，步行較多" },
+          blocks: [
+            {
+              icon: "🍽", tag:"早餐", time:"早上",
+              title:"宋家飯捲（明洞）",
+              desc:"https://naver.me/G8uH9PKk"
+            },
+            {
+              icon:"🛍", tag:"購物", time:"上午",
+              title:"明洞購物",
+              desc:"https://naver.me/5LYTVJQS"
+            },
+            {
+              icon:"🍽", tag:"午餐", time:"中午",
+              title:"韓牛一條街（退溪路）",
+              desc:"https://naver.me/5mOIQw2x"
+            },
+            {
+              icon:"🛍", tag:"市場", time:"下午",
+              title:"南大門市場",
+              desc:"https://naver.me/Fu2fLt3r"
+            },
+            {
+              icon:"🛍", tag:"Shopping", time:"傍晚前",
+              title:"Doota Mall + No Brand",
+              desc:"https://naver.me/5ooSPrMO"
+            },
+            {
+              icon:"🍨", tag:"甜品", time:"傍晚",
+              title:"Scooper Gelato（開心果 AFFOGATO）",
+              desc:"https://naver.me/GW1qN7HP"
+            },
+            {
+              icon:"🔥", tag:"晚餐", time:"晚上",
+              title:"友誼辣雞爪（新堂）",
+              desc:"https://naver.me/ISbHWWes"
+            }
+          ]
+        },
+        {
+          id:"d3",
+          labelShort:"12/27",
+          weekday:"六",
+          title:"Day 3｜安國 Café → 益善洞 → 乙支路",
+          weather:{temp:"0",low:"-4",feel:"-7",text:"小雪",note:"Café & 小店慢遊"},
+          blocks:[
+            {icon:"🍰",tag:"早餐",time:"早上",title:"Cafe Layered（安國）",desc:"https://naver.me/GcBHBVtT"},
+            {icon:"🍽",tag:"午餐",time:"中午",title:"Nakwonjang（益善洞）",desc:"https://naver.me/F5jtN9zK"},
+            {icon:"🛍",tag:"散步",time:"下午",title:"益善洞文青小店散步",desc:"https://naver.me/5E0PW5pz"},
+            {icon:"🍽",tag:"晚餐",time:"晚上",title:"水芹菜烤豬肉（乙支路）",desc:"https://naver.me/5XecCJ2E"},
+            {icon:"🌙",tag:"自由時間",time:"夜晚",title:"回酒店 / 明洞慢行 / 便利店掃貨",desc:"自由活動"}
+          ]
+        },
+        {
+          id:"d4",
+          labelShort:"12/28",
+          weekday:"日",
+          title:"Day 4｜聖水 ALL DAY → 明洞（晚餐 2選1）",
+          weather:{temp:"2",low:"-2",feel:"-4",text:"多雲",note:"聖水 Café & 潮店"},
+          blocks:[
+            {icon:"🍞",tag:"早餐",time:"早上",title:"Onion（聖水）",desc:"https://naver.me/FfnQXJR0"},
+            {icon:"🛍",tag:"聖水潮店",time:"上午",title:"Musinsa / ADER ERROR / Tamburins 聖水",desc:"Musinsa　https://naver.me/FNaQKTjD\nADER ERROR　https://naver.me/G7zB8A17\nTamburins 聖水　https://naver.me/FSVKkYgr"},
+            {icon:"🍽",tag:"午餐",time:"中午",title:"無垢屋（聖水）",desc:"https://naver.me/IGJfWThB"},
+            {icon:"🍮",tag:"甜品",time:"下午",title:"Milky Shop",desc:"https://naver.me/FT6ByU3N"},
+            {icon:"🚇",tag:"移動",time:"傍晚前",title:"聖水 → 明洞",desc:"地鐵移動"},
+            {icon:"🍲",tag:"晚餐選擇",time:"晚上",title:"Option A｜IDAEJO 排骨湯",desc:"https://naver.me/GAyyIQCf"},
+            {icon:"🍗",tag:"晚餐選擇",time:"晚上",title:"Option B｜明洞炸雞（橋村 / bb.q / NENE）",desc:"橋村 https://naver.me/xGRMiCmh\nbb.q https://naver.me/FPSHzw51\nNENE https://naver.me/5KGh80X0"}
+          ]
+        },
+        {
+          id:"d5",
+          labelShort:"12/29",
+          weekday:"一",
+          title:"Day 5｜補貨 → 鰻魚 → 機場",
+          weather:{temp:"1",low:"-3",feel:"-5",text:"多雲",note:"回程日"},
+          blocks:[
+            {icon:"🥪",tag:"早餐",time:"早上",title:"Egg Drop（明洞）",desc:"https://naver.me/5hgOP0Ia"},
+            {icon:"🛍",tag:"購物",time:"上午",title:"明洞最後掃貨",desc:"https://naver.me/5LYTVJQS"},
+            {icon:"🍽",tag:"午餐",time:"中午",title:"豐川鰻魚（乙支路）",desc:"https://naver.me/5iOaZr9u"},
+            {icon:"✈️",tag:"回程",time:"下午",title:"回酒店拿行李 → 機場",desc:"UO631 ICN → HKG"}
+          ]
+        }
+      ],
+      flights:[
+        {date:"12/25",no:"UO626",route:"HKG → ICN",time:"TBC"},
+        {date:"12/29",no:"UO631",route:"ICN → HKG",time:"TBC"}
       ]
     };
 
-    // === Day 資料（幫你填好行程）===
-    defaultData.days.day1 = {
-      label: "Day 1｜12/25｜安國 → 弘大 → 延南洞 → 明洞燈飾",
-      city: "Seoul",
-      temp: "", low:"", feel:"", weatherText:"",
-      schedule: `🍽 早餐｜Dotori Garden
-https://naver.me/xzXNBJYr
+    // ---- DOM ----
+    const dayStrip = document.getElementById('dayStrip');
+    const itineraryPanel = document.getElementById('panel-itinerary');
+    const expensePanel = document.getElementById('panel-expense');
+    const flightPanel = document.getElementById('panel-flight');
 
-🛍 安國潮店走走（順路行）
-ZERO SPACE　https://naver.me/5PyocQV5
-Object　https://naver.me/xNOAPAtl
-Sowol Department　https://naver.me/ID30Q57R
-INOUR MANSION　https://naver.me/x1iTiBKb
-OINU　https://naver.me/5FcjJ4qz
-Tamburins 安國店　https://naver.me/5kxLYuXe
+    const tabIt = document.getElementById('tab-itinerary');
+    const tabEx = document.getElementById('tab-expense');
+    const tabFl = document.getElementById('tab-flight');
 
-➡️ 🚇 安國 → 弘大入口
+    let currentDayIndex = 0;
 
-🍽 午餐｜Gop Mapo 烤肥腸
-https://naver.me/GPcC4YWc
-
-☕ 下午茶｜ARTIST BAKERY（弘大）
-https://naver.me/FiT5e8AY
-
-➡️ 徒步 12 分鐘 → 延南洞
-
-🧁 延南洞散步 + 小食 & 咖啡
-HUNHUN 糖餅 훈훈호떡　https://naver.me/5nre0cZm
-HIPPO Coffee（維也納咖啡）　https://naver.me/5MN2vtf4
-
-➡️ 🚇 延南洞 → 乙支路入口 / 明洞方向
-
-🍽 晚餐｜🦀 烏達里家（醬蟹）
-https://naver.me/5jcqjhgG
-
-🎄 聖誕燈飾｜明洞聖堂 & 明洞大街
-https://naver.me/G8EN4VnZ`
-    };
-
-    defaultData.days.day2 = {
-      label: "Day 2｜12/26｜明洞 → 南大門 → 東大門 → 新堂辣雞爪",
-      city: "Seoul",
-      temp:"",low:"",feel:"",weatherText:"",
-      schedule:`🍽 早餐｜宋家飯捲（明洞）
-https://naver.me/G8uH9PKk
-
-🛍 明洞購物
-https://naver.me/5LYTVJQS
-
-🍽 午餐｜韓牛一條街（退溪路）
-https://naver.me/5mOIQw2x
-
-🛍 南大門市場
-https://naver.me/Fu2fLt3r
-
-🛍 Doota Mall + No Brand
-https://naver.me/5ooSPrMO
-
-🍨 Scooper Gelato（開心果 AFFOGATO）
-https://naver.me/GW1qN7HP
-
-🍽 晚餐｜友誼辣雞爪（新堂）🔥
-https://naver.me/ISbHWWes`
-    };
-
-    defaultData.days.day3 = {
-      label: "Day 3｜12/27｜安國 Café → 益善洞 → 乙支路",
-      city:"Seoul", temp:"",low:"",feel:"",weatherText:"",
-      schedule:`🍽 早餐｜Cafe Layered（安國）
-https://naver.me/GcBHBVtT
-
-🍽 午餐｜Nakwonjang（益善洞）
-https://naver.me/F5jtN9zK
-
-🛍 益善洞文青小店散步
-https://naver.me/5E0PW5pz
-
-🍽 晚餐｜水芹菜烤豬肉（乙支路）
-https://naver.me/5XecCJ2E
-
-🌙 After dinner → 自由活動
-回酒店休息／慢行明洞／便利店掃貨`
-    };
-
-    defaultData.days.day4 = {
-      label:"Day 4｜12/28｜聖水 ALL DAY → 明洞（晚餐 2選1）",
-      city:"Seoul", temp:"",low:"",feel:"",weatherText:"",
-      schedule:`🍽 早餐｜Onion（聖水）
-https://naver.me/FfnQXJR0
-
-🛍 聖水潮店
-Musinsa Flagship　https://naver.me/FNaQKTjD
-ADER ERROR　https://naver.me/G7zB8A17
-Tamburins 聖水　https://naver.me/FSVKkYgr
-
-🍽 午餐｜無垢屋（聖水）
-https://naver.me/IGJfWThB
-
-🍮 甜品｜Milky Shop
-https://naver.me/FT6ByU3N
-
-➡️ 🚇 聖水 → 明洞
-
-🌙 晚餐當日自選：
-🟢 Option A｜IDAEJO 排骨湯（이대조 감자탕）
-https://naver.me/GAyyIQCf
-
-🟡 Option B｜明洞炸雞
-橋村　https://naver.me/xGRMiCmh
-bb.q　https://naver.me/FPSHzw51
-NENE　https://naver.me/5KGh80X0`
-    };
-
-    defaultData.days.day5 = {
-      label:"Day 5｜12/29｜補貨 → 鰻魚 → 機場",
-      city:"Seoul", temp:"",low:"",feel:"",weatherText:"",
-      schedule:`🍽 早餐｜Egg Drop（明洞）
-https://naver.me/5hgOP0Ia
-
-🛍 明洞最後掃貨
-https://naver.me/5LYTVJQS
-
-🍽 午餐｜🔥 豐川鰻魚（乙支路）
-https://naver.me/5iOaZr9u
-
-➡️ 拎行李 → 機場 ✈️`
-    };
-
-    let tripData = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || defaultData;
-    function saveAll(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(tripData)); }
-
-    // 封面
-    const coverEl=document.getElementById("cover");
-    const titleDisplay=document.getElementById("titleDisplay");
-    const dateDisplay=document.getElementById("dateDisplay");
-    const destinationDisplay=document.getElementById("destinationDisplay");
-    const titleInput=document.getElementById("titleInput");
-    const dateInput=document.getElementById("dateInput");
-    const destinationInput=document.getElementById("destinationInput");
-    const bgInput=document.getElementById("bgInput");
-
-    function renderMeta(){
-      const m=tripData.meta;
-      titleDisplay.textContent=m.title;
-      dateDisplay.textContent=m.dateRange;
-      destinationDisplay.textContent=m.destination;
-      titleInput.value=m.title;
-      dateInput.value=m.dateRange;
-      destinationInput.value=m.destination;
-      bgInput.value=m.bgUrl||"cover.jpg";
-      coverEl.style.backgroundImage=`url('${m.bgUrl||"cover.jpg"}')`;
-    }
-
-    document.getElementById("saveMetaBtn").addEventListener("click",()=>{
-      tripData.meta.title=titleInput.value||defaultData.meta.title;
-      tripData.meta.dateRange=dateInput.value||defaultData.meta.dateRange;
-      tripData.meta.destination=destinationInput.value||defaultData.meta.destination;
-      tripData.meta.bgUrl=bgInput.value||"cover.jpg";
-      renderMeta(); saveAll(); alert("封面已儲存 ✅");
-    });
-
-    // Tabs
-    const tabBtns=document.querySelectorAll(".tab-btn");
-    tabBtns.forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        tabBtns.forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        const target=btn.dataset.tab;
-        document.querySelectorAll(".tab").forEach(tab=>{
-          tab.style.display=tab.id==="tab-"+target?"block":"none";
+    function renderDayPills(){
+      const wrap = document.createElement('div');
+      wrap.className = 'day-scroll';
+      trip.days.forEach((d,i)=>{
+        const pill = document.createElement('div');
+        pill.className = 'day-pill'+(i===currentDayIndex?' active':'');
+        pill.dataset.index = i;
+        pill.innerHTML = `<span class="date">${d.labelShort}</span><span>${d.weekday}</span>`;
+        pill.addEventListener('click',()=>{
+          currentDayIndex = i;
+          document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('active'));
+          pill.classList.add('active');
+          renderItinerary();
         });
+        wrap.appendChild(pill);
       });
-    });
-
-    // 行程
-    const daySelect=document.getElementById("daySelect");
-    const dayLabelInput=document.getElementById("dayLabelInput");
-    const cityInputEl=document.getElementById("cityInput");
-    const tempInputEl=document.getElementById("tempInput");
-    const lowInputEl=document.getElementById("lowInput");
-    const feelInputEl=document.getElementById("feelInput");
-    const weatherTextInputEl=document.getElementById("weatherTextInput");
-    const scheduleInputEl=document.getElementById("scheduleInput");
-
-    function loadDay(key){
-      const d=tripData.days[key]||{};
-      dayLabelInput.value=d.label||"";
-      cityInputEl.value=d.city||tripData.meta.destination||"Seoul";
-      tempInputEl.value=d.temp??"";
-      lowInputEl.value=d.low??"";
-      feelInputEl.value=d.feel??"";
-      weatherTextInputEl.value=d.weatherText||"";
-      scheduleInputEl.value=d.schedule||"";
+      dayStrip.innerHTML = '';
+      dayStrip.appendChild(wrap);
     }
 
-    daySelect.addEventListener("change",()=>loadDay(daySelect.value));
-
-    document.getElementById("saveDayBtn").addEventListener("click",()=>{
-      const key=daySelect.value;
-      tripData.days[key]={
-        label:dayLabelInput.value,
-        city:cityInputEl.value,
-        temp:tempInputEl.value,
-        low:lowInputEl.value,
-        feel:feelInputEl.value,
-        weatherText:weatherTextInputEl.value,
-        schedule:scheduleInputEl.value
-      };
-      saveAll(); alert("行程已儲存 ✅");
-    });
-
-    // 天氣
-    document.getElementById("fetchWeatherBtn").addEventListener("click",async()=>{
-      if(!API_KEY||API_KEY==="YOUR_API_KEY_HERE"){
-        alert("請先在程式碼入 OpenWeather API key 🙏");
-        return;
-      }
-      const city=(cityInputEl.value||tripData.meta.destination||"Seoul")+",KR";
-      try{
-        const url=`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
-        const res=await fetch(url);
-        if(!res.ok)throw new Error("HTTP "+res.status);
-        const data=await res.json();
-        tempInputEl.value=Math.round(data.main.temp);
-        lowInputEl.value=Math.round(data.main.temp_min);
-        feelInputEl.value=Math.round(data.main.feels_like);
-        weatherTextInputEl.value=(data.weather&&data.weather[0]&&data.weather[0].description)||"";
-        alert("已更新即時天氣 ✅");
-      }catch(e){
-        console.error(e);
-        alert("取得天氣失敗，請檢查城市名稱或 API key 🔍");
-      }
-    });
-
-    // 消費
-    const expenseTableBody=document.querySelector("#expenseTable tbody");
-    function renderExpenses(){
-      expenseTableBody.innerHTML="";
-      tripData.expenses.forEach((row,index)=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`
-          <td><input value="${row.date||""}" /></td>
-          <td><input value="${row.item||""}" /></td>
-          <td><input type="number" step="0.01" value="${row.amount||""}" /></td>
-          <td><input value="${row.currency||""}" /></td>
-          <td style="text-align:center;">
-            <button data-index="${index}" class="del-exp btn-secondary" style="padding:2px 8px;font-size:11px;">✕</button>
-          </td>`;
-        expenseTableBody.appendChild(tr);
-      });
+    function linkify(text){
+      if(!text) return '';
+      const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      return escaped.replace(/(https?:\/\/\S+)/g,'<a href="$1" target="_blank">$1</a>').replace(/\n/g,'<br>');
     }
-    document.getElementById("addExpenseRowBtn").addEventListener("click",()=>{
-      tripData.expenses.push({date:"",item:"",amount:"",currency:"KRW"});
-      renderExpenses();
-    });
-    expenseTableBody.addEventListener("click",e=>{
-      if(e.target.classList.contains("del-exp")){
-        const i=Number(e.target.dataset.index);
-        tripData.expenses.splice(i,1); renderExpenses();
-      }
-    });
-    document.getElementById("saveExpensesBtn").addEventListener("click",()=>{
-      const rows=expenseTableBody.querySelectorAll("tr");
-      const newData=[];
-      rows.forEach(tr=>{
-        const [dEl,iEl,aEl,cEl]=tr.querySelectorAll("input");
-        if(dEl.value||iEl.value||aEl.value){
-          newData.push({date:dEl.value,item:iEl.value,amount:aEl.value,currency:cEl.value||"KRW"});
-        }
-      });
-      tripData.expenses=newData; saveAll(); alert("消費紀錄已儲存 ✅");
-    });
 
-    // 航班
-    const flightTableBody=document.querySelector("#flightTable tbody");
+    function renderItinerary(){
+      const d = trip.days[currentDayIndex];
+      const w = d.weather;
+      itineraryPanel.innerHTML = '';
+
+      const weather = document.createElement('div');
+      weather.className = 'weather-card';
+      weather.innerHTML = `
+        <div class="weather-icon">❄️</div>
+        <div class="weather-main">
+          <div style="font-size:11px;color:#777;margin-bottom:2px;">${d.title}</div>
+          <div class="temp-row">${w.temp}°C <span class="temp-low">/ ${w.low}°C</span></div>
+          <div class="feel">體感 ${w.feel}°C ・ ${w.text}</div>
+        </div>
+        <div class="weather-note">
+          <strong>今日重點</strong>
+          <span>${w.note}</span>
+        </div>
+      `;
+      itineraryPanel.appendChild(weather);
+
+      const secTitle = document.createElement('div');
+      secTitle.className = 'section-title';
+      secTitle.textContent = '行程安排';
+      itineraryPanel.appendChild(secTitle);
+
+      d.blocks.forEach(b=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-icon">${b.icon}</div>
+          <div class="card-body">
+            <div class="card-tag-row">
+              <span class="card-tag">${b.tag}</span>
+              <span class="card-time">${b.time}</span>
+            </div>
+            <div class="card-title">${b.title}</div>
+            <div class="card-desc">${linkify(b.desc)}</div>
+          </div>
+        `;
+        itineraryPanel.appendChild(card);
+      });
+
+      const note = document.createElement('div');
+      note.className = 'small-note';
+      note.textContent = '提示：上面所有 link 都係 Naver Map，喺手機打開會自動跳去 Naver。';
+      itineraryPanel.appendChild(note);
+    }
+
     function renderFlights(){
-      flightTableBody.innerHTML="";
-      tripData.flights.forEach((row,index)=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`
-          <td><input type="text" value="${row.date||""}" /></td>
-          <td><input type="text" value="${row.no||""}" /></td>
-          <td><input type="text" value="${row.dep||""}" /></td>
-          <td><input type="text" value="${row.arr||""}" /></td>
-          <td style="text-align:center;">
-            <button data-index="${index}" class="del-flight btn-secondary" style="padding:2px 8px;font-size:11px;">✕</button>
-          </td>`;
-        flightTableBody.appendChild(tr);
-      });
-    }
-    document.getElementById("addFlightRowBtn").addEventListener("click",()=>{
-      tripData.flights.push({date:"",no:"",dep:"",arr:""}); renderFlights();
-    });
-    flightTableBody.addEventListener("click",e=>{
-      if(e.target.classList.contains("del-flight")){
-        const i=Number(e.target.dataset.index);
-        tripData.flights.splice(i,1); renderFlights();
-      }
-    });
-    document.getElementById("saveFlightsBtn").addEventListener("click",()=>{
-      const rows=flightTableBody.querySelectorAll("tr");
-      const newData=[];
-      rows.forEach(tr=>{
-        const [dEl,nEl,depEl,arrEl]=tr.querySelectorAll("input");
-        if(dEl.value||nEl.value){
-          newData.push({date:dEl.value,no:nEl.value,dep:depEl.value,arr:arrEl.value});
-        }
-      });
-      tripData.flights=newData; saveAll(); alert("航班資料已儲存 ✅");
-    });
+      flightPanel.innerHTML = '';
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = '航班資料';
+      flightPanel.appendChild(title);
 
-    function init(){
-      renderMeta();
-      loadDay("day1");
-      renderExpenses();
-      renderFlights();
+      trip.flights.forEach(f=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-icon">✈️</div>
+          <div class="card-body">
+            <div class="card-tag-row">
+              <span class="card-tag">${f.date}</span>
+              <span class="card-time">${f.time}</span>
+            </div>
+            <div class="card-title">${f.no}</div>
+            <div class="card-desc">${f.route}</div>
+          </div>
+        `;
+        flightPanel.appendChild(card);
+      });
+
+      const note = document.createElement('div');
+      note.className = 'small-note';
+      note.textContent = '如有確實起飛時間，可以自己喺程式碼入面改 flight time。';
+      flightPanel.appendChild(note);
     }
-    init();
+
+    function renderExpenses(){
+      expensePanel.innerHTML = '';
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = '消費紀錄（可自行寫入）';
+      expensePanel.appendChild(title);
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-icon">🧾</div>
+        <div class="card-body">
+          <div class="card-title">建議用法</div>
+          <div class="card-desc">
+            呢個版本主要用嚟「睇行程」，如要記帳可以：<br>
+            ・直接喺備忘錄／Excel 記<br>
+            ・或者 fork 呢個檔案，自己加 textarea + localStorage 功能<br><br>
+            如果你之後想要「內置可編輯消費紀錄」版本，我可以再幫你開發一個加強版 😊
+          </div>
+        </div>
+      `;
+      expensePanel.appendChild(card);
+    }
+
+    function switchTab(tab){
+      [tabIt,tabEx,tabFl].forEach(b=>b.classList.remove('active'));
+      tab.classList.add('active');
+      panelSwitch();
+    }
+
+    function panelSwitch(){
+      const t = document.querySelector('.hero-tab.active');
+      const id = t.id;
+      itineraryPanel.style.display = id==='tab-itinerary' ? 'block':'none';
+      expensePanel.style.display   = id==='tab-expense'   ? 'block':'none';
+      flightPanel.style.display    = id==='tab-flight'    ? 'block':'none';
+    }
+
+    tabIt.addEventListener('click',()=>switchTab(tabIt));
+    tabEx.addEventListener('click',()=>switchTab(tabEx));
+    tabFl.addEventListener('click',()=>switchTab(tabFl));
+
+    // init
+    renderDayPills();
+    renderItinerary();
+    renderExpenses();
+    renderFlights();
+    panelSwitch();
   </script>
 </body>
 </html>
