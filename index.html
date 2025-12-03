@@ -6,13 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
-    body{background:#f4f7fb;color:#222;}
+    body{
+      background:#f4f7fb;
+      color:#222;
+      padding-top:env(safe-area-inset-top);
+    }
     .app{max-width:480px;margin:0 auto 40px;background:#f4f7fb;}
 
     /* ===== HERO / HEADER ===== */
     .hero{
       position:relative;
-      height:190px;
+      height:180px; /* 矮啲，唔遮日期 */
       overflow:hidden;
       border-bottom-left-radius:24px;
       border-bottom-right-radius:24px;
@@ -28,7 +32,7 @@
     .hero-inner{
       position:relative;
       z-index:1;
-      padding:14px 16px 8px;
+      padding:14px 16px 8px; /* 向上貼少少 */
       display:flex;
       flex-direction:column;
       justify-content:space-between;
@@ -69,7 +73,7 @@
       border-color:#ffe0eb;
     }
     .hero-tabs{
-      margin-top:14px;
+      margin-top:10px; /* tabs 貼啲 */
       display:flex;
       gap:10px;
     }
@@ -92,7 +96,7 @@
 
     /* ===== DAY STRIP ===== */
     .day-strip{
-      margin-top:-18px;
+      margin-top:0; /* 冇再向上拉，唔會俾 green hero 蓋住 */
       padding:0 12px;
     }
     .day-scroll{
@@ -285,7 +289,7 @@
       margin:2px 0 6px 52px;
     }
 
-    /* ===== TABLES (EXPENSE & FLIGHTS & HOTELS) ===== */
+    /* ===== TABLES (EXPENSE / FLIGHT / HOTELS) ===== */
     .table{
       width:100%;
       border-collapse:collapse;
@@ -332,7 +336,6 @@
     .btn-primary{
       background:#0b6b4a;
       color:#fff;
-      border:none;
     }
     .del-btn{
       font-size:11px;
@@ -569,11 +572,10 @@
   </div>
 
   <script>
-    // 使用你提供的 OpenWeather API key
+    // 用你個 OpenWeather API key
     const API_KEY = "bd5e378503939ddaee76f12ad7a97608";
     const STORAGE_KEY = "seoul_trip_christmas_modal_v1";
 
-    // 顏色 for card icon 背景
     const typeColors = {
       transport:"#ffa64d",
       flight:"#4da6ff",
@@ -594,136 +596,39 @@
           city:"Seoul",
           weather:{temp:"",low:"",feel:"",text:"",note:"當日步行／大眾運輸"},
           blocks:[
-            {
-              id:"d1b1",
-              type:"food",
-              icon:"🍽",
-              time:"早上",
-              title:"Dotori Garden",
-              location:"",
-              bizTime:"",
-              fee:"",
-              note:"",
-              map:"https://naver.me/xzXNBJYr",
-              move:0
-            },
-            {
-              id:"d1b2",
-              type:"sight",
-              icon:"🛍",
-              time:"上午",
-              title:"安國潮店走走（順路行）",
-              location:"",
-              bizTime:"",
-              fee:"",
+            {id:"d1b1",type:"food",icon:"🍽",time:"早上",
+              title:"Dotori Garden",location:"",bizTime:"",fee:"",note:"",
+              map:"https://naver.me/xzXNBJYr",move:0},
+            {id:"d1b2",type:"sight",icon:"🛍",time:"上午",
+              title:"安國潮店走走（順路行）",location:"",bizTime:"",fee:"",
               note:"ZERO SPACE / Object / Sowol Department / INOUR MANSION / OINU / Tamburins 安國店",
-              map:"",
-              move:10
-            },
-            {
-              id:"d1b3",
-              type:"transport",
-              icon:"🚇",
-              time:"中午前",
-              title:"安國 → 弘大入口",
-              location:"搭地鐵至 弘大入口站",
-              bizTime:"",
-              fee:"",
-              note:"",
-              map:"",
-              move:10
-            },
-            {
-              id:"d1b4",
-              type:"food",
-              icon:"🍽",
-              time:"中午",
-              title:"Gop Mapo 烤肥腸",
-              location:"",
-              bizTime:"",
-              fee:"",
-              note:"",
-              map:"https://naver.me/GPcC4YWc",
-              move:5
-            },
-            {
-              id:"d1b5",
-              type:"food",
-              icon:"☕️",
-              time:"下午",
-              title:"ARTIST BAKERY（弘大）",
-              location:"",
-              bizTime:"",
-              fee:"",
-              note:"",
-              map:"https://naver.me/FiT5e8AY",
-              move:10
-            },
-            {
-              id:"d1b6",
-              type:"sight",
-              icon:"🚶‍♀️",
-              time:"下午",
-              title:"步行 12 分鐘 → 延南洞",
-              location:"",
-              bizTime:"步行約 12 分鐘",
-              fee:"",
-              note:"",
-              map:"",
-              move:12
-            },
-            {
-              id:"d1b7",
-              type:"food",
-              icon:"🧁",
-              time:"下午",
-              title:"延南洞小食 & 咖啡",
-              location:"",
-              bizTime:"",
-              fee:"",
+              map:"",move:10},
+            {id:"d1b3",type:"transport",icon:"🚇",time:"中午前",
+              title:"安國 → 弘大入口",location:"搭地鐵至 弘大入口站",
+              bizTime:"",fee:"",note:"",map:"",move:10},
+            {id:"d1b4",type:"food",icon:"🍽",time:"中午",
+              title:"Gop Mapo 烤肥腸",location:"",bizTime:"",fee:"",note:"",
+              map:"https://naver.me/GPcC4YWc",move:5},
+            {id:"d1b5",type:"food",icon:"☕️",time:"下午",
+              title:"ARTIST BAKERY（弘大）",location:"",bizTime:"",fee:"",note:"",
+              map:"https://naver.me/FiT5e8AY",move:10},
+            {id:"d1b6",type:"sight",icon:"🚶‍♀️",time:"下午",
+              title:"步行 12 分鐘 → 延南洞",location:"",bizTime:"步行約 12 分鐘",
+              fee:"",note:"",map:"",move:12},
+            {id:"d1b7",type:"food",icon:"🧁",time:"下午",
+              title:"延南洞小食 & 咖啡",location:"",bizTime:"",fee:"",
               note:"HUNHUN 糖餅 / HIPPO Coffee（維也納咖啡）",
-              map:"https://naver.me/5nre0cZm",
-              move:5
-            },
-            {
-              id:"d1b8",
-              type:"transport",
-              icon:"🚇",
-              time:"傍晚",
-              title:"延南洞 → 乙支路入口 / 明洞方向",
-              location:"地鐵移動",
-              bizTime:"",
-              fee:"",
-              note:"",
-              map:"",
-              move:15
-            },
-            {
-              id:"d1b9",
-              type:"food",
-              icon:"🦀",
-              time:"晚餐",
-              title:"烏達里家（醬蟹）",
-              location:"",
-              bizTime:"",
-              fee:"",
-              note:"",
-              map:"https://naver.me/5jcqjhgG",
-              move:10
-            },
-            {
-              id:"d1b10",
-              type:"sight",
-              icon:"🎄",
-              time:"晚上",
-              title:"明洞聖誕燈飾",
-              location:"明洞聖堂 & 明洞大街",
-              bizTime:"",
-              fee:"",
-              note:"",
-              map:"https://naver.me/G8EN4VnZ",
-              move:0
-            }
+              map:"https://naver.me/5nre0cZm",move:5},
+            {id:"d1b8",type:"transport",icon:"🚇",time:"傍晚",
+              title:"延南洞 → 乙支路入口 / 明洞方向",location:"地鐵移動",
+              bizTime:"",fee:"",note:"",map:"",move:15},
+            {id:"d1b9",type:"food",icon:"🦀",time:"晚餐",
+              title:"烏達里家（醬蟹）",location:"",bizTime:"",fee:"",note:"",
+              map:"https://naver.me/5jcqjhgG",move:10},
+            {id:"d1b10",type:"sight",icon:"🎄",time:"晚上",
+              title:"明洞聖誕燈飾",location:"明洞聖堂 & 明洞大街",
+              bizTime:"",fee:"",note:"",
+              map:"https://naver.me/G8EN4VnZ",move:0}
           ]
         },
         {
@@ -734,41 +639,27 @@
           city:"Seoul",
           weather:{temp:"",low:"",feel:"",text:"",note:"購物日，步行較多"},
           blocks:[
-            {
-              id:"d2b1",type:"food",icon:"🍽",time:"早上",
+            {id:"d2b1",type:"food",icon:"🍽",time:"早上",
               title:"宋家飯捲（明洞）",location:"",bizTime:"",fee:"",note:"",
-              map:"https://naver.me/G8uH9PKk",move:0
-            },
-            {
-              id:"d2b2",type:"shopping",icon:"🛍",time:"上午",
+              map:"https://naver.me/G8uH9PKk",move:0},
+            {id:"d2b2",type:"shopping",icon:"🛍",time:"上午",
               title:"明洞購物",location:"",bizTime:"",fee:"",note:"",
-              map:"https://naver.me/5LYTVJQS",move:5
-            },
-            {
-              id:"d2b3",type:"food",icon:"🍽",time:"中午",
+              map:"https://naver.me/5LYTVJQS",move:5},
+            {id:"d2b3",type:"food",icon:"🍽",time:"中午",
               title:"韓牛一條街（退溪路）",location:"",bizTime:"",fee:"",note:"",
-              map:"https://naver.me/5mOIQw2x",move:10
-            },
-            {
-              id:"d2b4",type:"sight",icon:"🛍",time:"下午",
+              map:"https://naver.me/5mOIQw2x",move:10},
+            {id:"d2b4",type:"sight",icon:"🛍",time:"下午",
               title:"南大門市場",location:"",bizTime:"",fee:"",note:"",
-              map:"https://naver.me/Fu2fLt3r",move:10
-            },
-            {
-              id:"d2b5",type:"shopping",icon:"🛍",time:"傍晚前",
+              map:"https://naver.me/Fu2fLt3r",move:10},
+            {id:"d2b5",type:"shopping",icon:"🛍",time:"傍晚前",
               title:"Doota Mall + No Brand",location:"東大門",bizTime:"",fee:"",note:"",
-              map:"https://naver.me/5ooSPrMO",move:10
-            },
-            {
-              id:"d2b6",type:"food",icon:"🍨",time:"傍晚",
+              map:"https://naver.me/5ooSPrMO",move:10},
+            {id:"d2b6",type:"food",icon:"🍨",time:"傍晚",
               title:"Scooper Gelato（開心果 AFFOGATO）",location:"",bizTime:"",fee:"",note:"",
-              map:"https://naver.me/GW1qN7HP",move:5
-            },
-            {
-              id:"d2b7",type:"food",icon:"🔥",time:"晚上",
+              map:"https://naver.me/GW1qN7HP",move:5},
+            {id:"d2b7",type:"food",icon:"🔥",time:"晚上",
               title:"友誼辣雞爪（新堂）",location:"",bizTime:"",fee:"",note:"",
-              map:"https://naver.me/ISbHWWes",move:0
-            }
+              map:"https://naver.me/ISbHWWes",move:0}
           ]
         },
         {
@@ -818,8 +709,7 @@
               title:"Milky Shop",location:"",bizTime:"",fee:"",note:"",
               map:"https://naver.me/FT6ByU3N",move:10},
             {id:"d4b5",type:"transport",icon:"🚇",time:"傍晚前",
-              title:"聖水 → 明洞",location:"地鐵移動",bizTime:"",fee:"",note:"",
-              map:"",move:20},
+              title:"聖水 → 明洞",location:"地鐵移動",bizTime:"",fee:"",note:"",map:"",move:20},
             {id:"d4b6",type:"food",icon:"🍲",time:"晚上",
               title:"Option A｜IDAEJO 排骨湯",location:"",bizTime:"",fee:"",note:"",
               map:"https://naver.me/GAyyIQCf",move:0},
@@ -864,14 +754,12 @@
       fx:{rate:0.006,krw:"",hkd:""}
     };
 
-    // 讀取 localStorage，如有就用
     let trip;
     try{
       const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       trip = stored || baseTrip;
-    }catch(e){
-      trip = baseTrip;
-    }
+    }catch(e){ trip = baseTrip; }
+
     function saveAll(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(trip)); }
 
     const dayStrip = document.getElementById('dayStrip');
@@ -910,6 +798,8 @@
     let editingDayIndex = null;
     let editingBlockIndex = null;
 
+    function getTypeColor(t){ return typeColors[t] || typeColors.other; }
+
     function renderDayPills(){
       const wrap = document.createElement('div');
       wrap.className = 'day-scroll';
@@ -929,8 +819,6 @@
       dayStrip.innerHTML = '';
       dayStrip.appendChild(wrap);
     }
-
-    function getTypeColor(t){ return typeColors[t] || typeColors.other; }
 
     function openModal(dayIndex, blockIndex){
       editingDayIndex = dayIndex;
@@ -967,7 +855,6 @@
       fMove.value = block.move ? String(block.move) : "";
 
       btnModalDelete.style.display = (blockIndex === -1) ? "none" : "inline-block";
-
       modalBackdrop.style.display = 'flex';
     }
 
@@ -1038,6 +925,18 @@
       }
       renderItinerary();
       alert("已更新首爾即時天氣（所有日子顯示同一刻天氣）✅");
+    }
+
+    function labelType(t){
+      switch(t){
+        case "transport":return "交通";
+        case "flight":return "航班";
+        case "food":return "飲食";
+        case "sight":return "景點";
+        case "hotel":return "住宿";
+        case "shopping":return "購物";
+        default:return "其他";
+      }
     }
 
     function renderItinerary(){
@@ -1134,10 +1033,10 @@
         };
       }
 
-      // card footer actions
       itineraryPanel.addEventListener('click', cardFooterHandler, {once:true});
     }
 
+    // ⭐ 撳筆一定可以改，不用 Edit Mode
     function cardFooterHandler(e){
       const btn = e.target.closest('.icon-btn');
       if(!btn) return;
@@ -1146,48 +1045,38 @@
       if(isNaN(idx)) return;
       const day = trip.days[currentDayIndex];
 
-      if(act==="up" && idx>0){
+      if(act === "up" && idx > 0){
         const tmp = day.blocks[idx-1];
         day.blocks[idx-1] = day.blocks[idx];
         day.blocks[idx] = tmp;
-        saveAll(); renderItinerary();
-      }else if(act==="down" && idx<day.blocks.length-1){
+        saveAll();
+        renderItinerary();
+
+      }else if(act === "down" && idx < day.blocks.length-1){
         const tmp = day.blocks[idx+1];
         day.blocks[idx+1] = day.blocks[idx];
         day.blocks[idx] = tmp;
-        saveAll(); renderItinerary();
-      }else if(act==="nav"){
+        saveAll();
+        renderItinerary();
+
+      }else if(act === "nav"){
         const b = day.blocks[idx];
         if(b.map){
           window.open(b.map, "_blank");
         }else{
           alert("呢項未設定地圖連結，可以按 ✏️ 進去編輯加入 Naver / Google link。");
         }
-      }else if(act==="edit"){
-        if(!editMode){
-          alert("請先開啟上方『✏️ 編輯行程』再修改內容。");
-        }else{
-          openModal(currentDayIndex, idx);
-        }
-      }else if(act==="del"){
-        if(!editMode){
-          alert("要刪除行程請先開啟『編輯行程』。");
-        }else if(confirm("確定刪除這一項行程嗎？")){
-          day.blocks.splice(idx,1);
-          saveAll(); renderItinerary();
-        }
-      }
-    }
 
-    function labelType(t){
-      switch(t){
-        case "transport":return "交通";
-        case "flight":return "航班";
-        case "food":return "飲食";
-        case "sight":return "景點";
-        case "hotel":return "住宿";
-        case "shopping":return "購物";
-        default:return "其他";
+      }else if(act === "edit"){
+        // 不理 editMode，直接開編輯
+        openModal(currentDayIndex, idx);
+
+      }else if(act === "del"){
+        if(confirm("確定刪除這一項行程嗎？")){
+          day.blocks.splice(idx,1);
+          saveAll();
+          renderItinerary();
+        }
       }
     }
 
@@ -1357,7 +1246,6 @@
     function renderInfo(){
       infoPanel.innerHTML = "";
 
-      // 匯率
       const fxCard = document.createElement('div');
       fxCard.className = 'info-card';
       fxCard.innerHTML = `
@@ -1406,7 +1294,6 @@
         saveAll();
       });
 
-      // 住宿
       const hotelTitle = document.createElement('div');
       hotelTitle.className = 'section-title';
       hotelTitle.textContent = '住宿資訊';
@@ -1475,7 +1362,6 @@
         alert("住宿資訊已儲存 ✅");
       };
 
-      // 租車
       const rentTitle = document.createElement('div');
       rentTitle.className = 'section-title';
       rentTitle.textContent = '租車資訊（如有）';
@@ -1532,16 +1418,16 @@
       infoPanel.style.display = (id==="tab-info")?"block":"none";
     }
 
-    tabIt.onclick = ()=>{switchTab(tabIt);};
-    tabEx.onclick = ()=>{switchTab(tabEx);};
-    tabFl.onclick = ()=>{switchTab(tabFl);};
-    tabInfo.onclick = ()=>{switchTab(tabInfo);};
+    tabIt.onclick = ()=>switchTab(tabIt);
+    tabEx.onclick = ()=>switchTab(tabEx);
+    tabFl.onclick = ()=>switchTab(tabFl);
+    tabInfo.onclick = ()=>switchTab(tabInfo);
 
     editToggleBtn.onclick = ()=>{
       editMode = !editMode;
       if(editMode){
         editToggleBtn.classList.add('active');
-        editToggleBtn.textContent = "✅ 編輯行程中";
+        editToggleBtn.textContent = "✅ 可新增行程";
       }else{
         editToggleBtn.classList.remove('active');
         editToggleBtn.textContent = "✏️ 編輯行程";
@@ -1552,7 +1438,7 @@
     printBtn.onclick = ()=>window.print();
     weatherAllBtn.onclick = updateAllWeather;
 
-    async function init(){
+    function init(){
       renderDayPills();
       renderItinerary();
       renderExpenses();
