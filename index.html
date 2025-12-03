@@ -610,14 +610,314 @@
       other:"#94a3b8"
     };
 
-    /* ====== 初始行程資料 ====== */
-    const baseTrip = { /* －－－－－－你的 baseTrip 內容完全照舊－－－－－－ */ };
-  </script>
-  <!-- 由於訊息長度限制，baseTrip 到下面邏輯我冇改任何內容，
-       你可以直接保留你貼出來嗰一大段 baseTrip，擺返入呢度 { } 之內，
-       跟住用下面這段 JS 覆蓋原本的就可以。 -->
-  <script>
-    /* ====== 以下開始係邏輯部分（已修好 emoji & bug） ====== */
+
+/* ====== 初始行程資料（已根據你最新 version） ====== */
+    const baseTrip = {
+      days:[
+        {
+          id:"d1",
+          labelShort:"12/25",
+          weekday:"四",
+          title:"Day 1｜安國 → 弘大 → 延南洞 → 明洞燈飾",
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"安國、弘大、延南洞慢行＋明洞聖誕燈飾"},
+          blocks:[
+            {
+              id:"d1b1",type:"food",icon:"🍽",time:"早上",
+              title:"Dotori Garden",
+              location:"도토리가든 · 서울 종로구 북촌로4길 20",
+              bizTime:"",fee:"",note:"",
+              map:"",move:0
+            },
+            {
+              id:"d1b2",type:"sight",icon:"🛍",time:"上午",
+              title:"安國逛街順路",
+              location:"ZERO SPACE / Object 安國 / Sowol Department / INOUR MANSION / OINU / Tamburins 安國",
+              bizTime:"",
+              fee:"",
+              note:"ZERO SPACE（제로스페이스）· Object 안국 · 소월디파트먼트 · 이너맨션 · 오이누 · 탬버린즈 안국",
+              map:"",move:8
+            },
+            {
+              id:"d1b3",type:"transport",icon:"🚇",time:"中午前",
+              title:"安國 → 弘大入口（地鐵）",
+              location:"約 18 分鐘（轉乘一次）",
+              bizTime:"移動約 18 分鐘",
+              fee:"",note:"",
+              map:"",move:18
+            },
+            {
+              id:"d1b4",type:"food",icon:"🍽",time:"中午",
+              title:"Gop Mapo 烤肥腸",
+              location:"곱마포 · 서울 마포구 독막로7길 51",
+              bizTime:"",fee:"",note:"",
+              map:"",move:5
+            },
+            {
+              id:"d1b5",type:"food",icon:"☕️",time:"下午",
+              title:"Artist Bakery 弘大",
+              location:"아티스트 베이커리 · 서울 마포구 동교로 251-3",
+              bizTime:"",fee:"",note:"",
+              map:"",move:8
+            },
+            {
+              id:"d1b6",type:"transport",icon:"🚶‍♀️",time:"下午",
+              title:"步行 → 延南洞",
+              location:"徒步約 12 分鐘",
+              bizTime:"步行約 12 分鐘",
+              fee:"",note:"",
+              map:"",move:12
+            },
+            {
+              id:"d1b7",type:"food",icon:"🍮",time:"下午",
+              title:"延南洞食 & Café",
+              location:"훈훈호떡 · 히포커피 一帶",
+              bizTime:"",
+              fee:"",
+              note:"HUNHUN 糖餅（훈훈호떡）· 서울 마포구 동교로30길 19\nHIPPO Coffee（히포커피）· 서울 마포구 동교로 266-6",
+              map:"",move:10
+            },
+            {
+              id:"d1b8",type:"transport",icon:"🚇",time:"傍晚",
+              title:"延南洞 → 明洞（地鐵）",
+              location:"可到乙支路入口 / 明洞站，約 25–30 分鐘",
+              bizTime:"移動時間約 25–30 分鐘",
+              fee:"",note:"",
+              map:"",move:25
+            },
+            {
+              id:"d1b9",type:"food",icon:"🦀",time:"晚餐",
+              title:"烏達里家（醬蟹）",
+              location:"오다리집 간장게장 · 서울 중구 명동8나길 28 2–3층",
+              bizTime:"",fee:"",note:"",
+              map:"",move:8
+            },
+            {
+              id:"d1b10",type:"sight",icon:"🎄",time:"晚上",
+              title:"明洞聖誕燈飾 & 明洞聖堂",
+              location:"명동성당 · 서울 중구 명동길 74",
+              bizTime:"",fee:"",
+              note:"晚餐後步行去明洞聖堂，再行番明洞大街睇燈飾",
+              map:"",move:5
+            }
+          ]
+        },
+        {
+          id:"d2",
+          labelShort:"12/26",
+          weekday:"五",
+          title:"Day 2｜明洞 → 南大門 → 東大門 → 新堂",
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"明洞 & 南大門 & 東大門購物＋新堂辣雞爪"},
+          blocks:[
+            {
+              id:"d2b1",type:"food",icon:"🍽",time:"早上",
+              title:"宋家飯捲（明洞）",
+              location:"송가김밥 · 서울 중구 퇴계로 120",
+              bizTime:"",fee:"",note:"",
+              map:"",move:0
+            },
+            {
+              id:"d2b2",type:"shopping",icon:"🛍",time:"上午",
+              title:"明洞購物區",
+              location:"명동거리 · 서울 중구 명동길 일대",
+              bizTime:"",fee:"",note:"",
+              map:"",move:5
+            },
+            {
+              id:"d2b3",type:"food",icon:"🍽",time:"中午",
+              title:"韓牛一條街（退溪路）",
+              location:"퇴계로 한우골목 · 서울 中구 퇴계로180길 一帶",
+              bizTime:"",fee:"",note:"",
+              map:"",move:10
+            },
+            {
+              id:"d2b4",type:"sight",icon:"🛍",time:"下午",
+              title:"南大門市場",
+              location:"남대문시장 · 서울 中구 남대문시장4길 21",
+              bizTime:"",fee:"",note:"",
+              map:"",move:10
+            },
+            {
+              id:"d2b5",type:"shopping",icon:"🛍",time:"傍晚前",
+              title:"Doota Mall + No Brand",
+              location:"두타몰 · 서울 中구 장충단로 275",
+              bizTime:"",fee:"",note:"",
+              map:"",move:10
+            },
+            {
+              id:"d2b6",type:"food",icon:"🍨",time:"傍晚",
+              title:"Scooper Gelato（AFFOGATO）",
+              location:"스쿠퍼 젤라토 · Doota Mall 地下層",
+              bizTime:"",fee:"",note:"",
+              map:"",move:5
+            },
+            {
+              id:"d2b7",type:"food",icon:"🔥",time:"晚上",
+              title:"友誼辣雞爪（新堂）",
+              location:"우정닭발 · 서울 中구 퇴계로 421（新堂닭발골목）",
+              bizTime:"",fee:"",note:"",
+              map:"",move:20
+            }
+          ]
+        },
+        {
+          id:"d3",
+          labelShort:"12/27",
+          weekday:"六",
+          title:"Day 3｜安國 Café → 益善洞 → 乙支路",
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"安國 café＋益善洞小店＋乙支路烤肉 chill day"},
+          blocks:[
+            {
+              id:"d3b1",type:"food",icon:"🍰",time:"早上",
+              title:"Cafe Layered（安國）",
+              location:"카페 레이어드 · 서울 종로구 북촌로 6",
+              bizTime:"",fee:"",note:"",
+              map:"",move:0
+            },
+            {
+              id:"d3b2",type:"food",icon:"🍽",time:"中午",
+              title:"Nakwonjang（益善洞）",
+              location:"낙원장 · 서울 종로구 수표로28길 33",
+              bizTime:"",fee:"",note:"",
+              map:"",move:8
+            },
+            {
+              id:"d3b3",type:"sight",icon:"🛍",time:"下午",
+              title:"益善洞行小店／打卡",
+              location:"익선동 한옥거리 · 서울 종로구 수표로28길 一帶",
+              bizTime:"",fee:"",note:"",
+              map:"",move:10
+            },
+            {
+              id:"d3b4",type:"food",icon:"🍽",time:"晚上",
+              title:"水芹菜烤豬肉（乙支路）",
+              location:"돌판 수미나물 삼겹살 · 서울 中구 수표로 48-1",
+              bizTime:"",fee:"",note:"",
+              map:"",move:15
+            },
+            {
+              id:"d3b5",type:"other",icon:"🌙",time:"夜晚",
+              title:"飯後自由活動",
+              location:"回酒店 / 便利店 / 明洞散步 皆可",
+              bizTime:"",fee:"",note:"",
+              map:"",move:0
+            }
+          ]
+        },
+        {
+          id:"d4",
+          labelShort:"12/28",
+          weekday:"日",
+          title:"Day 4｜聖水 ALL DAY → 明洞（晚餐二選一）",
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"聖水 café＋潮店，晚餐二選一"},
+          blocks:[
+            {
+              id:"d4b1",type:"food",icon:"🍞",time:"早上",
+              title:"Onion 聖水",
+              location:"어니언 성수 · 서울 성동구 아차산로17길 33",
+              bizTime:"",fee:"",note:"",
+              map:"",move:0
+            },
+            {
+              id:"d4b2",type:"shopping",icon:"🛍",time:"上午",
+              title:"聖水潮流散步",
+              location:"Musinsa / ADER ERROR / Tamburins 聖水 一帶",
+              bizTime:"",fee:"",
+              note:"Musinsa（무신사 스탠다드 성수）· 연무장길 9\nADER ERROR（아더에러 성수）· 연무장길 18\nTamburins 聖水（탬버린즈 성수）· 연무장길 13",
+              map:"",move:12
+            },
+            {
+              id:"d4b3",type:"food",icon:"🍽",time:"中午",
+              title:"無垢屋（烏冬）",
+              location:"무쿠우동 · 서울 성동구 서울숲2길 28-13",
+              bizTime:"",fee:"",note:"",
+              map:"",move:8
+            },
+            {
+              id:"d4b4",type:"food",icon:"🍮",time:"下午",
+              title:"Milky Shop 甜品",
+              location:"밀키샵 · 서울 성동구 서울숲2길 19-13",
+              bizTime:"",fee:"",note:"",
+              map:"",move:8
+            },
+            {
+              id:"d4b5",type:"transport",icon:"🚇",time:"傍晚前",
+              title:"聖水 → 明洞（地鐵）",
+              location:"約 20–25 分鐘",
+              bizTime:"移動約 20–25 分鐘",
+              fee:"",note:"",
+              map:"",move:25
+            },
+            {
+              id:"d4b6",type:"food",icon:"🍲",time:"晚上",
+              title:"① IDAEJO 排骨湯",
+              location:"이대조 감자탕 · 서울 서대문구 이화여대3길 22",
+              bizTime:"",fee:"",note:"",
+              map:"",move:0
+            },
+            {
+              id:"d4b7",type:"food",icon:"🍗",time:"晚上",
+              title:"② 明洞炸雞（揀其一）",
+              location:"橋村 / bb.q / NENE（明洞一帶）",
+              bizTime:"",fee:"",
+              note:"橋村（교촌치킨 명동점）· 서울 中구 명동8가길 19\nbb.q（비비큐 명동점）· 서울 中구 명동8가길 37\nNENE（네네치킨 명동점）· 서울 中구 명동7길 21",
+              map:"",move:0
+            }
+          ]
+        },
+        {
+          id:"d5",
+          labelShort:"12/29",
+          weekday:"一",
+          title:"Day 5｜最後補貨 → 鰻魚 → 機場",
+          city:"Seoul",
+          weather:{temp:"",low:"",feel:"",text:"",note:"回程日，最後購物＋鰻魚午餐"},
+          blocks:[
+            {
+              id:"d5b1",type:"food",icon:"🥪",time:"早上",
+              title:"Egg Drop（明洞）",
+              location:"에그드랍 · 서울 中구 명동길 24",
+              bizTime:"",fee:"",note:"",
+              map:"",move:0
+            },
+            {
+              id:"d5b2",type:"shopping",icon:"🛍",time:"上午",
+              title:"明洞最後掃貨",
+              location:"명동거리 · 서울 中구 명동길 一帶",
+              bizTime:"",fee:"",note:"",
+              map:"",move:5
+            },
+            {
+              id:"d5b3",type:"food",icon:"🍽",time:"中午",
+              title:"豐川鰻魚（午餐）",
+              location:"풍천장어 · 서울 中구 명동4길 10",
+              bizTime:"",fee:"",note:"",
+              map:"",move:10
+            },
+            {
+              id:"d5b4",type:"flight",icon:"✈️",time:"下午",
+              title:"回酒店拎行李 → 機場",
+              location:"UO631 ICN → HKG",
+              bizTime:"預留充足時間返機場",
+              fee:"",note:"",
+              map:"",move:40
+            }
+          ]
+        }
+      ],
+      expenses:[],
+      flights:[
+        {date:"12/25",no:"UO626",route:"HKG → ICN",time:""},
+        {date:"12/29",no:"UO631",route:"ICN → HKG",time:""}
+      ],
+      hotels:[],
+      rental:{company:"",place:"",period:"",car:"",note:""},
+      fx:{rate:0.006,krw:"",hkd:""}
+    };
+
 
     let trip;
     try{
