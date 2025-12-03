@@ -1145,7 +1145,7 @@ function getWeatherEmoji(w){
       const weather = document.createElement('div');
       weather.className = 'weather-card';
       weather.innerHTML = `
-        <div class="weather-icon">❄️</div>
+       <div class="weather-icon">${emoji}</div>
         <div class="weather-main">
           <div style="font-size:11px;color:#777;margin-bottom:2px;">即時首爾天氣（非行程日期預報）</div>
           <div class="temp-row">${w.temp ? w.temp+"°C" : "--"} 
