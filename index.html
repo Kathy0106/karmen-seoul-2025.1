@@ -1,486 +1,400 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首爾行程規劃器 (可編輯)</title>
-    
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Firebase JS SDK (必須在運行時引入) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, doc, setDoc, onSnapshot, updateDoc, 
-            collection, query, getDoc, getDocs, setLogLevel
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // 設定 Firebase Debug Level (開發用)
-        setLogLevel('debug');
-
-        // 檢查全局變數
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        if (firebaseConfig) {
-            const app = initializeApp(firebaseConfig);
-            window.db = getFirestore(app);
-            window.auth = getAuth(app);
-            
-            // 登入邏輯
-            const signInUser = async () => {
-                try {
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(window.auth, initialAuthToken);
-                        console.log("Firebase: Signed in with custom token.");
-                    } else {
-                        await signInAnonymously(window.auth);
-                        console.log("Firebase: Signed in anonymously.");
-                    }
-                } catch (error) {
-                    console.error("Firebase Auth Error:", error);
-                }
-            };
-            
-            // 確保 authReady 狀態更新
-            onAuthStateChanged(window.auth, (user) => {
-                if (user) {
-                    window.globalUserId = user.uid;
-                } else {
-                    window.globalUserId = crypto.randomUUID(); // Fallback for unauthenticated
-                }
-                // 發送事件通知 React Auth 已準備好
-                window.dispatchEvent(new CustomEvent('authReady', { detail: { userId: window.globalUserId } }));
-            });
-
-            signInUser();
-        } else {
-            console.error("Firebase Config missing. Data persistence disabled.");
-        }
-        
-        window.appId = appId;
-    </script>
-
-    <!-- Inline Styles for Mobile and Custom Scrollbar Hide -->
-    <style>
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        /* Fade-in animation for smoother transitions */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首爾行程規劃器 (可編輯)</title>
+<!-- React & ReactDOM -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<!-- Babel for JSX -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Inline Styles for Mobile and Custom Scrollbar Hide -->
+<style>
+       .no-scrollbar::-webkit-scrollbar {
+           display: none;
+       }
+       .no-scrollbar {
+           -ms-overflow-style: none;
+           scrollbar-width: none;
+       }
+       /* Fade-in animation for smoother transitions */
+       @keyframes fadeIn {
+           from { opacity: 0; transform: translateY(10px); }
+           to { opacity: 1; transform: translateY(0); }
+       }
+       .animate-fade-in {
+           animation: fadeIn 0.5s ease-out;
+       }
+       .timeline-dot {
+           transition: all 0.2s;
+           box-shadow: 0 0 0 2px white;
+       }
+</style>
 </head>
 <body class="bg-slate-50">
-    <div id="root"></div>
+<div id="root"></div>
+<script type="text/babel">
+       const { useState, useEffect, useCallback } = React;
+       // --- Icon Components (Lucide-React style) ---
+       const Icons = {
+           MapPin: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
+           Utensils: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>,
+           Pencil: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>,
+           Save: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>,
+           Plus: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 5v14"/><path d="M5 12h14"/></svg>,
+           Trash: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
+           Check: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12"/></svg>,
+           Home: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+           Clock: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+       };
+       const LOCAL_STORAGE_KEY = "seoulTripPlannerDataV1";
+       const DEFAULT_ITINERARY_DATA = [
+           { id: 1, date: "12/25", day: "Day 1", title: "安國 · 弘大 · 明洞", desc: "傳統韓屋與年輕活力的聖誕節", locations: [
+               { id: 101, type: "food", time: "10:30", name: "Dotori Garden", desc: "安國人氣橡果漫遊麵包店", tag: "早餐" },
+               { id: 102, type: "shop", time: "14:00", name: "安國潮店散步", desc: "ZERO SPACE, Object, Tamburins", tag: "購物" },
+               { id: 103, type: "food", time: "19:30", name: "烏達里家 (乙支路/明洞)", desc: "醬蟹專門店", tag: "晚餐" }
+           ]},
+           { id: 2, date: "12/26", day: "Day 2", title: "明洞 · 東大門 · 新堂", desc: "經典購物路線與地道辣雞爪", locations: [
+               { id: 201, type: "food", time: "12:30", name: "韓牛一條街", desc: "退溪路享受高品質韓牛", tag: "午餐" },
+               { id: 202, type: "food", time: "20:00", name: "新堂 友誼辣雞爪", desc: "韓國人最愛，辣得過癮", tag: "晚餐" }
+           ]},
+       ];
+       // --- Utility Functions ---
+       const getItemIcon = (type) => {
+           const icons = {
+               'food': { icon: Icons.Utensils, color: 'text-orange-500', bgColor: 'bg-orange-100' },
+               'shop': { icon: Icons.MapPin, color: 'text-pink-500', bgColor: 'bg-pink-100' },
+               'cafe': { icon: Icons.MapPin, color: 'text-amber-600', bgColor: 'bg-amber-100' },
+               'view': { icon: Icons.MapPin, color: 'text-indigo-500', bgColor: 'bg-indigo-100' },
+               'default': { icon: Icons.MapPin, color: 'text-slate-400', bgColor: 'bg-slate-100' },
+           };
+           return icons[type] || icons['default'];
+       };
+       const generateId = () => Math.floor(Math.random() * 10000000);
+       // --- Core Components ---
+       const EditableTripItem = ({ item, dayIndex, locationIndex, updateItem, deleteItem }) => {
+           const [isEditing, setIsEditing] = useState(false);
+           const [editData, setEditData] = useState(item);
+           const { icon: Icon, color, bgColor } = getItemIcon(item.type);
+           // Sync internal state when prop item changes (e.g., after save)
+           useEffect(() => {
+               setEditData(item);
+           }, [item]);
+           const handleSave = () => {
+               updateItem(dayIndex, locationIndex, editData);
+               setIsEditing(false);
+           };
+           const handleChange = (e) => {
+               setEditData({ ...editData, [e.target.name]: e.target.value });
+           };
+           const handleDelete = () => {
+               // Use a custom modal or simple confirmation since alert is forbidden
+               const confirmed = window.confirm("確定要刪除這個行程項目嗎？");
+               if (confirmed) {
+                    deleteItem(dayIndex, locationIndex);
+               }
+           };
+           // In-place time and tag editing handlers
+           const handleTimeTagChange = (field, value) => {
+                setEditData(prev => ({ ...prev, [field]: value }));
+           };
+           return (
+<div className={`rounded-2xl border transition-all duration-200 overflow-hidden bg-white shadow-sm hover:shadow-md ${isEditing ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-100'}`}>
+<div className="p-4">
+                       {/* Time & Tag (Always editable input for quick changes) */}
+<div className="flex items-center gap-2 mb-3">
+<div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 uppercase tracking-wide bg-slate-100 px-2 py-1 rounded-lg">
+<Icons.Clock size={12} className="text-slate-500" />
+<input
+                                   type="text"
+                                   name="time"
+                                   value={editData.time}
+                                   onChange={(e) => handleTimeTagChange('time', e.target.value)}
+                                   onBlur={handleSave} // Save immediately after losing focus
+                                   className="bg-transparent w-16 outline-none focus:ring-0 focus:border-0 border-none p-0"
+                                   placeholder="時間"
+                               />
+</div>
+<input
+                               type="text"
+                               name="tag"
+                               value={editData.tag}
+                               onChange={(e) => handleTimeTagChange('tag', e.target.value)}
+                               onBlur={handleSave} // Save immediately after losing focus
+                               className={`text-[10px] font-bold px-2 py-0.5 rounded text-white ${bgColor} w-auto max-w-24 p-0 outline-none focus:ring-0`}
+                               placeholder="標籤"
+                               style={{ backgroundColor: item.tag ? 'var(--tw-color-indigo-500)' : 'var(--tw-color-slate-400)' }}
+                           />
+</div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useCallback } = React;
-
-        // --- Icon Components (Lucide-React style) ---
-        const Icons = {
-            MapPin: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
-            Utensils: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>,
-            Pencil: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z"/></svg>,
-            Save: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>,
-            Plus: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 5v14"/><path d="M5 12h14"/></svg>,
-            Trash: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
-            RefreshCw: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 12A9 9 0 0 0 6 5.3L3 7"/><path d="M3 3v4h4"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/><path d="M21 17v-4h-4"/></svg>,
-            X: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
-            Home: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-        };
-
-        const TRIP_DOC_ID = "seoul_2024_itinerary";
-        const DEFAULT_ITINERARY_DATA = [
-            { id: 1, date: "12/25", day: "Day 1", title: "安國 · 弘大 · 明洞", desc: "傳統韓屋與年輕活力的聖誕節", locations: [
-                { id: 101, type: "food", time: "Breakfast", name: "Dotori Garden", desc: "安國人氣橡果漫遊麵包店", tag: "早餐" },
-                { id: 102, type: "shop", time: "Morning", name: "安國潮店散步", desc: "ZERO SPACE, Object, Tamburins", tag: "購物" },
-                { id: 103, type: "food", time: "Dinner", name: "烏達里家 (乙支路/明洞)", desc: "醬蟹專門店", tag: "晚餐" }
-            ]},
-            { id: 2, date: "12/26", day: "Day 2", title: "明洞 · 東大門 · 新堂", desc: "經典購物路線與地道辣雞爪", locations: [
-                { id: 201, type: "food", time: "Lunch", name: "韓牛一條街", desc: "退溪路享受高品質韓牛", tag: "午餐" },
-                { id: 202, type: "food", time: "Dinner", name: "新堂 友誼辣雞爪", desc: "韓國人最愛，辣得過癮", tag: "晚餐" }
-            ]},
-        ];
-
-        // --- Utility Functions ---
-        const getItemIcon = (type) => {
-            const icons = {
-                'food': { icon: Icons.Utensils, color: 'text-orange-500' },
-                'shop': { icon: Icons.ShoppingBag, color: 'text-pink-500' },
-                'cafe': { icon: Icons.Coffee, color: 'text-amber-600' },
-                'transport': { icon: Icons.Train, color: 'text-blue-500' },
-                'view': { icon: Icons.Moon, color: 'text-indigo-500' },
-                'rest': { icon: Icons.Home, color: 'text-green-500' },
-                'default': { icon: Icons.MapPin, color: 'text-slate-400' },
-            };
-            return icons[type] || icons['default'];
-        };
-
-        const generateId = () => Math.floor(Math.random() * 10000000);
-        
-        // --- Core Components ---
-
-        const EditableTripItem = ({ item, dayIndex, locationIndex, updateItem, deleteItem }) => {
-            const [isEditing, setIsEditing] = useState(false);
-            const [editData, setEditData] = useState(item);
-            const { icon: Icon, color } = getItemIcon(item.type);
-
-            const handleSave = () => {
-                updateItem(dayIndex, locationIndex, editData);
-                setIsEditing(false);
-            };
-
-            const handleChange = (e) => {
-                setEditData({ ...editData, [e.target.name]: e.target.value });
-            };
-
-            const handleDelete = () => {
-                if (window.confirm("確定要刪除這個行程項目嗎？")) {
-                     deleteItem(dayIndex, locationIndex);
-                }
-            };
-
-            return (
-                <div className={`rounded-2xl border transition-all duration-200 overflow-hidden bg-white shadow-sm hover:shadow-md ${isEditing ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-100'}`}>
-                    <div className="p-4">
-                        <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1">
-                                {isEditing ? (
-                                    <>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={editData.name}
-                                            onChange={handleChange}
-                                            className="font-bold text-slate-800 text-lg leading-snug w-full border-b border-slate-300 focus:border-blue-500 outline-none p-1 mb-1"
-                                            placeholder="地點名稱"
-                                        />
-                                        <input
-                                            type="text"
-                                            name="desc"
-                                            value={editData.desc}
-                                            onChange={handleChange}
-                                            className="text-sm text-slate-500 w-full border-b border-slate-300 focus:border-blue-500 outline-none p-1 mt-1"
-                                            placeholder="簡短描述"
-                                        />
-                                    </>
-                                ) : (
-                                    <>
-                                        <h3 className="font-bold text-slate-800 text-lg leading-snug">{item.name}</h3>
-                                        <p className="text-sm text-slate-500 mt-1 leading-relaxed">{item.desc}</p>
-                                    </>
-                                )}
-                            </div>
-                            <div className={`p-2 rounded-xl shrink-0 ${isEditing ? 'bg-blue-50' : 'bg-slate-50'}`}>
-                                <Icon size={18} className={color} />
-                            </div>
-                        </div>
-
-                        {/* Controls */}
-                        <div className="mt-3 flex gap-2">
-                            {isEditing ? (
-                                <button
-                                    onClick={handleSave}
-                                    className="flex items-center justify-center flex-1 py-2 bg-blue-500 text-white rounded-lg text-sm font-bold gap-1.5 hover:bg-blue-600 transition-colors shadow-md"
-                                >
-                                    <Icons.Save size={14} /> 儲存變更
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => setIsEditing(true)}
-                                    className="flex items-center justify-center flex-1 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-bold gap-1.5 hover:bg-slate-100 active:bg-slate-200 transition-colors"
-                                >
-                                    <Icons.Pencil size={14} /> 編輯
-                                </button>
-                            )}
-                             <button
-                                onClick={handleDelete}
-                                className={`flex items-center justify-center px-3 py-2 ${isEditing ? 'bg-red-100 text-red-600' : 'bg-slate-50 text-slate-400'} rounded-lg text-sm font-bold hover:bg-red-200 transition-colors`}
-                            >
-                                <Icons.Trash size={14} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const TripApp = () => {
-            const [itinerary, setItinerary] = useState(null);
-            const [activeDayIndex, setActiveDayIndex] = useState(0);
-            const [loading, setLoading] = useState(true);
-            const [userId, setUserId] = useState(null);
-            const [error, setError] = useState(null);
-
-            // --- Firestore Hooks & Logic ---
-
-            // 1. Initial Data Fetch / Listener Setup
-            useEffect(() => {
-                const handleAuthReady = (e) => {
-                    const authenticatedUserId = e.detail.userId;
-                    setUserId(authenticatedUserId);
-
-                    if (!window.db || !window.appId) {
-                        setError("資料庫未初始化，請檢查控制台。");
-                        setLoading(false);
-                        return;
-                    }
-
-                    // Firestore Path: /artifacts/{appId}/users/{userId}/trips/{docId}
-                    const docRef = doc(window.db, 
-                        `artifacts/${window.appId}/users/${authenticatedUserId}/trips`, 
-                        TRIP_DOC_ID
-                    );
-
-                    // Real-time listener
-                    const unsubscribe = onSnapshot(docRef, async (docSnap) => {
-                        if (docSnap.exists()) {
-                            // Data exists, load it
-                            console.log("Firestore: Document data loaded.");
-                            setItinerary(docSnap.data().data);
-                        } else {
-                            // Document does not exist, initialize with default data
-                            console.log("Firestore: No document found. Initializing...");
-                            const initialData = {
-                                createdAt: new Date(),
-                                data: DEFAULT_ITINERARY_DATA
-                            };
-                            await setDoc(docRef, initialData).catch(e => console.error("Error setting initial doc:", e));
-                            setItinerary(DEFAULT_ITINERARY_DATA);
-                        }
-                        setLoading(false);
-                    }, (err) => {
-                        console.error("Firestore Error:", err);
-                        setError(`資料讀取錯誤: ${err.message}`);
-                        setLoading(false);
-                    });
-
-                    return () => unsubscribe();
-                };
-
-                window.addEventListener('authReady', handleAuthReady);
-                
-                // Fallback for immediate load if auth is somehow ready before effect runs
-                if (window.globalUserId) {
-                    handleAuthReady({ detail: { userId: window.globalUserId } });
-                }
-
-                return () => window.removeEventListener('authReady', handleAuthReady);
-            }, []); // Run only once on mount
-
-            // 2. Data Update Function
-            const updateFirestore = useCallback(async (newItinerary) => {
-                if (!window.db || !userId) return;
-
-                const docRef = doc(window.db, 
-                    `artifacts/${window.appId}/users/${userId}/trips`, 
-                    TRIP_DOC_ID
-                );
-                
-                try {
-                    await updateDoc(docRef, { data: newItinerary, updatedAt: new Date() });
-                    console.log("Firestore: Data updated successfully.");
-                } catch (e) {
-                    console.error("Error updating document:", e);
-                    setError("數據保存失敗，請檢查網絡。");
-                }
-            }, [userId]);
-
-            // --- UI/State Management Functions ---
-
-            const updateItem = useCallback((dayIndex, locationIndex, newLocData) => {
-                const newItinerary = [...itinerary];
-                newItinerary[dayIndex].locations[locationIndex] = newLocData;
-                setItinerary(newItinerary);
-                updateFirestore(newItinerary);
-            }, [itinerary, updateFirestore]);
-
-            const deleteItem = useCallback((dayIndex, locationIndex) => {
-                const newItinerary = [...itinerary];
-                newItinerary[dayIndex].locations.splice(locationIndex, 1);
-                setItinerary(newItinerary);
-                updateFirestore(newItinerary);
-            }, [itinerary, updateFirestore]);
-            
-            const addItem = useCallback((dayIndex) => {
-                const newItinerary = [...itinerary];
-                const newLocation = {
-                    id: generateId(),
-                    type: "default",
-                    time: "Time",
-                    name: "新增地點 (點擊編輯)",
-                    desc: "點擊編輯按鈕修改細節",
-                    tag: "新增"
-                };
-                newItinerary[dayIndex].locations.push(newLocation);
-                setItinerary(newItinerary);
-                updateFirestore(newItinerary);
-            }, [itinerary, updateFirestore]);
-
-            // --- Render Logic ---
-
-            if (loading) {
-                return (
-                    <div className="min-h-screen flex items-center justify-center">
-                        <p className="text-xl font-semibold text-slate-500 flex items-center gap-2">
-                            <Icons.RefreshCw size={20} className="animate-spin" />
-                            載入行程數據中...
-                        </p>
-                    </div>
-                );
-            }
-
-            if (error) {
-                 return (
-                    <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center bg-red-50">
-                        <Icons.X size={36} className="text-red-500 mb-4" />
-                        <h2 className="text-xl font-bold text-red-700">數據庫連接錯誤</h2>
-                        <p className="text-red-600 mt-2">{error}</p>
-                        <p className="text-sm text-red-500 mt-4">請檢查控制台 (Console) 或重新整理頁面。</p>
-                        <p className="text-xs text-slate-400 mt-8">User ID: {userId || 'N/A'}</p>
-                    </div>
-                );
-            }
-            
-            const activeDay = itinerary[activeDayIndex];
-
-            return (
-                <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 max-w-md mx-auto shadow-2xl">
-                    {/* Header */}
-                    <div className="bg-white px-5 pt-8 pb-4 shadow-sm rounded-b-3xl sticky top-0 z-30">
-                        <div className="flex justify-between items-center mb-2">
-                            <div>
-                                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">首爾行程規劃器</h1>
-                                <p className="text-slate-500 text-sm font-medium">資料庫狀態: <span className="text-green-500 font-bold">已連接 (Firestore)</span></p>
-                            </div>
-                        </div>
-                        <p className="text-[10px] text-slate-400 font-mono mt-1 break-all">
-                            User ID: {userId} (請勿外洩此 ID)
-                        </p>
-                    </div>
-
-                    {/* Date Tabs */}
-                    <div className="sticky top-[108px] z-20 bg-slate-50/95 backdrop-blur-md pt-4 pb-2 px-4 overflow-x-auto no-scrollbar border-b border-slate-200/50">
-                        <div className="flex gap-2 min-w-max">
-                        {itinerary.map((item, index) => (
-                            <button
-                            key={item.id}
-                            onClick={() => setActiveDayIndex(index)}
-                            className={`flex flex-col items-center justify-center w-[72px] py-2 rounded-xl transition-all duration-200 ${
-                                activeDayIndex === index
-                                ? 'bg-slate-900 text-white shadow-md transform scale-105'
-                                : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-100'
-                            }`}
-                            >
-                            <span className="text-[10px] font-bold uppercase opacity-80">{item.day}</span>
-                            <span className={`text-base font-bold leading-none mt-0.5 ${activeDayIndex === index ? 'text-blue-300' : 'text-slate-600'}`}>
-                                {item.date.split('/')[1]}
-                            </span>
-                            </button>
-                        ))}
-                        </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="px-5 mt-6">
-                        <div className="mb-6 animate-fade-in">
-                            <h2 className="text-xl font-bold text-slate-900">{activeDay.title}</h2>
-                            <p className="text-sm text-slate-500 mt-1">{activeDay.desc}</p>
-                        </div>
-
-                        <div className="relative border-l-2 border-slate-200 ml-3 space-y-8 pb-10">
-                            {activeDay.locations.map((loc, idx) => (
-                                <div key={loc.id} className="relative pl-8 group">
-                                    {/* Timeline Dot */}
-                                    <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-slate-800 transition-colors`}></div>
-                                    
-                                    {/* Time & Tag (Editable in place) */}
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <input
-                                            type="text"
-                                            value={loc.time}
-                                            onChange={(e) => {
-                                                const newItinerary = [...itinerary];
-                                                newItinerary[activeDayIndex].locations[idx].time = e.target.value;
-                                                setItinerary(newItinerary);
-                                                // Optional: Debounce or save on blur for time field
-                                            }}
-                                            onBlur={() => updateFirestore(itinerary)}
-                                            className="text-xs font-bold text-slate-600 uppercase tracking-wide w-20 p-1 rounded border border-slate-200 focus:border-blue-400 outline-none"
-                                            placeholder="時間"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={loc.tag}
-                                            onChange={(e) => {
-                                                const newItinerary = [...itinerary];
-                                                newItinerary[activeDayIndex].locations[idx].tag = e.target.value;
-                                                setItinerary(newItinerary);
-                                                // Optional: Debounce or save on blur for tag field
-                                            }}
-                                            onBlur={() => updateFirestore(itinerary)}
-                                            className={`text-[10px] font-bold px-2 py-0.5 rounded text-white bg-slate-400 w-auto max-w-24 p-1 rounded border border-slate-200 focus:border-blue-400 outline-none`}
-                                            placeholder="標籤"
-                                            style={{ backgroundColor: loc.tag ? 'var(--tw-color-blue-500)' : 'var(--tw-color-slate-400)' }}
-                                        />
-                                    </div>
-
-                                    <EditableTripItem 
-                                        item={loc}
-                                        dayIndex={activeDayIndex}
-                                        locationIndex={idx}
-                                        updateItem={updateItem}
-                                        deleteItem={deleteItem}
-                                    />
-                                </div>
-                            ))}
-                            
-                            {/* Add New Item Button */}
-                            <div className="relative pl-8">
-                                <div className="absolute -left-[9px] top-4 w-4 h-4 rounded-full bg-slate-300 border-4 border-slate-50"></div>
-                                <button
-                                    onClick={() => addItem(activeDayIndex)}
-                                    className="mt-4 flex items-center justify-center w-full py-3 bg-indigo-500 text-white rounded-xl text-md font-bold gap-2 hover:bg-indigo-600 active:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
-                                >
-                                    <Icons.Plus size={18} />
-                                    新增行程項目
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Footer */}
-                    <div className="text-center pb-8 pt-4 border-t border-slate-100 mt-4">
-                        <p className="text-xs text-slate-300 font-medium">Data persisted via Firestore • 2024</p>
-                    </div>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<TripApp />);
-    </script>
+                       {/* Title and Description */}
+<div className="flex items-start justify-between gap-3">
+<div className="flex-1">
+                               {isEditing ? (
+<>
+<input
+                                           type="text"
+                                           name="name"
+                                           value={editData.name}
+                                           onChange={handleChange}
+                                           className="font-bold text-slate-800 text-lg leading-snug w-full border-b border-slate-300 focus:border-blue-500 outline-none p-1 mb-1"
+                                           placeholder="地點名稱"
+                                       />
+<textarea
+                                           name="desc"
+                                           value={editData.desc}
+                                           onChange={handleChange}
+                                           className="text-sm text-slate-500 w-full border-b border-slate-300 focus:border-blue-500 outline-none p-1 mt-1 resize-none h-16"
+                                           placeholder="簡短描述"
+                                       />
+</>
+                               ) : (
+<>
+<h3 className="font-bold text-slate-800 text-lg leading-snug">{item.name}</h3>
+<p className="text-sm text-slate-500 mt-1 leading-relaxed whitespace-pre-wrap">{item.desc}</p>
+</>
+                               )}
+</div>
+<div className={`p-2 rounded-xl shrink-0 ${bgColor}`}>
+<Icon size={18} className={color} />
+</div>
+</div>
+                       {/* Controls */}
+<div className="mt-4 flex gap-2">
+                           {isEditing ? (
+<button
+                                   onClick={handleSave}
+                                   className="flex items-center justify-center flex-1 py-2 bg-blue-500 text-white rounded-lg text-sm font-bold gap-1.5 hover:bg-blue-600 transition-colors shadow-md"
+>
+<Icons.Check size={14} /> 完成編輯
+</button>
+                           ) : (
+<button
+                                   onClick={() => setIsEditing(true)}
+                                   className="flex items-center justify-center flex-1 py-2 bg-slate-50 text-slate-600 rounded-lg text-sm font-bold gap-1.5 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+>
+<Icons.Pencil size={14} /> 編輯詳情
+</button>
+                           )}
+<button
+                               onClick={handleDelete}
+                               className={`flex items-center justify-center px-3 py-2 ${isEditing ? 'bg-red-100 text-red-600' : 'bg-slate-50 text-slate-400'} rounded-lg text-sm font-bold hover:bg-red-200 transition-colors`}
+>
+<Icons.Trash size={14} />
+</button>
+</div>
+</div>
+</div>
+           );
+       };
+       const TripApp = () => {
+           const [itinerary, setItinerary] = useState(null);
+           const [activeDayIndex, setActiveDayIndex] = useState(0);
+           const [loading, setLoading] = useState(true);
+           const [isSaved, setIsSaved] = useState(false); // For user feedback
+           // --- Local Storage Logic ---
+           // 1. Initial Load from Local Storage
+           useEffect(() => {
+               try {
+                   const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+                   if (savedData) {
+                       setItinerary(JSON.parse(savedData));
+                       console.log("Local Storage: Data loaded successfully.");
+                   } else {
+                       // Initialize with default data
+                       setItinerary(DEFAULT_ITINERARY_DATA);
+                       console.log("Local Storage: No data found. Initializing with default.");
+                   }
+               } catch (e) {
+                   console.error("Local Storage Error on load:", e);
+                   setItinerary(DEFAULT_ITINERARY_DATA);
+               } finally {
+                   setLoading(false);
+               }
+           }, []); // Run only once on mount
+           // 2. Data Write to Local Storage
+           const saveToLocalStorage = useCallback((newItinerary) => {
+               if (!newItinerary) return;
+               try {
+                   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newItinerary));
+                   setItinerary(newItinerary); // Update React state
+                   setIsSaved(true); // Trigger save feedback
+                   setTimeout(() => setIsSaved(false), 2000);
+                   console.log("Local Storage: Data saved.");
+               } catch (e) {
+                   console.error("Local Storage Error on save:", e);
+                   // Optionally show a save error message to the user
+               }
+           }, []);
+           // --- UI/State Management Functions ---
+           const updateItem = useCallback((dayIndex, locationIndex, newLocData) => {
+               const newItinerary = [...itinerary];
+               newItinerary[dayIndex].locations[locationIndex] = newLocData;
+               saveToLocalStorage(newItinerary);
+           }, [itinerary, saveToLocalStorage]);
+           const deleteItem = useCallback((dayIndex, locationIndex) => {
+               const newItinerary = [...itinerary];
+               newItinerary[dayIndex].locations.splice(locationIndex, 1);
+               saveToLocalStorage(newItinerary);
+           }, [itinerary, saveToLocalStorage]);
+           const addItem = useCallback((dayIndex) => {
+               const newItinerary = [...itinerary];
+               const newLocation = {
+                   id: generateId(),
+                   type: "default",
+                   time: "Time",
+                   name: "新增地點",
+                   desc: "點擊編輯詳情，修改地點名稱、描述和時間。",
+                   tag: "新增"
+               };
+               newItinerary[dayIndex].locations.push(newLocation);
+               saveToLocalStorage(newItinerary);
+           }, [itinerary, saveToLocalStorage]);
+           const addNewDay = useCallback(() => {
+               const newItinerary = [...itinerary];
+               const lastDay = newItinerary[newItinerary.length - 1];
+               const nextDay = newItinerary.length + 1;
+               const newDay = {
+                   id: generateId(),
+                   date: "新日期",
+                   day: `Day ${nextDay}`,
+                   title: "新增行程日",
+                   desc: "點擊日期標籤進行修改",
+                   locations: [{
+                        id: generateId(),
+                        type: "default",
+                        time: "10:00",
+                        name: "新增首個地點",
+                        desc: "這是新一天的第一個行程項目。",
+                        tag: "開始"
+                   }]
+               };
+               newItinerary.push(newDay);
+               saveToLocalStorage(newItinerary);
+               setActiveDayIndex(newItinerary.length - 1); // Switch to the new day
+           }, [itinerary, saveToLocalStorage]);
+           const updateDayHeader = useCallback((index, field, value) => {
+               const newItinerary = [...itinerary];
+               newItinerary[index][field] = value;
+               saveToLocalStorage(newItinerary);
+           }, [itinerary, saveToLocalStorage]);
+           // --- Render Logic ---
+           if (loading || !itinerary) {
+               return (
+<div className="min-h-screen flex items-center justify-center">
+<p className="text-xl font-semibold text-slate-500 flex items-center gap-2">
+<Icons.Clock size={20} className="animate-spin" />
+                           載入行程數據中...
+</p>
+</div>
+               );
+           }
+           const activeDay = itinerary[activeDayIndex];
+           return (
+<div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 max-w-md mx-auto shadow-2xl">
+                   {/* Floating Save Indicator */}
+<div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-opacity duration-300 ${isSaved ? 'opacity-100' : 'opacity-0'}`}>
+<div className="bg-green-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+<Icons.Check size={16} /> 數據已保存
+</div>
+</div>
+                   {/* Header */}
+<div className="bg-white px-5 pt-8 pb-4 shadow-sm rounded-b-3xl sticky top-0 z-30">
+<div className="flex justify-between items-center mb-2">
+<div>
+<h1 className="text-2xl font-bold text-slate-900 tracking-tight">首爾行程規劃器</h1>
+<p className="text-slate-500 text-sm font-medium">狀態: <span className="text-green-500 font-bold">本地儲存 (已啟用編輯)</span></p>
+</div>
+</div>
+</div>
+                   {/* Date Tabs */}
+<div className="sticky top-[108px] z-20 bg-slate-50/95 backdrop-blur-md pt-4 pb-2 px-4 overflow-x-auto no-scrollbar border-b border-slate-200/50">
+<div className="flex gap-2 min-w-max">
+                       {itinerary.map((item, index) => (
+<button
+                           key={item.id}
+                           onClick={() => setActiveDayIndex(index)}
+                           className={`flex flex-col items-center justify-center w-[72px] py-2 rounded-xl transition-all duration-200 ${
+                               activeDayIndex === index
+                               ? 'bg-indigo-600 text-white shadow-md transform scale-105'
+                               : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-100'
+                           }`}
+>
+<span className="text-[10px] font-bold uppercase opacity-80">{item.day}</span>
+<input
+                               type="text"
+                               value={item.date}
+                               onChange={(e) => updateDayHeader(index, 'date', e.target.value)}
+                               onBlur={() => saveToLocalStorage(itinerary)}
+                               className={`text-sm font-bold leading-none mt-0.5 w-full bg-transparent text-center outline-none ${activeDayIndex === index ? 'text-indigo-200' : 'text-slate-600'}`}
+                           />
+</button>
+                       ))}
+<button
+                               onClick={addNewDay}
+                               className="flex flex-col items-center justify-center w-[72px] py-2 rounded-xl bg-slate-100 text-slate-500 border border-dashed border-slate-300 hover:bg-slate-200 transition-colors"
+>
+<Icons.Plus size={16} />
+<span className="text-[10px] font-bold mt-1">新一天</span>
+</button>
+</div>
+</div>
+                   {/* Content */}
+<div className="px-5 mt-6">
+<div className="mb-6 animate-fade-in">
+<input
+                               type="text"
+                               value={activeDay.title}
+                               onChange={(e) => updateDayHeader(activeDayIndex, 'title', e.target.value)}
+                               onBlur={() => saveToLocalStorage(itinerary)}
+                               className="text-xl font-bold text-slate-900 w-full bg-transparent border-b border-slate-200 focus:border-indigo-500 outline-none p-1 mb-1"
+                           />
+<textarea
+                               value={activeDay.desc}
+                               onChange={(e) => updateDayHeader(activeDayIndex, 'desc', e.target.value)}
+                               onBlur={() => saveToLocalStorage(itinerary)}
+                               className="text-sm text-slate-500 mt-1 w-full bg-transparent border-b border-slate-200 focus:border-indigo-500 outline-none p-1 resize-none h-10"
+                           />
+</div>
+<div className="relative border-l-4 border-indigo-200 ml-3 space-y-8 pb-10">
+                           {activeDay.locations.map((loc, idx) => (
+<div key={loc.id} className="relative pl-8 group">
+                                   {/* Timeline Dot */}
+<div className="timeline-dot absolute -left-[9px] top-4 w-4 h-4 rounded-full bg-indigo-600 transition-all"></div>
+<EditableTripItem
+                                       item={loc}
+                                       dayIndex={activeDayIndex}
+                                       locationIndex={idx}
+                                       updateItem={updateItem}
+                                       deleteItem={deleteItem}
+                                   />
+</div>
+                           ))}
+                           {/* Add New Item Button */}
+<div className="relative pl-8">
+<div className="absolute -left-[9px] top-4 w-4 h-4 rounded-full bg-slate-300 border-4 border-slate-50"></div>
+<button
+                                   onClick={() => addItem(activeDayIndex)}
+                                   className="mt-4 flex items-center justify-center w-full py-3 bg-indigo-500 text-white rounded-xl text-md font-bold gap-2 hover:bg-indigo-600 active:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+>
+<Icons.Plus size={18} />
+                                   新增行程項目
+</button>
+</div>
+</div>
+</div>
+                   {/* Footer */}
+<div className="text-center pb-8 pt-4 border-t border-slate-100 mt-4">
+<p className="text-xs text-slate-300 font-medium">數據儲存於您的瀏覽器 (Local Storage)</p>
+</div>
+</div>
+           );
+       };
+       const root = ReactDOM.createRoot(document.getElementById('root'));
+       root.render(<TripApp />);
+</script>
 </body>
 </html>
