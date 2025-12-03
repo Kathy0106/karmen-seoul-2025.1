@@ -1066,23 +1066,32 @@
 
     /* ====== 天氣 ====== */
     async function fetchWeatherForDay(index){
-      const d = trip.days[index];
-      const cityQuery = (d.city || "Seoul") + ",KR";
-      try{
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityQuery)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
-        const res = await fetch(url);
-        if(!res.ok) throw new Error("HTTP "+res.status);
-        const data = await res.json();
-        d.weather.temp = Math.round(data.main.temp).toString();
-        d.weather.low  = Math.round(data.main.temp_min).toString();
-        d.weather.feel = Math.round(data.main.feels_like).toString();
-        d.weather.text = (data.weather && data.weather[0] && data.weather[0].description) || "";
-        saveAll();
-      }catch(e){
-        console.error(e);
-        alert("取得天氣失敗，可以之後再試一次。");
-      }
-    }
+  const d = trip.days[index];
+  const cityQuery = (d.city || "Seoul") + ",KR";
+  try{
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityQuery)}&units=metric&lang=zh_tw&appid=${API_KEY}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const data = await res.json();
+
+    const w0 = data.weather && data.weather[0] ? data.weather[0] : null;
+
+    d.weather.temp = Math.round(data.main.temp).toString();
+    d.weather.low  = Math.round(data.main.temp_min).toString();
+    d.weather.feel = Math.round(data.main.feels_like).toString();
+    d.weather.text = w0 ? (w0.description || "") : "";
+
+    // ⭐ 新增：儲存 id / main / icon，俾 emoji 用
+    d.weather.id    = w0 ? w0.id   : null;
+    d.weather.main  = w0 ? w0.main : "";
+    d.weather.icon  = w0 ? w0.icon : "";
+
+    saveAll();
+  }catch(e){
+    console.error(e);
+    alert("取得天氣失敗，可以之後再試一次。");
+  }
+}
 
     async function updateAllWeather(){
       for(let i=0;i<trip.days.length;i++){
@@ -1103,7 +1112,30 @@
         default:return "其他";
       }
     }
+// 根據 OpenWeather 天氣資料，決定用咩 emoji
+function getWeatherEmoji(w){
+  const id = w && w.id ? w.id : 0;
+  const main = (w && w.main ? w.main : "").toLowerCase();
+  const text = (w && w.text ? w.text : "").toLowerCase();
 
+  // 有 id 就用 id 判斷
+  if(id >= 200 && id < 300) return "⛈️";        // Thunderstorm
+  if(id >= 300 && id < 600) return "🌧️";        // Drizzle / Rain
+  if(id >= 600 && id < 700) return "❄️";        // Snow
+  if(id >= 700 && id < 800) return "🌫️";        // Mist / Fog / Haze…
+  if(id === 800)             return "☀️";        // Clear sky
+  if(id > 800 && id < 900)   return "☁️";        // Clouds
+
+  // 冇 id 或者好奇怪嘅情況，就用文字再估多次
+  if(main.includes("thunder")) return "⛈️";
+  if(main.includes("rain") || text.includes("雨")) return "🌧️";
+  if(main.includes("snow") || text.includes("雪")) return "❄️";
+  if(main.includes("cloud")) return "☁️";
+  if(main.includes("clear")) return "☀️";
+
+  // default
+  return "🌤";
+}
     /* ====== 行程渲染 ====== */
     function renderItinerary(){
       const d = trip.days[currentDayIndex];
