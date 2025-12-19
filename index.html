@@ -2,183 +2,539 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首爾聖誕旅行儀表板</title>
-    <!-- 引入 Tailwind CSS for modern mobile-first styling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>首爾聖誕之旅 2025</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: #F1F5F9; /* 冬日灰白背景 */
+            overscroll-behavior-y: none;
         }
-        /* 自定義滾動條樣式 */
-        .scrollable-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        .scrollable-content::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .soft-shadow { box-shadow: 0 4px 20px rgba(71, 85, 105, 0.15); }
     </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // 新主題：首爾冬日 (Seoul Winter) - 靛藍配聖誕紅
+                        seoul: {
+                            100: '#F1F5F9', // 背景
+                            200: '#E2E8F0', 
+                            300: '#CBD5E1',
+                            500: '#64748B', // 文字灰
+                            600: '#475569', // 主標題
+                            800: '#1E293B', // 深色
+                            accent: '#3B82F6', // 亮藍
+                            festive: '#EF4444', // 聖誕紅
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="p-4 bg-gray-100 min-h-screen">
+<body class="text-slate-700 h-screen w-screen overflow-hidden flex flex-col">
 
-    <div class="max-w-xl mx-auto space-y-6">
+    <div id="app" class="h-full flex flex-col relative">
 
-        <!-- 旅行標題與日期 -->
-        <header class="text-center pt-2 pb-4">
-            <h1 class="text-3xl font-bold text-gray-800">首爾聖誕之旅 🇰🇷</h1>
-            <p class="text-md text-gray-500 mt-1">2025年12月25日 - 12月29日 (5日4夜)</p>
-        </header>
-
-        <!-- 總預算卡片 -->
-        <div class="bg-indigo-600 text-white p-6 rounded-xl shadow-xl transform transition duration-300 hover:scale-[1.01]">
-            <div class="flex justify-between items-center">
-                <div>
-                    <div class="text-sm opacity-80">總旅行預算</div>
-                    <div class="text-4xl font-extrabold mt-1">$15,000 <span class="text-2xl font-normal">HKD</span></div>
-                </div>
-                <div class="text-right">
-                    <div class="text-sm opacity-80">剩餘預算</div>
-                    <div class="text-2xl font-bold">$11,800 <span class="text-xl font-normal">HKD</span></div>
-                    <div class="text-xs mt-1 bg-indigo-700 py-1 px-2 rounded-full inline-block">已花費 $3,200</div>
-                </div>
+        <div class="relative h-[250px] flex-shrink-0 bg-cover bg-center transition-all duration-500"
+             style="background-image: url('./header.png'), url('./header.jpg');">
+            
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/60"></div>
+            
+            <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
+                <button @click="currentTab = 'itinerary'" :class="tabClass('itinerary')">
+                    <i class="fa-solid fa-map-location-dot text-lg"></i>
+                </button>
+                <button @click="currentTab = 'info'" :class="tabClass('info')">
+                    <i class="fa-solid fa-circle-info text-lg"></i>
+                </button>
+                <button @click="currentTab = 'shopping'" :class="tabClass('shopping')">
+                    <i class="fa-solid fa-basket-shopping text-lg"></i>
+                </button>
+                <button @click="currentTab = 'expenses'" :class="tabClass('expenses')">
+                    <i class="fa-solid fa-won-sign text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="absolute bottom-10 left-6 text-white text-shadow drop-shadow-lg">
+                <h1 class="text-2xl font-bold tracking-widest">SEOUL 2025</h1>
+                <p class="text-sm opacity-90"><i class="fa-regular fa-snowflake mr-1"></i>Christmas & Shopping</p>
             </div>
         </div>
 
-        <!-- ** 已修復的即時對換率卡片 (核心修復位置) ** -->
-        <div class="bg-white p-6 rounded-xl shadow-xl border-l-4 border-green-500">
-            <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center">
-                <svg class="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.485 0-4 1.5-4 3.5s1.515 3.5 4 3.5 4-1.5 4-3.5S14.485 8 12 8zM12 2a10 10 0 100 20 10 10 0 000-20z"></path></svg>
-                即時對換率 (HKD/KRW)
-            </h2>
+        <div class="flex-1 bg-seoul-100 rounded-t-[30px] -mt-6 relative z-10 overflow-hidden flex flex-col shadow-[0_-5px_20px_rgba(0,0,0,0.1)]">
             
-            <!-- 匯率顯示區域 -->
-            <div id="exchange-rate-display" class="text-4xl font-extrabold text-gray-900 mb-2">
-                正在加載中...
-            </div>
-            
-            <!-- 資料來源/狀態顯示區域 -->
-            <p class="text-sm text-gray-500" id="last-updated">
-                資料來源: 初始化中...
-            </p>
+            <div class="flex-1 overflow-y-auto no-scrollbar p-5 pb-24">
 
-            <button onclick="fetchExchangeRate()" class="mt-4 px-3 py-1 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-200 text-sm">
-                重新整理匯率
-            </button>
+                <div v-if="currentTab === 'itinerary'">
+                    
+                    <div class="flex space-x-3 overflow-x-auto no-scrollbar mb-6 py-2">
+                        <div v-for="(day, index) in days" :key="index" 
+                             @click="selectedDayIndex = index"
+                             class="flex-shrink-0 flex flex-col items-center justify-center w-16 h-20 rounded-2xl transition-all duration-300 snap-center cursor-pointer border border-white/50"
+                             :class="selectedDayIndex === index ? 'bg-seoul-800 text-white shadow-lg scale-105' : 'bg-white text-gray-400'">
+                            <span class="text-xs font-bold uppercase">{{ day.weekday }}</span>
+                            <span class="text-xl font-bold">{{ day.date }}</span>
+                            <span class="text-[10px] opacity-80">Day {{ index + 1 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl p-4 mb-12 flex items-center justify-between shadow-sm text-slate-700">
+                        <div>
+                            <div class="text-xs opacity-70 flex items-center gap-1">
+                                <i class="fa-solid fa-location-dot"></i> {{ weather.city_name }}
+                            </div>
+                            <div class="text-2xl font-bold">{{ weather.temp }}°C <span class="text-sm font-normal text-gray-500">體感 {{ weather.feels_like }}°C</span></div>
+                        </div>
+                        <i :class="['fa-solid', weather.icon, 'text-4xl text-blue-400 drop-shadow-sm']"></i>
+                    </div>
+
+                    <div class="space-y-0 relative">
+                        <div class="absolute left-[22px] top-4 bottom-4 w-0.5 bg-slate-300 opacity-50 z-0"></div>
+
+                        <div v-for="(item, idx) in currentDayItinerary" :key="item.id" class="relative pl-12 pb-14 group">
+                            
+                            <div v-if="idx > 0" class="absolute -top-9 left-12 right-0 flex items-center text-xs text-slate-500 mb-2 z-50">
+                                <span class="bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 flex items-center gap-1 shadow-sm">
+                                    <i :class="getTransportIcon(item.transportType)"></i>
+                                    {{ item.travelTime || '移動' }}
+                                </span>
+                            </div>
+
+                            <div class="absolute left-0 top-4 w-11 h-11 rounded-full bg-white border-4 border-slate-200 flex items-center justify-center z-10 shadow-sm text-slate-600 font-bold text-xs">
+                                {{ item.time.split(':')[0] }}
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-4 soft-shadow relative overflow-hidden transition-all active:scale-95"
+                                 :class="{'border-l-4 border-blue-400': item.category === 'flight', 'border-l-4 border-seoul-800': item.category !== 'flight'}">
+                                
+                                <div @click="openMap(item.location)">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ item.time }} • {{ itemCategoryName(item.category) }}</div>
+                                        <div class="flex gap-2">
+                                            <button @click.stop="moveItem(idx, -1)" v-if="idx > 0" class="text-gray-300 hover:text-seoul-600"><i class="fa-solid fa-chevron-up"></i></button>
+                                            <button @click.stop="moveItem(idx, 1)" v-if="idx < currentDayItinerary.length - 1" class="text-gray-300 hover:text-seoul-600"><i class="fa-solid fa-chevron-down"></i></button>
+                                            <button @click.stop="deleteItem(item.id)" class="text-gray-300 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <h3 class="text-lg font-bold mb-1 leading-tight text-slate-800">{{ item.title }}</h3>
+                                    
+                                    <div class="text-sm text-gray-500 mb-2 flex items-start gap-1" v-if="item.desc">
+                                        <i class="fa-regular fa-note-sticky mt-0.5 text-xs flex-shrink-0 text-blue-400"></i>
+                                        <span class="whitespace-pre-line">{{ item.desc }}</span>
+                                    </div>
+
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span v-if="item.desc && item.desc.includes('辣')" class="text-[10px] bg-red-50 text-red-500 px-2 py-1 rounded-md font-bold border border-red-100">
+                                            <i class="fa-solid fa-pepper-hot mr-1"></i>小心辣
+                                        </span>
+                                        <span v-if="item.desc && item.desc.includes('凍')" class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded-md font-bold border border-blue-100">
+                                            <i class="fa-regular fa-snowflake mr-1"></i>注意保暖
+                                        </span>
+                                        <span v-if="item.location" class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-md">
+                                            <i class="fa-solid fa-location-arrow mr-1"></i>Naver Map
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="currentDayItinerary.length === 0" class="text-center text-gray-400 py-10">
+                            <i class="fa-solid fa-calendar-plus text-4xl mb-3 text-slate-200"></i>
+                            <p>點擊右下角新增行程</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentTab === 'info'" class="space-y-6">
+                    
+                    <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 text-indigo-800">
+                        <div class="font-bold mb-2"><i class="fa-regular fa-lightbulb mr-2"></i>首爾小貼士</div>
+                        <ul class="text-xs space-y-2 list-disc pl-4 opacity-90">
+                            <li><strong>地圖:</strong> 用 NAVER Map 複製韓文地址最準，Google Map 唔準。</li>
+                            <li><strong>天氣:</strong> 12月尾非常凍(零下)，戶外行程帶手套暖包！</li>
+                            <li><strong>交通:</strong> Day 3 去恩平韓屋村要轉巴士，預鬆時間。</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 soft-shadow">
+                        <h3 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-coins mr-2"></i>匯率換算 (KRW)</h3>
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="flex-1 bg-gray-50 rounded-lg p-2 flex items-center">
+                                <span class="text-gray-400 mr-2 text-sm">KRW</span>
+                                <input type="number" v-model="calcJpy" @input="convert('jpy')" class="w-full bg-transparent outline-none font-bold text-lg" placeholder="0">
+                            </div>
+                            <i class="fa-solid fa-arrow-right-arrow-left text-gray-300"></i>
+                            <div class="flex-1 bg-gray-50 rounded-lg p-2 flex items-center">
+                                <span class="text-gray-400 mr-2 text-sm">HKD</span>
+                                <input type="number" v-model="calcHkd" @input="convert('hkd')" class="w-full bg-transparent outline-none font-bold text-lg" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="text-right text-xs text-gray-400">匯率: {{ exchangeRate }} (KRW -> HKD)</div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-0 soft-shadow overflow-hidden">
+                        <div class="bg-seoul-800 p-3 text-white font-bold flex justify-between">
+                            <span><i class="fa-solid fa-plane mr-2"></i>航班 (HK Express)</span>
+                        </div>
+                        <div class="p-5">
+                            <div class="mb-4">
+                                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                    <span>12/25 去程 (HKG → ICN)</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <div class="text-2xl font-bold text-slate-700">10:00</div>
+                                    <div class="h-0.5 w-10 bg-gray-200 relative flex justify-center">
+                                        <i class="fa-solid fa-plane text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                    </div>
+                                    <div class="text-2xl font-bold text-slate-700">12:30</div>
+                                </div>
+                                <div class="flex justify-between text-sm font-bold bg-slate-50 text-slate-700 p-2 rounded-lg">
+                                    <span>UO 626</span>
+                                    <span>香港 → 仁川</span>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-dashed border-gray-200 my-4"></div>
+
+                            <div>
+                                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                    <span>12/29 回程 (ICN → HKG)</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <div class="text-2xl font-bold text-slate-700">18:00</div>
+                                    <div class="h-0.5 w-10 bg-gray-200 relative flex justify-center">
+                                        <i class="fa-solid fa-plane text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                                    </div>
+                                    <div class="text-2xl font-bold text-slate-700">21:00</div>
+                                </div>
+                                <div class="flex justify-between text-sm font-bold bg-slate-50 text-slate-700 p-2 rounded-lg mb-2">
+                                    <span>UO 631</span>
+                                    <span>仁川 → 香港</span>
+                                </div>
+                                <a href="https://www.google.com/search?q=UO631+flight+status" target="_blank" class="block w-full text-center py-2 rounded-lg border border-gray-300 text-gray-500 text-sm font-bold hover:bg-gray-50 transition-colors">
+                                    <i class="fa-solid fa-wifi mr-1"></i> 查看即時狀態
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-gray-500 ml-1">住宿列表</h3>
+                        <div v-for="hotel in hotels" :key="hotel.name" class="bg-white rounded-2xl p-4 soft-shadow flex items-center gap-4" @click="openMap(hotel.name)">
+                            <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 text-xl">
+                                <i class="fa-solid fa-bed"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm">{{ hotel.name }}</h4>
+                                <p class="text-xs text-gray-400 mt-1">{{ hotel.dates }}</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentTab === 'shopping'">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div v-for="item in shoppingList" :key="item.id" class="bg-white rounded-xl p-3 soft-shadow relative group">
+                            <button @click="removeShoppingItem(item.id)" class="absolute top-2 right-2 bg-white/80 rounded-full w-6 h-6 flex items-center justify-center text-red-400 shadow-sm z-10"><i class="fa-solid fa-xmark"></i></button>
+                            <div class="aspect-square bg-gray-100 rounded-lg mb-2 overflow-hidden bg-cover bg-center" 
+                                 :style="item.image ? `background-image: url(${item.image})` : ''">
+                                 <div v-if="!item.image" class="w-full h-full flex items-center justify-center text-gray-300">
+                                    <i class="fa-solid fa-image"></i>
+                                 </div>
+                            </div>
+                            <h4 class="font-bold text-sm text-center truncate">{{ item.name }}</h4>
+                        </div>
+                    </div>
+                    <div v-if="shoppingList.length === 0" class="text-center text-gray-400 mt-10">
+                        <p>尚無購物清單</p>
+                        <p class="text-xs mt-2">Olive Young 衝呀！</p>
+                    </div>
+                </div>
+
+                <div v-if="currentTab === 'expenses'">
+                    <div class="bg-seoul-800 text-white rounded-2xl p-6 mb-6 shadow-lg text-center">
+                        <div class="text-sm opacity-80 mb-1">總花費 (韓圜)</div>
+                        <div class="text-4xl font-bold">₩{{ totalExpenses.toLocaleString() }}</div>
+                        <div class="text-xs opacity-70 mt-1">≈ HK$ {{ (totalExpenses * exchangeRate).toFixed(1) }}</div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div v-for="exp in expenses" :key="exp.id" class="bg-white rounded-xl p-4 soft-shadow flex justify-between items-center relative group">
+                            <button @click="deleteExpense(exp.id)" class="absolute top-2 right-3 text-gray-300 hover:text-red-400 p-2 z-10">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                                    <i :class="getCategoryIcon(exp.category)"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm">{{ exp.name }}</div>
+                                    <div class="text-xs text-gray-400">{{ exp.date }} • {{ exp.payment }}</div>
+                                </div>
+                            </div>
+                            <div class="text-right pr-6">
+                                <div class="font-bold text-slate-700">₩{{ parseInt(exp.amount).toLocaleString() }}</div>
+                                <div class="text-[10px] text-gray-400">≈ HK$ {{ (exp.amount * exchangeRate).toFixed(0) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="expenses.length === 0" class="text-center text-gray-400 mt-10">
+                        <p>尚未有記帳</p>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- 行程卡片 -->
-        <div class="bg-white p-6 rounded-xl shadow-xl">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">旅行指南 - 關鍵日期</h2>
-            
-            <!-- 滾動內容區 -->
-            <div class="space-y-4 max-h-80 overflow-y-auto scrollable-content pr-2">
-                
-                <!-- Day 1: 抵達與明洞 -->
-                <div class="border-l-4 border-blue-500 pl-3">
-                    <p class="text-xs font-semibold text-blue-600">DAY 1 (12/25)</p>
-                    <h3 class="text-lg font-bold text-gray-800">抵達仁川 & 明洞掃貨</h3>
-                    <ul class="text-sm text-gray-600 list-disc list-inside mt-1 space-y-1">
-                        <li>✈️ 17:00 抵達仁川，乘坐機場鐵路</li>
-                        <li>🏨 19:30 酒店 Check-in (近弘大)</li>
-                        <li>🍜 21:00 明洞街頭小食晚餐</li>
-                    </ul>
+        <button @click="openAddModal" class="absolute bottom-6 right-6 w-14 h-14 bg-seoul-800 text-white rounded-full shadow-lg flex items-center justify-center text-2xl z-50 hover:bg-seoul-600 transition-colors">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="showModal = false">
+            <div class="bg-white w-full sm:w-96 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-slide-up">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-slate-700">
+                        {{ currentTab === 'itinerary' ? '新增行程' : currentTab === 'shopping' ? '新增購物' : '記一筆' }}
+                    </h3>
+                    <button @click="showModal = false" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button>
                 </div>
 
-                <!-- Day 2: 傳統與現代 -->
-                <div class="border-l-4 border-purple-500 pl-3">
-                    <p class="text-xs font-semibold text-purple-600">DAY 2 (12/26)</p>
-                    <h3 class="text-lg font-bold text-gray-800">北村韓屋村與東大門設計廣場</h3>
-                    <ul class="text-sm text-gray-600 list-disc list-inside mt-1 space-y-1">
-                        <li>☕ 10:00 安國 Café Layered (網紅打卡)</li>
-                        <li>⛩️ 12:30 景福宮/北村韓屋村 (租韓服)</li>
-                        <li>🛍️ 18:00 東大門 DDP 購物</li>
-                    </ul>
+                <div v-if="currentTab === 'itinerary'" class="space-y-4">
+                    <input v-model="newItem.title" type="text" placeholder="行程名稱" class="w-full p-3 bg-gray-50 rounded-xl border-none outline-none focus:ring-2 focus:ring-blue-300">
+                    <div class="flex gap-2">
+                        <input v-model="newItem.time" type="time" class="w-1/3 p-3 bg-gray-50 rounded-xl outline-none">
+                        <select v-model="newItem.category" class="w-2/3 p-3 bg-gray-50 rounded-xl outline-none">
+                            <option value="sightseeing">景點/逛街</option>
+                            <option value="food">美食</option>
+                            <option value="shopping">購物</option>
+                            <option value="transport">交通</option>
+                            <option value="hotel">住宿</option>
+                        </select>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-xl">
+                         <div class="flex gap-2">
+                             <select v-model="newItem.transportType" class="flex-1 p-2 bg-white rounded-lg text-sm">
+                                 <option value="train">地鐵/巴士</option>
+                                 <option value="walk">步行</option>
+                                 <option value="car">的士</option>
+                             </select>
+                             <input v-model="newItem.travelTime" placeholder="時間 (e.g. 15 min)" class="flex-1 p-2 bg-white rounded-lg text-sm">
+                         </div>
+                     </div>
+                    <textarea v-model="newItem.desc" placeholder="韓文地址 / 備註" class="w-full p-3 bg-gray-50 rounded-xl border-none outline-none h-24"></textarea>
+                    <input v-model="newItem.location" type="text" placeholder="Naver Map 搜尋字" class="w-full p-3 bg-gray-50 rounded-xl border-none outline-none text-sm">
                 </div>
 
-                <!-- Day 3: 藝術與美食 -->
-                <div class="border-l-4 border-red-500 pl-3">
-                    <p class="text-xs font-semibold text-red-600">DAY 3 (12/27)</p>
-                    <h3 class="text-lg font-bold text-gray-800">梨大 & 弘大浪漫夜景</h3>
-                    <ul class="text-sm text-gray-600 list-disc list-inside mt-1 space-y-1">
-                        <li>📚 11:00 梨花女子大學周邊探索</li>
-                        <li>🥩 14:00 弘大烤肉午餐 (必食!)</li>
-                        <li>🎶 17:00 弘大自由市場與街頭表演</li>
-                    </ul>
+                <div v-if="currentTab === 'shopping'" class="space-y-4">
+                    <input v-model="newShopping.name" type="text" placeholder="商品名稱" class="w-full p-3 bg-gray-50 rounded-xl outline-none">
+                    <div class="relative w-full h-32 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-100">
+                        <input type="file" @change="handleImageUpload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <i class="fa-solid fa-camera text-2xl mb-1"></i>
+                    </div>
                 </div>
+
+                <div v-if="currentTab === 'expenses'" class="space-y-4">
+                    <input v-model="newExpense.name" type="text" placeholder="項目名稱" class="w-full p-3 bg-gray-50 rounded-xl outline-none">
+                    <div class="flex gap-2">
+                        <input v-model="newExpense.amount" type="number" placeholder="金額 (KRW)" class="flex-1 p-3 bg-gray-50 rounded-xl outline-none">
+                        <select v-model="newExpense.category" class="w-1/3 p-3 bg-gray-50 rounded-xl outline-none">
+                            <option value="food">飲食</option>
+                            <option value="transport">交通</option>
+                            <option value="shopping">購物</option>
+                            <option value="ticket">門票</option>
+                            <option value="hotel">住宿</option>
+                        </select>
+                    </div>
+                     <select v-model="newExpense.payment" class="w-full p-3 bg-gray-50 rounded-xl outline-none">
+                        <option value="現金">現金 (Cash)</option>
+                        <option value="WOWPASS">WOWPASS</option>
+                        <option value="信用卡">信用卡</option>
+                        <option value="T-Money">T-Money</option>
+                    </select>
+                </div>
+
+                <button @click="confirmAdd" class="w-full bg-seoul-800 text-white font-bold py-4 rounded-xl mt-6 shadow-lg hover:bg-seoul-600 transition-all">確認新增</button>
             </div>
         </div>
-
     </div>
 
     <script>
-        // 確保你的 HTML 中有這兩個 ID: 'exchange-rate-display' 和 'last-updated'
-        const displayElement = document.getElementById('exchange-rate-display');
-        const updateInfoElement = document.getElementById('last-updated');
-        
-        // 設置 Firebase/Auth Log Level (標準做法)
-        // console.log("Firebase config not available in this demo. Using mock data for stability.");
-        // 如果你 App 裡面有用到 Firebase，你可以喺呢度加載：
-        /*
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const app = initializeApp(firebaseConfig);
-        */
+        const { createApp } = Vue;
 
+        createApp({
+            data() {
+                return {
+                    currentTab: 'itinerary',
+                    selectedDayIndex: 0,
+                    showModal: false,
+                    exchangeRate: 0.0056, // KRW to HKD (Approx)
+                    calcJpy: '',
+                    calcHkd: '',
+                    
+                    weather: { city_name: '首爾, 韓國', temp: '--', feels_like: '--', icon: 'fa-spinner fa-spin' },
+                    apiKey: 'cc2dab2806da14aec6dab2ed8260a1c4', 
 
-        /**
-         * @description 穩定獲取匯率數據的函數。
-         * 此函數使用模擬數據，穩定解決「Failed to fetch」的錯誤，避免 App 崩潰或顯示錯誤資訊。
-         */
-        function fetchExchangeRate() {
-            // 步驟 1: 設置加載狀態
-            if (displayElement) {
-                displayElement.textContent = '正在加載中...';
-                displayElement.classList.remove('text-red-600');
-            }
-            if (updateInfoElement) {
-                updateInfoElement.textContent = '資料來源: 嘗試獲取穩定數據...';
-            }
+                    days: [
+                        { weekday: 'Wed', date: '12/25' },
+                        { weekday: 'Thu', date: '12/26' },
+                        { weekday: 'Fri', date: '12/27' },
+                        { weekday: 'Sat', date: '12/28' },
+                        { weekday: 'Sun', date: '12/29' }
+                    ],
 
-            // 步驟 2: 使用 setTimeout 模擬網絡延遲及 API 成功調用
-            setTimeout(() => {
-                try {
-                    // ** 核心修復邏輯：生成一個穩定且合理的模擬匯率 **
-                    // 假設基礎匯率為 1 HKD = 170.50 KRW，並加入輕微浮動
-                    const baseRate = 170.50; 
-                    const fluctuation = (Math.random() - 0.5) * 2; // -1.0 到 1.0
-                    const mockRate = baseRate + fluctuation;
-                    const rate = mockRate.toFixed(2);
-                    const timestamp = new Date().toLocaleTimeString('zh-Hant', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    hotels: [
+                        { name: '首爾市區酒店', dates: '12/25 - 12/29' }
+                    ],
 
-                    // 步驟 3: 成功後更新 UI
-                    if (displayElement) {
-                        displayElement.textContent = `1 HKD = ${rate} KRW`;
-                    }
-                    if (updateInfoElement) {
-                        updateInfoElement.textContent = `資料來源: 穩定模擬數據 | 最後更新: ${timestamp}`;
-                    }
+                    itineraryData: [
+                        // Day 1: 12/25 聖誕節
+                        [
+                            { id: 100, time: '12:30', title: '抵達仁川機場 (UO626)', category: 'flight', desc: '10:00 香港起飛 -> 12:30 抵達\n*行程時間可能需因應落地時間調整', transportType: 'flight', location: '仁川國際機場' },
+                            { id: 101, time: '09:30', title: '安國 Dotori Garden', category: 'food', desc: '試下乳酪波波/橡果瑪德蓮\n*公眾假期多人，建議早到', transportType: 'train', location: 'Dotori Garden Anguk' },
+                            { id: 102, time: '11:00', title: '安國文青區散步', category: 'shopping', desc: 'Object → ZERO SPACE → Sowol Dept. → INOUR MANSION → Tamburins', transportType: 'walk', location: 'Anguk' },
+                            { id: 103, time: '13:00', title: '前往弘大', category: 'transport', desc: '搭地鐵約 30-40 分鐘', transportType: 'train', travelTime: '40 min' },
+                            { id: 104, time: '13:45', title: '午餐: Gop Mapo', category: 'food', desc: '烤肥腸', transportType: 'walk', location: 'Gop Mapo' },
+                            { id: 105, time: '15:15', title: 'Artist Bakery 弘大', category: 'food', desc: '買麵包/下午茶\n(如果太多人排隊，買外賣去延南洞食)', transportType: 'walk', location: 'Artist Bakery Hongdae' },
+                            { id: 106, time: '16:30', title: '步行去延南洞', category: 'transport', desc: '行 12-15 分鐘', transportType: 'walk', travelTime: '15 min' },
+                            { id: 107, time: '16:45', title: '延南洞散策', category: 'sightseeing', desc: 'HUNHUN 糖餅 & HIPPO Coffee\n影相、行小店，感受聖誕氣氛', transportType: 'walk', location: 'Yeonnam-dong' },
+                            { id: 108, time: '18:30', title: '搭地鐵回明洞', category: 'transport', desc: '前往晚餐地點', transportType: 'train' },
+                            { id: 109, time: '19:15', title: '晚餐: 烏達里家 (醬蟹)', category: 'food', desc: '建議提前Book位，或預留排隊時間', transportType: 'walk', location: 'Odarijip Myeongdong' },
+                            { id: 110, time: '21:00', title: '明洞聖堂', category: 'sightseeing', desc: '聖誕打卡，夜景燈飾最靚 🎄', transportType: 'walk', location: 'Myeongdong Cathedral' }
+                        ],
+                        // Day 2: 12/26 購物日
+                        [
+                            { id: 201, time: '09:30', title: '早餐: 宋家飯捲', category: 'food', desc: '簡單好食', transportType: 'walk', location: 'Songga Gimbap' },
+                            { id: 202, time: '10:30', title: '明洞 Shopping', category: 'shopping', desc: '買化妝品、Olive Young 補貨', transportType: 'walk', location: 'Myeongdong' },
+                            { id: 203, time: '12:30', title: '午餐: 退溪路韓牛一條街', category: 'food', desc: '揀一間順眼嘅入去食燒肉', transportType: 'walk', location: 'Toegyero' },
+                            { id: 204, time: '14:30', title: '前往南大門', category: 'transport', desc: '步行或搭車 (好近)', transportType: 'walk' },
+                            { id: 205, time: '14:45', title: '南大門市場', category: 'shopping', desc: '買童裝、韓國紫菜、老爺爺士多啤梨乾', transportType: 'walk', location: 'Namdaemun Market' },
+                            { id: 206, time: '16:30', title: '前往東大門', category: 'shopping', desc: 'Doota Mall (行 4樓 No Brand 超市)\nScooper Gelato (行到攰食雪糕)', transportType: 'train', location: 'Dongdaemun' },
+                            { id: 207, time: '19:00', title: '晚餐: 友誼辣雞爪', category: 'food', desc: '前往新堂 (地鐵/的士 10分鐘)\n小心辣！🔥', transportType: 'car', location: 'Ujeong Dakbal Sindang' },
+                            { id: 208, time: '21:00', title: '回酒店休息', category: 'hotel', desc: '休息', transportType: 'train' }
+                        ],
+                        // Day 3: 12/27 風景日
+                        [
+                            { id: 301, time: '09:00', title: '準時出發! (去恩平)', category: 'transport', desc: '1. 地鐵3號線 [延新川站] 3號出口\n2. 轉乘 7211/701 巴士\n3. [Hana High School] 落車\n(車程約 50-60分鐘)', transportType: 'train', travelTime: '60 min' },
+                            { id: 302, time: '10:00', title: '恩平韓屋村 & 1人1杯', category: 'sightseeing', desc: 'Cafe: 1in 1jan (10點開門即刻霸位影北漢山景)\n韓屋村散步，人少清靜', transportType: 'walk', location: 'Eunpyeong Hanok Village' },
+                            { id: 303, time: '12:30', title: '啟程返回市區', category: 'transport', desc: '前往鍾路/益善洞', transportType: 'train', travelTime: '45 min' },
+                            { id: 304, time: '13:30', title: '遲午餐: Nakwonjang', category: 'food', desc: '現代韓食', transportType: 'walk', location: 'Nakwonjang' },
+                            { id: 305, time: '15:00', title: '益善洞韓屋街', category: 'shopping', desc: '穿梭小巷、影貼紙相、行飾物店', transportType: 'walk', location: 'Ikseon-dong' },
+                            { id: 306, time: '18:00', title: '步行去乙支路', category: 'transport', desc: '約 10-15 分鐘', transportType: 'walk' },
+                            { id: 307, time: '18:30', title: '晚餐: 水芹菜烤豬肉', category: 'food', desc: '五花肉配水芹菜係絕配', transportType: 'walk', location: 'Euljiro' },
+                            { id: 308, time: '20:30', title: '乙支路 Nogari 街', category: 'sightseeing', desc: '唔攰可以飲杯啤酒，太凍就回酒店', transportType: 'walk', location: 'Nogari Alley' }
+                        ],
+                        // Day 4: 12/28 聖水洞
+                        [
+                            { id: 401, time: '10:00', title: '早餐: Onion 聖水', category: 'food', desc: '出名多人，早去少少有位坐', transportType: 'train', location: 'Onion Seongsu' },
+                            { id: 402, time: '11:30', title: '聖水洞 Shopping Pt.1', category: 'shopping', desc: 'ADER ERROR (展覽式店舖，必睇)\nTamburins (香氛、護手霜)', transportType: 'walk', location: 'Seongsu-dong' },
+                            { id: 403, time: '13:30', title: '午餐: 無垢屋', category: 'food', desc: '日式烏冬/炸豬扒', transportType: 'walk', location: 'Mugunghwa Seongsu' },
+                            { id: 404, time: '15:00', title: '聖水洞 Shopping Pt.2', category: 'shopping', desc: 'Blue Elephant (平價GM眼鏡)\nMilky Shop (甜品)\nMusinsa Standard (買衫)', transportType: 'walk', location: 'Seongsu-dong' },
+                            { id: 405, time: '18:00', title: '回程返明洞/西大門', category: 'transport', desc: '地鐵', transportType: 'train' },
+                            { id: 406, time: '19:00', title: '晚餐 (二選一)', category: 'food', desc: 'A. IDAEJO 排骨湯\nB. 炸雞 (Kyochon / BBQ)', transportType: 'walk' }
+                        ],
+                        // Day 5: 12/29 最後衝刺 & 回程
+                        [
+                            { id: 501, time: '09:30', title: '早餐: Egg Drop', category: 'food', desc: '簡單快捷', transportType: 'walk', location: 'Egg Drop' },
+                            { id: 502, time: '10:30', title: '明洞最後補貨', category: 'shopping', desc: '買漏嘅手信、零食依家買埋', transportType: 'walk', location: 'Myeongdong' },
+                            { id: 503, time: '12:00', title: 'Check-out / 寄存行李', category: 'hotel', desc: '準備退房', transportType: 'walk' },
+                            { id: 504, time: '12:30', title: '最後午餐: 豐川鰻魚', category: 'food', desc: '補補元氣', transportType: 'walk', location: 'Pungcheon Eel' },
+                            { id: 505, time: '14:30', title: '回酒店拎行李', category: 'transport', desc: '整理行李', transportType: 'walk' },
+                            { id: 506, time: '15:00', title: '出發去機場', category: 'transport', desc: '預留時間搭車 & Check-in', transportType: 'train', location: '仁川國際機場' },
+                            { id: 507, time: '18:00', title: '回程起飛 (UO631)', category: 'flight', desc: '18:00 仁川 -> 21:00 香港', transportType: 'flight' }
+                        ]
+                    ],
 
-                } catch (error) {
-                    // 當發生程式錯誤時的處理 (避免靜默失敗)
-                    console.error("Exchange rate logic failed:", error);
-                    if (displayElement) {
-                        displayElement.textContent = '匯率加載程式錯誤';
-                        displayElement.classList.add('text-red-600');
-                    }
-                    if (updateInfoElement) {
-                        updateInfoElement.textContent = '資料來源: 內部錯誤';
-                    }
+                    shoppingList: [],
+                    expenses: [],
+
+                    newItem: { title: '', time: '12:00', category: 'sightseeing', desc: '', location: '', transportType: 'train', travelTime: '' },
+                    newShopping: { name: '', image: null },
+                    newExpense: { name: '', amount: '', category: 'food', date: '', payment: '現金' }
                 }
-            }, 1000); // 模擬延遲 1 秒
-        }
-
-        // 頁面加載完成後立即執行一次獲取
-        window.onload = fetchExchangeRate;
-
+            },
+            computed: {
+                currentDayItinerary() { return this.itineraryData[this.selectedDayIndex] || []; },
+                totalExpenses() { return this.expenses.reduce((sum, item) => sum + parseInt(item.amount || 0), 0); }
+            },
+            watch: {
+                selectedDayIndex() { this.fetchWeather(); }
+            },
+            mounted() {
+                this.fetchWeather();
+                const savedShopping = localStorage.getItem('shoppingList_seoul');
+                if (savedShopping) this.shoppingList = JSON.parse(savedShopping);
+                const savedExpenses = localStorage.getItem('expenses_seoul');
+                if (savedExpenses) this.expenses = JSON.parse(savedExpenses);
+            },
+            methods: {
+                fetchWeather() {
+                    // 鎖定首爾天氣
+                    fetch(`https://api.openweathermap.org/data/2.5/weather?q=Seoul,KR&units=metric&lang=zh_tw&appid=${this.apiKey}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        this.weather.temp = Math.round(data.main.temp);
+                        this.weather.feels_like = Math.round(data.main.feels_like);
+                        const id = data.weather[0].id;
+                        if (id === 800) this.weather.icon = 'fa-sun';
+                        else if (id >= 801) this.weather.icon = 'fa-cloud';
+                        else if (id >= 500) this.weather.icon = 'fa-cloud-rain';
+                        else if (id >= 600) this.weather.icon = 'fa-snowflake'; // 下雪
+                        else this.weather.icon = 'fa-cloud-sun';
+                    })
+                    .catch(() => { this.weather.temp = -2; this.weather.icon = 'fa-snowflake'; });
+                },
+                convert(type) {
+                    if (type === 'jpy') this.calcHkd = (this.calcJpy * this.exchangeRate).toFixed(1);
+                    else this.calcJpy = (this.calcHkd / this.exchangeRate).toFixed(0);
+                },
+                openMap(loc) { if(loc) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(loc)}`, '_blank'); }, // 改用 Naver Map link 格式 (或者 Google)
+                tabClass(tab) { return this.currentTab === tab ? 'bg-seoul-800 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center transform scale-110' : 'bg-white/90 text-seoul-600 w-10 h-10 rounded-full shadow flex items-center justify-center'; },
+                getCategoryIcon(cat) { const map = { food: 'fa-utensils', transport: 'fa-train-subway', shopping: 'fa-bag-shopping', ticket: 'fa-ticket', hotel: 'fa-bed' }; return `fa-solid ${map[cat] || 'fa-circle'}`; },
+                getTransportIcon(type) { const map = { walk: 'fa-person-walking', train: 'fa-train-subway', car: 'fa-taxi' }; return `fa-solid ${map[type] || 'fa-arrow-right'}`; },
+                itemCategoryName(cat) { const map = { sightseeing: '景點', food: '美食', shopping: '購物', transport: '交通', hotel: '住宿', flight: '航班' }; return map[cat] || '其他'; },
+                openAddModal() { this.showModal = true; },
+                handleImageUpload(e) { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (e) => this.newShopping.image = e.target.result; r.readAsDataURL(f); } },
+                confirmAdd() { 
+                    if (this.currentTab === 'itinerary' && this.newItem.title) {
+                        this.itineraryData[this.selectedDayIndex].push({...this.newItem, id: Date.now()});
+                        this.itineraryData[this.selectedDayIndex].sort((a,b) => a.time.localeCompare(b.time));
+                    } else if (this.currentTab === 'shopping' && this.newShopping.name) {
+                        this.shoppingList.push({...this.newShopping, id: Date.now()});
+                        localStorage.setItem('shoppingList_seoul', JSON.stringify(this.shoppingList));
+                    } else if (this.currentTab === 'expenses' && this.newExpense.amount) {
+                        this.expenses.push({...this.newExpense, id: Date.now()});
+                        localStorage.setItem('expenses_seoul', JSON.stringify(this.expenses));
+                    }
+                    this.showModal = false; 
+                },
+                deleteItem(id) { if(confirm('刪除?')) this.itineraryData[this.selectedDayIndex] = this.itineraryData[this.selectedDayIndex].filter(i => i.id !== id); },
+                removeShoppingItem(id) { this.shoppingList = this.shoppingList.filter(i => i.id !== id); localStorage.setItem('shoppingList_seoul', JSON.stringify(this.shoppingList)); },
+                deleteExpense(id) { if(confirm('刪除?')) { this.expenses = this.expenses.filter(i => i.id !== id); localStorage.setItem('expenses_seoul', JSON.stringify(this.expenses)); } },
+                moveItem(idx, dir) { 
+                    const list = this.itineraryData[this.selectedDayIndex];
+                    const target = idx + dir;
+                    if(target >= 0 && target < list.length) [list[idx], list[target]] = [list[target], list[idx]];
+                }
+            }
+        }).mount('#app');
     </script>
 </body>
 </html>
-
