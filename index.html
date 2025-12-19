@@ -16,12 +16,12 @@
     <style>
         body {
             font-family: 'Zen Maru Gothic', sans-serif;
-            background-color: #F1F5F9; /* 冬日灰白背景 */
+            background-color: #F8FAFC; /* 雪白背景 */
             overscroll-behavior-y: none;
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .soft-shadow { box-shadow: 0 4px 20px rgba(71, 85, 105, 0.15); }
+        .soft-shadow { box-shadow: 0 4px 20px rgba(148, 163, 184, 0.15); }
     </style>
     
     <script>
@@ -29,16 +29,16 @@
             theme: {
                 extend: {
                     colors: {
-                        // 首爾冬日聖誕主題 (Seoul Winter)
+                        // 首爾冬日聖誕主題
                         seoul: {
-                            100: '#F1F5F9', // 背景
+                            100: '#F1F5F9', // 淺灰藍背景
                             200: '#E2E8F0', 
                             300: '#CBD5E1',
                             500: '#64748B', // 文字灰
                             600: '#475569', // 主標題
-                            800: '#1E293B', // 深色 (夜空藍)
+                            800: '#1E293B', // 深夜藍
                             festive: '#DC2626', // 聖誕紅
-                            gold: '#D97706',   // 燈飾金
+                            tree: '#15803D',    // 聖誕樹綠
                         }
                     }
                 }
@@ -53,7 +53,7 @@
         <div class="relative h-[250px] flex-shrink-0 bg-cover bg-center transition-all duration-500"
              style="background-image: url('./header.png'), url('./header.jpg');">
             
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/60"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/70"></div>
             
             <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
                 <button @click="currentTab = 'itinerary'" :class="tabClass('itinerary')">
@@ -72,7 +72,9 @@
             
             <div class="absolute bottom-10 left-6 text-white text-shadow drop-shadow-lg">
                 <h1 class="text-2xl font-bold tracking-widest">SEOUL 2025</h1>
-                <p class="text-sm opacity-90"><i class="fa-solid fa-tree mr-1 text-green-400"></i>Christmas Edition (6 Days)</p>
+                <p class="text-sm opacity-90 font-medium">
+                    <i class="fa-regular fa-snowflake mr-1 text-blue-200"></i> Christmas Trip (12/24-29)
+                </p>
             </div>
         </div>
 
@@ -109,7 +111,7 @@
                         <div v-for="(item, idx) in currentDayItinerary" :key="item.id" class="relative pl-12 pb-14 group">
                             
                             <div v-if="idx > 0" class="absolute -top-9 left-12 right-0 flex items-center text-xs text-slate-500 mb-2 z-50">
-                                <span class="bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 flex items-center gap-1 shadow-sm">
+                                <span class="bg-white px-2 py-0.5 rounded-full border border-slate-200 flex items-center gap-1 shadow-sm text-slate-400">
                                     <i :class="getTransportIcon(item.transportType)"></i>
                                     {{ item.travelTime || '移動' }}
                                 </span>
@@ -135,16 +137,18 @@
                                     <h3 class="text-lg font-bold mb-1 leading-tight text-slate-800">{{ item.title }}</h3>
                                     
                                     <div class="text-sm text-gray-500 mb-2 flex items-start gap-1" v-if="item.desc">
-                                        <i class="fa-regular fa-note-sticky mt-0.5 text-xs flex-shrink-0 text-blue-400"></i>
-                                        <span class="whitespace-pre-line">{{ item.desc }}</span>
+                                        <i class="fa-solid fa-map-pin mt-1 text-[10px] flex-shrink-0 text-blue-400"></i>
+                                        <span class="whitespace-pre-line text-xs">{{ item.desc }}</span>
+                                    </div>
+
+                                    <div v-if="item.reminder" class="mt-2 p-2 bg-yellow-50 rounded-lg text-xs text-yellow-700 border border-yellow-100 flex items-start gap-2">
+                                        <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                                        <span>{{ item.reminder }}</span>
                                     </div>
 
                                     <div class="flex flex-wrap gap-2 mt-2">
                                         <span v-if="item.desc && item.desc.includes('必睇')" class="text-[10px] bg-seoul-festive text-white px-2 py-1 rounded-md font-bold shadow-sm">
                                             <i class="fa-solid fa-star mr-1"></i>必睇
-                                        </span>
-                                        <span v-if="item.desc && item.desc.includes('辣')" class="text-[10px] bg-red-50 text-red-500 px-2 py-1 rounded-md font-bold border border-red-100">
-                                            <i class="fa-solid fa-pepper-hot mr-1"></i>小心辣
                                         </span>
                                         <span v-if="item.location" class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-md">
                                             <i class="fa-solid fa-location-arrow mr-1"></i>Naver Map
@@ -164,10 +168,13 @@
                 <div v-if="currentTab === 'info'" class="space-y-6">
                     
                     <div class="bg-red-50 rounded-2xl p-4 border border-red-100 text-red-800 shadow-sm">
-                        <div class="font-bold mb-2"><i class="fa-solid fa-bell mr-2"></i>12/24 平安夜特別提示</div>
-                        <p class="text-xs leading-relaxed opacity-90">
-                            新世界百貨 (Shinsegae) 門口會有很多人聚集睇燈飾，警察會實施人流管制。建議在對面馬路（中央郵局前）觀賞，注意安全和保暖！🧣
-                        </p>
+                        <div class="font-bold mb-3 flex items-center"><i class="fa-solid fa-triangle-exclamation mr-2"></i>出發前重點 Reminder</div>
+                        <ul class="text-xs space-y-2 list-none opacity-90">
+                            <li class="flex gap-2"><i class="fa-solid fa-temperature-arrow-down text-blue-400"></i><span><strong>天氣預警:</strong> -5°C至-10°C，必備頸巾、手套、發熱衣。</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-map text-green-500"></i><span><strong>地圖:</strong> 下載 NAVER Map，Google Map 不能導航步行。</span></li>
+                            <li class="flex gap-2"><i class="fa-regular fa-credit-card text-purple-500"></i><span><strong>交通:</strong> 準備 T-Money 或 WOWPASS。</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-plug text-gray-500"></i><span><strong>插頭:</strong> 兩腳圓形 (德標)。</span></li>
+                        </ul>
                     </div>
 
                     <div class="bg-white rounded-2xl p-5 soft-shadow">
@@ -338,6 +345,7 @@
                          </div>
                      </div>
                     <textarea v-model="newItem.desc" placeholder="韓文地址 / 備註" class="w-full p-3 bg-gray-50 rounded-xl border-none outline-none h-24"></textarea>
+                    <input v-model="newItem.reminder" placeholder="⚠️ 特別提示 (選填)" class="w-full p-3 bg-yellow-50 text-yellow-700 rounded-xl border border-yellow-100 outline-none text-sm placeholder-yellow-300">
                     <input v-model="newItem.location" type="text" placeholder="Naver Map 搜尋字" class="w-full p-3 bg-gray-50 rounded-xl border-none outline-none text-sm">
                 </div>
 
@@ -400,7 +408,7 @@
                     ],
 
                     hotels: [
-                        { name: '首爾市區酒店', dates: '12/24 - 12/29' }
+                        { name: '明洞酒店', dates: '12/24 - 12/29' }
                     ],
 
                     itineraryData: [
@@ -409,62 +417,64 @@
                             { id: 100, time: '12:30', title: '抵達仁川機場 (UO626)', category: 'flight', desc: '搭機場巴士/鐵路前往明洞酒店', transportType: 'flight', location: 'Incheon Airport' },
                             { id: 101, time: '16:00', title: '酒店 Check-in', category: 'hotel', desc: '休息整頓', transportType: 'walk', location: 'Myeongdong' },
                             { id: 102, time: '17:00', title: '明洞換錢 & 掃街', category: 'shopping', desc: '大使館/一品香換錢\n先食魚糕湯/雞肉串醫肚', transportType: 'walk', location: 'Myeongdong Money Exchange' },
-                            { id: 103, time: '18:00', title: '新世界百貨 Media Facade', category: 'sightseeing', desc: '必睇！今年聖誕主題好夢幻\n位置: 明洞站行去會賢站方向，馬路對面睇最靚', transportType: 'walk', location: 'Shinsegae Department Store Main Store' },
-                            { id: 104, time: '19:30', title: '晚餐: 明洞餃子', category: 'food', desc: '米芝蓮推介\n刀削麵 + 韓式蒸餃 (暖笠笠)', transportType: 'walk', location: 'Myeongdong Kyoja Main' },
-                            { id: 105, time: '21:00', title: '清溪川聖誕燈飾', category: 'sightseeing', desc: '步行 10分鐘去清溪川散步', transportType: 'walk', location: 'Cheonggyecheon' }
+                            { id: 103, time: '18:00', title: '新世界百貨 Media Facade', category: 'sightseeing', desc: '📍 신세계백화점 본점\n位置: 明洞站行去會賢站方向', reminder: '人流極多，最佳觀賞點在「中央郵局」前。小心財物！', transportType: 'walk', location: 'Shinsegae Department Store Main Store' },
+                            { id: 104, time: '19:30', title: '晚餐: 明洞餃子', category: 'food', desc: '📍 명동교자\n米芝蓮推介，刀削麵 + 韓式蒸餃 (暖笠笠)', reminder: '翻桌率快，排隊通常 15-20 分鐘。', transportType: 'walk', location: 'Myeongdong Kyoja Main' },
+                            { id: 105, time: '21:00', title: '清溪川聖誕燈飾', category: 'sightseeing', desc: 'Seoul Lantern Festival\n步行 10分鐘去清溪川散步', transportType: 'walk', location: 'Cheonggyecheon' }
                         ],
                         // Day 2: 12/25 聖誕節 (安國/弘大)
                         [
-                            { id: 201, time: '09:30', title: '早餐: Dotori Garden', category: 'food', desc: '安國站\n試下乳酪波波/橡果瑪德蓮', transportType: 'train', location: 'Dotori Garden Anguk' },
-                            { id: 202, time: '11:00', title: '安國文青區散步', category: 'shopping', desc: 'Object → ZERO SPACE → Tamburins', transportType: 'walk', location: 'Anguk' },
-                            { id: 203, time: '13:00', title: '前往弘大', category: 'transport', desc: '搭地鐵', transportType: 'train', travelTime: '40 min' },
-                            { id: 204, time: '13:45', title: '午餐: Gop Mapo', category: 'food', desc: '烤肥腸', transportType: 'walk', location: 'Gop Mapo' },
-                            { id: 205, time: '15:15', title: '下午茶: Artist Bakery', category: 'food', desc: '弘大店', transportType: 'walk', location: 'Artist Bakery Hongdae' },
+                            { id: 201, time: '09:30', title: '早餐: Dotori Garden', category: 'food', desc: '📍 도토리가든\n必試 Greek Yogurt、橡果瑪德蓮', reminder: '建議開門(8:00)後盡快去，或預留排隊時間。', transportType: 'train', location: 'Dotori Garden Anguk' },
+                            { id: 202, time: '11:00', title: '安國文青區散步', category: 'shopping', desc: 'Object → ZERO SPACE → Tamburins 安國店', transportType: 'walk', location: 'Anguk' },
+                            { id: 203, time: '13:00', title: '前往弘大', category: 'transport', desc: '搭地鐵 (3號線轉2號線)', transportType: 'train', travelTime: '40 min' },
+                            { id: 204, time: '13:45', title: '午餐: Gop Mapo', category: 'food', desc: '📍 곱마포\n烤肥腸', transportType: 'walk', location: 'Gop Mapo' },
+                            { id: 205, time: '15:15', title: '下午茶: Artist Bakery', category: 'food', desc: '📍 아티스트 베이커리\n買鹽麵包 (Salt Bread)', transportType: 'walk', location: 'Artist Bakery Hongdae' },
                             { id: 206, time: '16:45', title: '延南洞散策', category: 'sightseeing', desc: 'HUNHUN 糖餅 & HIPPO Coffee', transportType: 'walk', location: 'Yeonnam-dong' },
-                            { id: 207, time: '19:15', title: '晚餐: 烏達里家', category: 'food', desc: '醬蟹 (明洞)', transportType: 'train', location: 'Odarijip Myeongdong' },
-                            { id: 208, time: '21:00', title: '聖誕打卡: 明洞聖堂', category: 'sightseeing', desc: '睇夜景，感受氣氛', transportType: 'walk', location: 'Myeongdong Cathedral' }
+                            { id: 207, time: '19:15', title: '晚餐: 烏達里家', category: 'food', desc: '📍 오다리집 간장게장\n醬蟹 (明洞)', reminder: '遊客多，建議請酒店幫忙訂位，或要排隊。', transportType: 'train', location: 'Odarijip Myeongdong' },
+                            { id: 208, time: '21:00', title: '聖誕打卡: 明洞聖堂', category: 'sightseeing', desc: '📍 명동성당\n欣賞著名的聖誕夜景 🎄', transportType: 'walk', location: 'Myeongdong Cathedral' }
                         ],
                         // Day 3: 12/26 購物日
                         [
-                            { id: 301, time: '09:30', title: '早餐: 宋家飯捲', category: 'food', desc: '明洞', transportType: 'walk', location: 'Songga Gimbap' },
-                            { id: 302, time: '10:30', title: '明洞 Shopping', category: 'shopping', desc: '美妝 / 波鞋', transportType: 'walk', location: 'Myeongdong' },
-                            { id: 303, time: '12:30', title: '午餐: 退溪路韓牛一條街', category: 'food', desc: '韓式烤肉', transportType: 'walk', location: 'Toegyero' },
-                            { id: 304, time: '14:30', title: '南大門市場', category: 'shopping', desc: '童裝 / 紫菜 / 士多啤梨乾', transportType: 'walk', location: 'Namdaemun Market' },
-                            { id: 305, time: '16:30', title: '東大門 Doota Mall', category: 'shopping', desc: 'No Brand 超市掃貨\nScooper Gelato 雪糕', transportType: 'train', location: 'Doota Mall' },
-                            { id: 306, time: '19:00', title: '晚餐: 友誼辣雞爪', category: 'food', desc: '新堂洞 (小心辣!)', transportType: 'car', location: 'Ujeong Dakbal Sindang' }
+                            { id: 301, time: '09:30', title: '早餐: 宋家飯捲', category: 'food', desc: '📍 송가김밥\n簡單好食', transportType: 'walk', location: 'Songga Gimbap' },
+                            { id: 302, time: '10:30', title: '明洞 Shopping', category: 'shopping', desc: 'Olive Young 旗艦店、波鞋店', transportType: 'walk', location: 'Myeongdong' },
+                            { id: 303, time: '12:30', title: '午餐: 退溪路韓牛一條街', category: 'food', desc: '📍 퇴계로 한우골목\n隨心選一家韓牛燒肉', transportType: 'walk', location: 'Toegyero' },
+                            { id: 304, time: '14:30', title: '南大門市場', category: 'shopping', desc: '📍 남대문시장\n買老爺爺草莓乾、童裝、紫菜', reminder: '店鋪 17:00 開始收檔，下午去剛剛好。', transportType: 'walk', location: 'Namdaemun Market' },
+                            { id: 305, time: '16:30', title: '東大門 Doota Mall', category: 'shopping', desc: '4樓 No Brand 超市 (掃零食)\n地下 Scooper Gelato', transportType: 'train', location: 'Doota Mall' },
+                            { id: 306, time: '19:00', title: '前往新堂', category: 'transport', desc: '的士/地鐵', transportType: 'car' },
+                            { id: 307, time: '19:30', title: '晚餐: 友誼辣雞爪', category: 'food', desc: '📍 우정닭발\n新堂洞年糕街', reminder: '雞爪頗辣，怕辣記得點 Mild。', transportType: 'walk', location: 'Ujeong Dakbal Sindang' }
                         ],
                         // Day 4: 12/27 風景日
                         [
-                            { id: 401, time: '09:00', title: '出發前往恩平', category: 'transport', desc: '地鐵轉巴士 (車程約 50-60分鐘)', transportType: 'train', travelTime: '60 min' },
-                            { id: 402, time: '10:00', title: '恩平韓屋村 & 1人1杯', category: 'sightseeing', desc: 'Cafe: 1in 1jan (睇北漢山景)', transportType: 'walk', location: 'Eunpyeong Hanok Village' },
-                            { id: 403, time: '13:30', title: '遲午餐: Nakwonjang', category: 'food', desc: '益善洞 (現代韓食)', transportType: 'train', location: 'Nakwonjang' },
-                            { id: 404, time: '15:00', title: '益善洞韓屋街', category: 'shopping', desc: '散步、行飾物店', transportType: 'walk', location: 'Ikseon-dong' },
-                            { id: 405, time: '18:30', title: '晚餐: 水芹菜烤豬肉', category: 'food', desc: '乙支路', transportType: 'walk', location: 'Euljiro' },
-                            { id: 406, time: '20:30', title: '乙支路 Nogari 街', category: 'sightseeing', desc: '飲杯啤酒 / 回酒店', transportType: 'walk', location: 'Nogari Alley' }
+                            { id: 401, time: '09:00', title: '準時出發! (去恩平)', category: 'transport', desc: '1. 地鐵3號線 [延新川站] 3號出口\n2. 轉乘 7211/701 巴士\n3. [Hana High School] 下車', transportType: 'train', travelTime: '60 min' },
+                            { id: 402, time: '10:00', title: '恩平韓屋村 & 1人1杯', category: 'sightseeing', desc: '☕ 1인1잔\nCafe 對住北漢山景', reminder: '早到可以霸到 4樓/5樓 靚位。', transportType: 'walk', location: 'Eunpyeong Hanok Village' },
+                            { id: 403, time: '13:30', title: '回到市區 (鍾路)', category: 'transport', desc: '前往益善洞', transportType: 'train', travelTime: '45 min' },
+                            { id: 404, time: '14:00', title: '遲午餐: Nakwonjang', category: 'food', desc: '📍 낙원장\n現代韓食 (益善洞)', transportType: 'walk', location: 'Nakwonjang' },
+                            { id: 405, time: '15:30', title: '益善洞韓屋街', category: 'shopping', desc: '路窄人多，主要行飾物店、影貼紙相', transportType: 'walk', location: 'Ikseon-dong' },
+                            { id: 406, time: '18:30', title: '晚餐: 水芹菜烤豬肉', category: 'food', desc: '📍 돌판 수미나물 삼겹살\n乙支路', reminder: '晚上氣氛很好。', transportType: 'walk', location: 'Euljiro' }
                         ],
                         // Day 5: 12/28 聖水洞
                         [
-                            { id: 501, time: '10:00', title: '早餐: Onion 聖水', category: 'food', desc: '人氣Cafe', transportType: 'train', location: 'Onion Seongsu' },
-                            { id: 502, time: '11:30', title: '聖水洞 Shopping Pt.1', category: 'shopping', desc: 'ADER ERROR, Tamburins', transportType: 'walk', location: 'Seongsu-dong' },
-                            { id: 503, time: '13:30', title: '午餐: 無垢屋', category: 'food', desc: '日式料理', transportType: 'walk', location: 'Mugunghwa Seongsu' },
-                            { id: 504, time: '15:00', title: '聖水洞 Shopping Pt.2', category: 'shopping', desc: 'Blue Elephant (眼鏡)\nMilky Shop (甜品)\nMusinsa (服飾)', transportType: 'walk', location: 'Seongsu-dong' },
-                            { id: 505, time: '19:00', title: '晚餐 (二選一)', category: 'food', desc: 'A. IDAEJO 排骨湯\nB. 炸雞 (Kyochon/BBQ)', transportType: 'walk' }
+                            { id: 501, time: '10:00', title: '早餐: Onion 聖水', category: 'food', desc: '📍 어니언 성수', transportType: 'train', location: 'Onion Seongsu' },
+                            { id: 502, time: '11:30', title: '聖水洞 Shopping Pt.1', category: 'shopping', desc: 'ADER ERROR (像美術館一樣)\nTamburins (旗艦店)', transportType: 'walk', location: 'Seongsu-dong' },
+                            { id: 503, time: '13:30', title: '午餐: 無垢屋', category: 'food', desc: '📍 무쿠우동\n日式料理', transportType: 'walk', location: 'Mugunghwa Seongsu' },
+                            { id: 504, time: '15:00', title: '聖水洞 Shopping Pt.2', category: 'shopping', desc: 'Blue Elephant (眼鏡)\nMilky Shop (甜品)\nMusinsa Standard (服飾)', reminder: '店鋪比較分散，要行幾多路。', transportType: 'walk', location: 'Seongsu-dong' },
+                            { id: 505, time: '19:00', title: '晚餐 (二選一)', category: 'food', desc: 'A. IDAEJO 排骨湯\nB. 炸雞 (Kyochon / BBQ)', transportType: 'walk' }
                         ],
                         // Day 6: 12/29 最後衝刺 & 回程
                         [
-                            { id: 601, time: '09:30', title: '早餐: Egg Drop', category: 'food', desc: '簡單快捷', transportType: 'walk', location: 'Egg Drop' },
-                            { id: 602, time: '10:30', title: '明洞最後補貨', category: 'shopping', desc: '買漏嘅手信、零食依家買埋', transportType: 'walk', location: 'Myeongdong' },
-                            { id: 603, time: '12:30', title: '最後午餐: 豐川鰻魚', category: 'food', desc: '補補元氣', transportType: 'walk', location: 'Pungcheon Eel' },
-                            { id: 604, time: '14:30', title: '回酒店拎行李', category: 'transport', desc: '整理行李', transportType: 'walk' },
-                            { id: 605, time: '15:00', title: '出發去機場', category: 'transport', desc: '預留時間搭車 & Check-in', transportType: 'train', location: '仁川國際機場' },
-                            { id: 606, time: '18:00', title: '回程起飛 (UO631)', category: 'flight', desc: '18:00 仁川 -> 21:00 香港', transportType: 'flight' }
+                            { id: 601, time: '09:30', title: '早餐: Egg Drop', category: 'food', desc: '📍 에그드랍', transportType: 'walk', location: 'Egg Drop' },
+                            { id: 602, time: '10:30', title: '明洞最後補貨', category: 'shopping', desc: '確認手信買齊未 (HBAF 杏仁、面膜等)', transportType: 'walk', location: 'Myeongdong' },
+                            { id: 603, time: '12:00', title: '退房 / 寄存行李', category: 'hotel', desc: '準備離開', transportType: 'walk' },
+                            { id: 604, time: '12:30', title: '最後午餐: 豐川鰻魚', category: 'food', desc: '📍 풍천장어\n炭火現烤鰻魚，補元氣', transportType: 'walk', location: 'Pungcheon Eel' },
+                            { id: 605, time: '14:30', title: '回酒店拿行李', category: 'transport', desc: '整理行李', transportType: 'walk' },
+                            { id: 606, time: '15:00', title: '出發去機場', category: 'transport', desc: '前往仁川國際機場', reminder: '請提前 3 小時到達機場辦理退稅及 Check-in。', transportType: 'train', location: 'Incheon International Airport' },
+                            { id: 607, time: '18:00', title: '回程起飛 (UO631)', category: 'flight', desc: '18:00 仁川 -> 21:00 香港', transportType: 'flight' }
                         ]
                     ],
 
                     shoppingList: [],
                     expenses: [],
 
-                    newItem: { title: '', time: '12:00', category: 'sightseeing', desc: '', location: '', transportType: 'train', travelTime: '' },
+                    newItem: { title: '', time: '12:00', category: 'sightseeing', desc: '', location: '', transportType: 'train', travelTime: '', reminder: '' },
                     newShopping: { name: '', image: null },
                     newExpense: { name: '', amount: '', category: 'food', date: '', payment: '現金' }
                 }
@@ -497,7 +507,7 @@
                         else if (id >= 600) this.weather.icon = 'fa-snowflake';
                         else this.weather.icon = 'fa-cloud-sun';
                     })
-                    .catch(() => { this.weather.temp = -2; this.weather.icon = 'fa-snowflake'; });
+                    .catch(() => { this.weather.temp = -5; this.weather.icon = 'fa-snowflake'; });
                 },
                 convert(type) {
                     if (type === 'jpy') this.calcHkd = (this.calcJpy * this.exchangeRate).toFixed(1);
