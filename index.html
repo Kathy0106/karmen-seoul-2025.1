@@ -50,12 +50,19 @@
 
     <div id="app" class="h-full flex flex-col relative">
 
-        <div class="relative h-[250px] flex-shrink-0 bg-cover bg-center transition-all duration-500"
+        <div class="relative h-[280px] flex-shrink-0 bg-cover bg-center transition-all duration-500"
              style="background-image: url('./header.png'), url('./header.jpg');">
             
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/70"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
             
-            <div class="absolute bottom-8 right-4 flex space-x-3 z-20">
+            <div class="absolute bottom-20 left-6 text-white text-shadow drop-shadow-lg z-10">
+                <h1 class="text-3xl font-bold tracking-widest mb-1">SEOUL 2025</h1>
+                <p class="text-sm opacity-90 font-medium flex items-center">
+                    <i class="fa-regular fa-snowflake mr-2 text-blue-300"></i> Christmas Trip (12/24-29)
+                </p>
+            </div>
+
+            <div class="absolute bottom-6 right-4 flex space-x-4 z-20">
                 <button @click="currentTab = 'itinerary'" :class="tabClass('itinerary')">
                     <i class="fa-solid fa-map-location-dot text-lg"></i>
                 </button>
@@ -68,13 +75,6 @@
                 <button @click="currentTab = 'expenses'" :class="tabClass('expenses')">
                     <i class="fa-solid fa-won-sign text-lg"></i>
                 </button>
-            </div>
-            
-            <div class="absolute bottom-10 left-6 text-white text-shadow drop-shadow-lg">
-                <h1 class="text-2xl font-bold tracking-widest">SEOUL 2025</h1>
-                <p class="text-sm opacity-90 font-medium">
-                    <i class="fa-regular fa-snowflake mr-1 text-blue-200"></i> Christmas Trip (12/24-29)
-                </p>
             </div>
         </div>
 
@@ -408,7 +408,7 @@
                     ],
 
                     hotels: [
-                        { name: '明洞酒店', dates: '12/24 - 12/29' }
+                        { name: '首爾市區酒店', dates: '12/24 - 12/29' }
                     ],
 
                     itineraryData: [
