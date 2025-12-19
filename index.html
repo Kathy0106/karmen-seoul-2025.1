@@ -204,15 +204,15 @@
                                     <span>12/24 去程 (HKG → ICN)</span>
                                 </div>
                                 <div class="flex justify-between items-center mb-1">
-                                    <div class="text-2xl font-bold text-slate-700">10:00</div>
+                                    <div class="text-2xl font-bold text-slate-700">16:35</div>
                                     <div class="h-0.5 w-10 bg-gray-200 relative flex justify-center">
                                         <i class="fa-solid fa-plane text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
                                     </div>
-                                    <div class="text-2xl font-bold text-slate-700">12:30</div>
+                                    <div class="text-2xl font-bold text-slate-700">21:05</div>
                                 </div>
                                 <div class="flex justify-between text-sm font-bold bg-slate-50 text-slate-700 p-2 rounded-lg">
                                     <span>UO 626</span>
-                                    <span>香港 → 仁川</span>
+                                    <span>香港 → 仁川 (晚機)</span>
                                 </div>
                                 <a href="https://www.google.com/search?q=UO626+flight+status" target="_blank" class="block w-full text-center py-2 rounded-lg border border-gray-300 text-gray-500 text-sm font-bold hover:bg-gray-50 transition-colors mt-2">
                                     <i class="fa-solid fa-wifi mr-1"></i> 查看即時狀態
@@ -226,11 +226,11 @@
                                     <span>12/29 回程 (ICN → HKG)</span>
                                 </div>
                                 <div class="flex justify-between items-center mb-1">
-                                    <div class="text-2xl font-bold text-slate-700">18:00</div>
+                                    <div class="text-2xl font-bold text-slate-700">15:45</div>
                                     <div class="h-0.5 w-10 bg-gray-200 relative flex justify-center">
                                         <i class="fa-solid fa-plane text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
                                     </div>
-                                    <div class="text-2xl font-bold text-slate-700">21:00</div>
+                                    <div class="text-2xl font-bold text-slate-700">19:00</div>
                                 </div>
                                 <div class="flex justify-between text-sm font-bold bg-slate-50 text-slate-700 p-2 rounded-lg mb-2">
                                     <span>UO 631</span>
@@ -416,35 +416,32 @@
                     ],
 
                     itineraryData: [
-                        // Day 1: 12/24 平安夜
+                        // Day 1: 12/24 平安夜 (晚機到)
                         [
-                            { id: 100, time: '12:30', title: '抵達仁川機場 (UO626)', category: 'flight', desc: '搭 6015 巴士 (尾站落車) 前往明洞酒店', transportType: 'flight', location: 'Incheon Airport' },
-                            { id: 101, time: '16:00', title: '酒店 Check-in', category: 'hotel', desc: '休息整頓', transportType: 'walk', location: 'Myeongdong' },
-                            { id: 102, time: '17:00', title: '明洞換錢 & 掃街', category: 'shopping', desc: '大使館/一品香換錢\n先食魚糕湯/雞肉串醫肚', transportType: 'walk', location: 'Myeongdong Money Exchange' },
-                            { id: 103, time: '18:00', title: '新世界百貨 Media Facade', category: 'sightseeing', desc: '📍 신세계백화점 본점\n位置: 明洞站行去會賢站方向', reminder: '人流極多，最佳觀賞點在「中央郵局」前。小心財物！', transportType: 'walk', location: 'Shinsegae Department Store Main Store' },
-                            { id: 104, time: '19:30', title: '晚餐: 明洞餃子', category: 'food', desc: '📍 명동교자\n米芝蓮推介，刀削麵 + 韓式蒸餃 (暖笠笠)', reminder: '翻桌率快，排隊通常 15-20 分鐘。', transportType: 'walk', location: 'Myeongdong Kyoja Main' },
-                            { id: 105, time: '21:00', title: '清溪川聖誕燈飾', category: 'sightseeing', desc: 'Seoul Lantern Festival\n步行 10分鐘去清溪川散步', transportType: 'walk', location: 'Cheonggyecheon' }
+                            { id: 100, time: '21:05', title: '抵達仁川機場 (UO626)', category: 'flight', desc: '搭 6015 巴士 (尾站落車) 前往明洞酒店\n*因晚機到，新世界燈飾及明洞餃子等 Day 1 餐廳行程已保留於此供參考/調整', transportType: 'flight', location: 'Incheon Airport' },
+                            { id: 101, time: '23:00', title: '酒店 Check-in & 宵夜', category: 'hotel', desc: '安頓好，落樓下食炸雞/便利店 🍗', transportType: 'walk', location: 'Myeongdong' }
                         ],
                         // Day 2: 12/25 聖誕節 (安國/文來/弘大)
                         [
                             { id: 201, time: '09:30', title: '早餐: Dotori Garden', category: 'food', desc: '📍 도토리가든\n必試 Greek Yogurt、橡果瑪德蓮', reminder: '建議開門(8:00)後盡快去，或預留排隊時間。', transportType: 'train', location: 'Dotori Garden Anguk' },
                             { id: 202, time: '11:00', title: '安國文青區散步', category: 'shopping', desc: 'Object → ZERO SPACE → Tamburins 安國店', transportType: 'walk', location: 'Anguk' },
-                            { id: 203, time: '12:30', title: '前往文來洞 (Mullae)', category: 'transport', desc: '3號線[安國]->[乙支路3街]轉2號線->[文來站]7號出口', transportType: 'train', travelTime: '40 min' },
-                            { id: 204, time: '13:30', title: '午餐: 元祖蒜肥腸', category: 'food', desc: '📍 원조마늘곱창 문래본점\n必點：蒜頭肥腸 + 炒飯', reminder: '聖誕節可能提早至12:30開門，建議出發前Naver再確認。', transportType: 'walk', location: 'Wonjo Garlic Gopchang Mullae' },
-                            { id: 205, time: '15:30', title: '前往弘大/延南洞', category: 'transport', desc: '2號線[文來] -> [弘大入口] (10分鐘)', transportType: 'train', travelTime: '10 min' },
-                            { id: 206, time: '16:00', title: '下午茶: Artist Bakery', category: 'food', desc: '📍 아티스트 베이커리\n鹽麵包 (Salt Bread)', transportType: 'walk', location: 'Artist Bakery Hongdae' },
-                            { id: 207, time: '19:15', title: '晚餐: 烏達里家', category: 'food', desc: '📍 오다리집 간장게장\n醬蟹 (回明洞食)', reminder: '遊客多，建議請酒店幫忙訂位。', transportType: 'train', location: 'Odarijip Myeongdong' },
-                            { id: 208, time: '21:00', title: '聖誕打卡: 明洞聖堂', category: 'sightseeing', desc: '📍 명동성당\n欣賞著名的聖誕夜景 🎄', transportType: 'walk', location: 'Myeongdong Cathedral' }
+                            { id: 2025, time: '12:30', title: 'Artist Bakery (補回)', category: 'food', desc: '📍 아티스트 베이커리\n安國店買鹽麵包 (Salt Bread)', transportType: 'walk', location: 'Artist Bakery Anguk' },
+                            { id: 203, time: '13:00', title: '前往弘大', category: 'transport', desc: '搭地鐵', transportType: 'train', travelTime: '40 min' },
+                            { id: 204, time: '14:00', title: '下午茶/行街: 弘大', category: 'shopping', desc: '弘大商圈自由活動', transportType: 'walk', location: 'Hongdae Shopping Street' },
+                            { id: 205, time: '16:30', title: '前往文來洞 (Mullae)', category: 'transport', desc: '2號線 [弘大] -> [文來] (10分鐘)', transportType: 'train', travelTime: '10 min' },
+                            { id: 206, time: '17:00', title: '晚餐: 元祖蒜肥腸', category: 'food', desc: '📍 원조마늘곱창 문래본점\n必點：蒜頭肥腸 + 炒飯', reminder: '16:00 開門，早去排隊！', transportType: 'walk', location: 'Wonjo Garlic Gopchang Mullae' },
+                            { id: 207, time: '19:30', title: '聖誕打卡: 明洞聖堂', category: 'sightseeing', desc: '📍 명동성당\n欣賞著名的聖誕夜景 🎄', transportType: 'walk', location: 'Myeongdong Cathedral' }
                         ],
-                        // Day 3: 12/26 購物日
+                        // Day 3: 12/26 購物日 (補回 Day 1 錯過的重點)
                         [
                             { id: 301, time: '09:30', title: '早餐: 宋家飯捲', category: 'food', desc: '📍 송가김밥\n簡單好食', transportType: 'walk', location: 'Songga Gimbap' },
                             { id: 302, time: '10:30', title: '明洞 Shopping', category: 'shopping', desc: 'Olive Young 旗艦店、波鞋店', transportType: 'walk', location: 'Myeongdong' },
                             { id: 303, time: '12:30', title: '午餐: 退溪路韓牛一條街', category: 'food', desc: '📍 퇴계로 한우골목\n隨心選一家韓牛燒肉', transportType: 'walk', location: 'Toegyero' },
                             { id: 304, time: '14:30', title: '南大門市場', category: 'shopping', desc: '📍 남대문시장\n買老爺爺草莓乾、童裝、紫菜', reminder: '店鋪 17:00 開始收檔，下午去剛剛好。', transportType: 'walk', location: 'Namdaemun Market' },
                             { id: 305, time: '16:30', title: '東大門 Doota Mall', category: 'shopping', desc: '4樓 No Brand 超市 (掃零食)\n地下 Scooper Gelato', transportType: 'train', location: 'Doota Mall' },
-                            { id: 306, time: '19:00', title: '前往新堂', category: 'transport', desc: '的士/地鐵', transportType: 'car' },
-                            { id: 307, time: '19:30', title: '晚餐: 友誼辣雞爪', category: 'food', desc: '📍 우정닭발\n新堂洞年糕街', reminder: '雞爪頗辣，怕辣記得點 Mild。', transportType: 'walk', location: 'Ujeong Dakbal Sindang' }
+                            { id: 3055, time: '18:00', title: '新世界百貨 Media Facade', category: 'sightseeing', desc: '📍 신세계백화점 본점\n位置: 明洞站行去會賢站方向 (補回必睇)', reminder: '最佳觀賞點在「中央郵局」前。', transportType: 'car', location: 'Shinsegae Department Store Main Store' },
+                            { id: 306, time: '19:00', title: '晚餐: 明洞餃子', category: 'food', desc: '📍 명동교자\n(補回必食) 米芝蓮推介', transportType: 'walk', location: 'Myeongdong Kyoja Main' },
+                            { id: 307, time: '20:30', title: '宵夜: 友誼辣雞爪', category: 'food', desc: '📍 우정닭발\n新堂洞年糕街 (可選)', reminder: '如食唔落可 Skip，雞爪頗辣。', transportType: 'car', location: 'Ujeong Dakbal Sindang' }
                         ],
                         // Day 4: 12/27 風景日
                         [
@@ -461,17 +458,16 @@
                             { id: 502, time: '11:30', title: '聖水洞 Shopping Pt.1', category: 'shopping', desc: 'ADER ERROR (像美術館一樣)\nTamburins (旗艦店)', transportType: 'walk', location: 'Seongsu-dong' },
                             { id: 503, time: '13:30', title: '午餐: 無垢屋', category: 'food', desc: '📍 무쿠우동\n日式料理', transportType: 'walk', location: 'Mugunghwa Seongsu' },
                             { id: 504, time: '15:00', title: '聖水洞 Shopping Pt.2', category: 'shopping', desc: 'Blue Elephant (眼鏡)\nMilky Shop (甜品)\nMusinsa Standard (服飾)', reminder: '店鋪比較分散，要行幾多路。', transportType: 'walk', location: 'Seongsu-dong' },
-                            { id: 505, time: '19:00', title: '晚餐 (二選一)', category: 'food', desc: 'A. IDAEJO 排骨湯\nB. 炸雞 (Kyochon / BBQ)', transportType: 'walk' }
+                            { id: 505, time: '19:00', title: '晚餐: 豐川鰻魚', category: 'food', desc: '📍 풍천장어\n(原 Day 6 行程，改晚餐補身)', transportType: 'walk', location: 'Pungcheon Eel' }
                         ],
-                        // Day 6: 12/29 最後衝刺 & 回程
+                        // Day 6: 12/29 回程 (午機)
                         [
                             { id: 601, time: '09:30', title: '早餐: Egg Drop', category: 'food', desc: '📍 에그드랍', transportType: 'walk', location: 'Egg Drop' },
-                            { id: 602, time: '10:30', title: '明洞最後補貨', category: 'shopping', desc: '確認手信買齊未 (HBAF 杏仁、面膜等)', transportType: 'walk', location: 'Myeongdong' },
-                            { id: 603, time: '12:00', title: '退房 / 寄存行李', category: 'hotel', desc: '準備離開', transportType: 'walk' },
-                            { id: 604, time: '12:30', title: '最後午餐: 豐川鰻魚', category: 'food', desc: '📍 풍천장어\n炭火現烤鰻魚，補元氣', transportType: 'walk', location: 'Pungcheon Eel' },
-                            { id: 605, time: '14:30', title: '回酒店拿行李', category: 'transport', desc: '整理行李', transportType: 'walk' },
-                            { id: 606, time: '15:00', title: '出發去機場', category: 'transport', desc: '前往仁川國際機場', reminder: '請提前 3 小時到達機場辦理退稅及 Check-in。', transportType: 'train', location: 'Incheon International Airport' },
-                            { id: 607, time: '18:00', title: '回程起飛 (UO631)', category: 'flight', desc: '18:00 仁川 -> 21:00 香港', transportType: 'flight' }
+                            { id: 602, time: '10:30', title: '最後補貨 (明洞)', category: 'shopping', desc: '確認手信買齊未', transportType: 'walk', location: 'Myeongdong' },
+                            { id: 603, time: '11:30', title: '簡單午餐 / 機場食', category: 'food', desc: '機場餐廳 / 便利店', transportType: 'train', location: 'Incheon International Airport' },
+                            { id: 6035, time: '12:30', title: '豐川鰻魚 (原定行程)', category: 'food', desc: '📍 풍천장어\n(如果趕得切11:00開門即食，否則建議改去 Day 5)', reminder: '請自行評估時間，12:45 前要上車去機場。', transportType: 'walk', location: 'Pungcheon Eel' },
+                            { id: 604, time: '12:45', title: '出發去機場', category: 'transport', desc: '前往仁川國際機場', reminder: '15:45 起飛，請預留 3 小時 Check-in。', transportType: 'train', location: 'Incheon International Airport' },
+                            { id: 605, time: '15:45', title: '回程起飛 (UO631)', category: 'flight', desc: '15:45 仁川 -> 19:00 香港', transportType: 'flight' }
                         ]
                     ],
 
